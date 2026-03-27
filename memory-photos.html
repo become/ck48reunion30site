@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回憶照片 · 建中第48屆30年重聚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container page-hero__content">
+    <div class="page-hero__eyebrow">Memory Photos</div>
+    <h1 class="page-hero__title">回憶照片</h1>
+    <p class="page-hero__sub">那些年，我們一起在建中的青春歲月</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div data-tabs>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="all">全部</button>
+        <button class="tab-btn" data-tab="校園照片">校園照片</button>
+        <button class="tab-btn" data-tab="畢業照">畢業照</button>
+        <button class="tab-btn" data-tab="班級照片">班級照片</button>
+        <button class="tab-btn" data-tab="社團活動">社團活動</button>
+        <button class="tab-btn" data-tab="校友投稿">校友投稿</button>
+      </div>
+      <div class="photo-grid photo-grid--3" id="memory-grid"></div>
+    </div>
+
+    <div style="margin-top:48px;text-align:center;" class="reveal">
+      <p style="font-size:16px;color:var(--color-text-muted);margin-bottom:20px;">
+        📷 更多精彩回憶照片收錄於 Google 相簿，歡迎前往查看及投稿。
+      </p>
+      <div class="btn-group" style="justify-content:center;">
+        <a href="#" class="btn btn--secondary btn--lg">前往 Google 相簿</a>
+        <a href="#" class="btn btn--outline btn--lg">投稿照片</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let currentCat = 'all';
+
+  function renderPhotos() {
+    const grid = document.getElementById('memory-grid');
+    const items = currentCat === 'all'
+      ? CK48_DATA.memoryPhotos
+      : CK48_DATA.memoryPhotos.filter(p => p.category === currentCat);
+    grid.innerHTML = '';
+    items.forEach(p => {
+      grid.innerHTML += `
+        <div class="photo-card reveal" role="button" tabindex="0"
+             aria-label="${p.title}" data-caption="${p.title} · ${p.category}">
+          <div class="photo-placeholder">${p.emoji}</div>
+          <div class="photo-card__overlay"></div>
+          <div class="photo-card__info">
+            <div class="photo-card__title">${p.title}</div>
+            <div class="photo-card__cat">${p.category}</div>
+          </div>
+        </div>`;
+    });
+    setTimeout(() => {
+      document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
+    }, 50);
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.tab;
+      renderPhotos();
+    });
+  });
+
+  renderPhotos();
+});
+</script>
+</body>
+</html>

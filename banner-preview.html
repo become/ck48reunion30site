@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Banner 設計預覽 · CK48 Reunion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; font-family: 'Noto Sans TC', sans-serif; color: #fff; }
+    .preview-header {
+      background: #1a1a1a;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #333;
+    }
+    .preview-header h1 { font-size: 16px; font-weight: 600; color: #ccc; }
+    .dim-tag {
+      background: #B08D57;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: .05em;
+    }
+    /* Full width desktop preview */
+    .preview-desktop {
+      width: 100%;
+      max-width: 1440px;
+      margin: 40px auto;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,.6);
+    }
+    .preview-desktop img { display: block; width: 100%; }
+
+    /* Tablet preview */
+    .preview-row {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      padding: 0 40px 48px;
+      flex-wrap: wrap;
+    }
+    .preview-box { text-align: center; }
+    .preview-box__label { font-size: 13px; color: #888; margin-bottom: 10px; letter-spacing: .08em; }
+    .preview-tablet {
+      width: 768px;
+      max-width: 100%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .preview-tablet img { display: block; width: 100%; height: 240px; object-fit: cover; object-position: center top; }
+    /* Mobile preview */
+    .preview-mobile {
+      width: 390px;
+      max-width: 100%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .preview-mobile img { display: block; width: 100%; height: 200px; object-fit: cover; object-position: left top; }
+
+    .spec-section {
+      max-width: 900px;
+      margin: 0 auto 48px;
+      padding: 0 40px;
+    }
+    .spec-section h2 { font-size: 18px; font-weight: 700; color: #B08D57; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #333; }
+    .spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .spec-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px 20px; }
+    .spec-card__key { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #B08D57; margin-bottom: 6px; }
+    .spec-card__val { font-size: 15px; font-weight: 600; color: #eee; }
+    .spec-card__sub { font-size: 12px; color: #777; margin-top: 3px; }
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #B08D57; color: #fff;
+      padding: 12px 28px; border-radius: 8px;
+      font-size: 15px; font-weight: 700; text-decoration: none;
+      transition: background .2s ease;
+    }
+    .download-btn:hover { background: #C9A96E; }
+  </style>
+</head>
+<body>
+
+<div class="preview-header">
+  <h1>🎨 Hero Banner 設計預覽 · 建中第48屆30年重聚</h1>
+  <span class="dim-tag">1440 × 720 px</span>
+</div>
+
+<!-- Desktop preview -->
+<div style="padding: 32px 40px 24px; max-width:1440px; margin:0 auto;">
+  <div style="font-size:12px;color:#666;margin-bottom:12px;letter-spacing:.06em;">DESKTOP — 1440px</div>
+  <div class="preview-desktop">
+    <img src="images/hero-banner.svg" alt="CK48 Reunion Hero Banner">
+  </div>
+</div>
+
+<!-- Tablet + Mobile previews -->
+<div class="preview-row" style="margin-top:8px;">
+  <div class="preview-box">
+    <div class="preview-box__label">TABLET — 768px</div>
+    <div class="preview-tablet">
+      <img src="images/hero-banner.svg" alt="tablet preview">
+    </div>
+  </div>
+  <div class="preview-box">
+    <div class="preview-box__label">MOBILE — 390px</div>
+    <div class="preview-mobile">
+      <img src="images/hero-banner.svg" alt="mobile preview">
+    </div>
+  </div>
+</div>
+
+<!-- Specs -->
+<div class="spec-section">
+  <h2>Banner 規格說明</h2>
+  <div class="spec-grid">
+    <div class="spec-card">
+      <div class="spec-card__key">建議尺寸</div>
+      <div class="spec-card__val">1440 × 720 px</div>
+      <div class="spec-card__sub">主流寬屏標準，比例 2:1</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">全幅大螢幕</div>
+      <div class="spec-card__val">1920 × 960 px</div>
+      <div class="spec-card__sub">適用 2K 螢幕，同比例放大</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">格式</div>
+      <div class="spec-card__val">SVG（向量）</div>
+      <div class="spec-card__sub">無限縮放、檔案小、品質最佳</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">Fallback 格式</div>
+      <div class="spec-card__val">JPG / WebP</div>
+      <div class="spec-card__sub">若需匯出點陣圖，建議 300dpi</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">主色</div>
+      <div class="spec-card__val" style="display:flex;gap:8px;align-items:center;">
+        <span style="display:inline-block;width:14px;height:14px;background:#1F3A5F;border-radius:3px;"></span>
+        <span>#1F3A5F</span>
+      </div>
+      <div class="spec-card__sub">深藍（Primary）</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">強調色</div>
+      <div class="spec-card__val" style="display:flex;gap:8px;align-items:center;">
+        <span style="display:inline-block;width:14px;height:14px;background:#B08D57;border-radius:3px;"></span>
+        <span>#B08D57</span>
+      </div>
+      <div class="spec-card__sub">金棕（Accent）</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">內容安全區</div>
+      <div class="spec-card__val">左側 80–680px</div>
+      <div class="spec-card__sub">文字配置在左半部，右側為建中紅樓插圖</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card__key">手機適配</div>
+      <div class="spec-card__val">object-position: left</div>
+      <div class="spec-card__sub">手機版顯示左半文字區，建築圖可裁切</div>
+    </div>
+  </div>
+  <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+    <a href="images/hero-banner.svg" download="ck48-hero-banner.svg" class="download-btn">
+      ⬇ 下載 SVG Banner
+    </a>
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:#aaa;font-size:14px;text-decoration:none;">
+      ← 回首頁查看實際效果
+    </a>
+  </div>
+</div>
+
+</body>
+</html>

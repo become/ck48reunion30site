@@ -1,0 +1,25 @@
+# ── 系統檔案 ──────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE / 編輯器 ──────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ── 前端開發工具 ──────────────────────────
+node_modules/
+npm-debug.log*
+.env
+.env.local
+
+# ── 後端 Spring Boot (ck48-backend) ───────
+ck48-backend/target/
+ck48-backend/.mvn/wrapper/maven-wrapper.jar
+ck48-backend/*.log
+
+# ── 敏感設定 ──────────────────────────────
+application-prod.properties
+**/application-secret*.properties

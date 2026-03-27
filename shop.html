@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>紀念商品 · 建中第48屆30年重聚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container page-hero__content">
+    <div class="page-hero__eyebrow">Merchandise</div>
+    <h1 class="page-hero__title">紀念商品</h1>
+    <p class="page-hero__sub">帶一份建中48屆的記憶回家</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- Tabs -->
+    <div data-tabs style="margin-bottom:0;">
+      <div class="tabs">
+        <button class="tab-btn active" data-shop-cat="all">全部</button>
+        <button class="tab-btn" data-shop-cat="服飾">服飾</button>
+        <button class="tab-btn" data-shop-cat="紀念品">紀念品</button>
+        <button class="tab-btn" data-shop-cat="其他">其他</button>
+      </div>
+    </div>
+
+    <!-- Notice -->
+    <div style="background:rgba(176,141,87,.08);border:1px solid rgba(176,141,87,.25);border-radius:var(--radius-md);padding:14px 18px;font-size:14px;color:var(--color-text);margin-bottom:28px;">
+      🎁 商品數量有限，敬請提早預購！預計於活動前寄出，或活動當天現場領取。
+    </div>
+
+    <div class="shop-grid" id="shop-grid">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-banner reveal">
+      <div class="cta-banner__content">
+        <h2 class="cta-banner__title">已完成報名了嗎？</h2>
+        <p class="cta-banner__sub">別忘了同時完成活動報名，確保您的重聚席位。</p>
+        <div class="btn-group" style="justify-content:center;">
+          <a href="registration.html" class="btn btn--primary btn--lg">前往報名</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let currentCat = 'all';
+
+  function renderShop() {
+    const grid = document.getElementById('shop-grid');
+    const items = currentCat === 'all'
+      ? CK48_DATA.products
+      : CK48_DATA.products.filter(p => p.category === currentCat);
+    grid.innerHTML = '';
+    items.forEach(p => {
+      grid.innerHTML += `
+        <article class="product-card reveal">
+          <div class="product-card__img">
+            <div class="product-card__img-placeholder">${p.emoji}</div>
+          </div>
+          <div class="product-card__body">
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <span class="badge badge--light">${p.category}</span>
+            </div>
+            <h2 class="product-card__name">${p.name}</h2>
+            <p class="product-card__desc">${p.description}</p>
+            <div class="product-card__footer">
+              <div class="product-card__price">NT$${p.price.toLocaleString()} <span>/ 件</span></div>
+              <a href="shop-detail.html?slug=${p.slug}" class="btn btn--outline btn--sm">查看詳情</a>
+            </div>
+          </div>
+        </article>`;
+    });
+    setTimeout(() => {
+      document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
+    }, 50);
+  }
+
+  document.querySelectorAll('[data-shop-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-shop-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCat = btn.dataset.shopCat;
+      renderShop();
+    });
+  });
+
+  renderShop();
+});
+</script>
+</body>
+</html>

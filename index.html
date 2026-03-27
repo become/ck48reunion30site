@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建中第48屆30年重聚 · CK48 Reunion 2026</title>
+  <meta name="description" content="建中第48屆畢業30年重聚官方網站。三十再聚，少年依舊。活動日期：2026年12月19–20日。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="page-top">
+
+<div id="header-placeholder"></div>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero" aria-label="主視覺">
+  <div class="hero__bg">
+    <img src="images/hero-banner.jpg"
+         alt="建中紅樓 — 三十年，我們再聚首"
+         loading="eager">
+  </div>
+  <div class="hero__overlay" aria-hidden="true"></div>
+  <div class="container hero__content">
+    <div class="hero__eyebrow">CK48 Reunion 2026</div>
+    <h1 class="hero__title">
+      建中第48屆<br>
+      <em>畢業30年重聚</em>
+    </h1>
+    <p class="hero__slogan">三十再聚，少年依舊</p>
+    <div class="hero__cta">
+      <a href="registration.html" class="btn btn--accent btn--lg btn--disabled" aria-disabled="true" tabindex="-1">報名即將開放</a>
+      <a href="find-classmates.html" class="btn btn--outline-white btn--lg">校友簽到</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── EVENT STRIP：活動資訊 ＋ 倒數 ＋ 儀錶板 ─────────────── -->
+<section class="home-event-strip">
+  <div class="container">
+    <div class="home-event-strip__inner">
+
+      <!-- ── 左欄：標題 + 活動方塊 + 倒數計時器 ── -->
+      <div class="strip-left">
+        <div class="strip-left__eyebrow">CK48 Reunion 2026</div>
+        <h2 class="strip-left__title">三十年，我們再聚首</h2>
+        <p class="strip-left__sub">建中48屆 · 三十重聚</p>
+
+        <div class="event-info-boxes">
+          <div class="event-info-box">
+            <div class="event-info-box__tag">重聚晚宴</div>
+            <div class="event-info-box__date">2026 / 12 / 19</div>
+            <div class="event-info-box__time">🕕 18:00</div>
+            <div class="event-info-box__place">大直典華<br>花田盛事廳</div>
+          </div>
+          <div class="event-info-box">
+            <div class="event-info-box__tag">返校日</div>
+            <div class="event-info-box__date">2026 / 12 / 20</div>
+            <div class="event-info-box__time">🕙 10:00</div>
+            <div class="event-info-box__place">台北市立<br>建國高級中學</div>
+          </div>
+        </div>
+
+        <div class="home-countdown" id="countdown" aria-label="距離重聚餐會倒數">
+          <div class="home-countdown__label">距離重聚餐會</div>
+          <div class="home-countdown__timer">
+            <div class="home-cd-unit">
+              <div class="home-cd-num" data-unit="days">--</div>
+              <div class="home-cd-lbl">天</div>
+            </div>
+            <div class="home-cd-sep">:</div>
+            <div class="home-cd-unit">
+              <div class="home-cd-num" data-unit="hours">--</div>
+              <div class="home-cd-lbl">時</div>
+            </div>
+            <div class="home-cd-sep">:</div>
+            <div class="home-cd-unit">
+              <div class="home-cd-num" data-unit="mins">--</div>
+              <div class="home-cd-lbl">分</div>
+            </div>
+            <div class="home-cd-sep">:</div>
+            <div class="home-cd-unit">
+              <div class="home-cd-num" data-unit="secs">--</div>
+              <div class="home-cd-lbl">秒</div>
+            </div>
+          </div>
+          <div class="home-countdown__sub">2026 · 12 · 19 · SAT</div>
+        </div>
+      </div>
+
+      <!-- ── 右欄：儀錶板 + 社群 + 校友簽到 ── -->
+      <div class="strip-right">
+
+        <!-- 統計儀錶板 -->
+        <div class="strip-stats">
+          <div class="strip-stat">
+            <div class="strip-stat__num">48</div>
+            <div class="strip-stat__lbl">屆</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-stat__num">1,520</div>
+            <div class="strip-stat__lbl">位校友</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-stat__num">30</div>
+            <div class="strip-stat__lbl">年後重聚</div>
+          </div>
+          <div class="strip-stat">
+            <div class="strip-stat__num" id="checkin-count">--</div>
+            <div class="strip-stat__lbl">人已簽到</div>
+          </div>
+        </div>
+
+        <!-- 社群連結 -->
+        <div class="strip-social">
+          <div class="strip-social__label">加入社群</div>
+          <div class="strip-social__links">
+            <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener" class="strip-social-link strip-social-link--fb">
+              <span class="strip-social-link__icon">📘</span>
+              <span>Facebook 粉絲專頁</span>
+            </a>
+            <a href="https://discord.gg/gHpBA9Kz" target="_blank" rel="noopener" class="strip-social-link strip-social-link--dc">
+              <span class="strip-social-link__icon">🎮</span>
+              <span>Discord 社群</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 校友簽到 CTA -->
+        <div class="strip-checkin">
+          <h3 class="strip-checkin__title">✏️ 校友簽到</h3>
+          <p class="strip-checkin__desc">留下聯絡資訊，告訴我們你是否參加 12/19 晚宴與 12/20 返校日</p>
+          <a href="find-classmates.html" class="btn btn--primary strip-checkin__btn">填寫聯絡資訊 →</a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── HIGHLIGHTS ─────────────────────────────────────────── -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">Event Highlights</div>
+      <h2 class="section-title__main">本次重聚亮點</h2>
+      <p class="section-title__sub">三十年後再聚首，與老同學一起找回青春的記憶</p>
+    </div>
+    <div class="highlight-grid">
+      <div class="highlight-card reveal reveal-delay-1">
+        <span class="highlight-card__icon">🥂</span>
+        <h3 class="highlight-card__title">重聚晚宴</h3>
+        <p class="highlight-card__desc">12/19 精心策劃的重聚晚宴，與老同學把酒言歡，重溫校園情誼。</p>
+      </div>
+      <div class="highlight-card reveal reveal-delay-2">
+        <span class="highlight-card__icon">🏫</span>
+        <h3 class="highlight-card__title">返校日</h3>
+        <p class="highlight-card__desc">12/20 重回建中校園，參觀母校新舊風貌，尋找當年的青春足跡。</p>
+      </div>
+      <div class="highlight-card reveal reveal-delay-3">
+        <span class="highlight-card__icon">📸</span>
+        <h3 class="highlight-card__title">大合照</h3>
+        <p class="highlight-card__desc">全屆大合照及各班合影，留下珍貴的30年重聚歷史畫面。</p>
+      </div>
+      <div class="highlight-card reveal reveal-delay-4">
+        <span class="highlight-card__icon">📖</span>
+        <h3 class="highlight-card__title">紀念冊</h3>
+        <p class="highlight-card__desc">精裝限量紀念冊，收錄同學近況、老師寄語與珍貴歷史照片。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── MEMORY PHOTOS ──────────────────────────────────────── -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">Memory Photos</div>
+      <h2 class="section-title__main">回憶照片精選</h2>
+      <p class="section-title__sub">那些年，我們一起在建中的青春歲月</p>
+    </div>
+    <div class="photo-grid reveal" id="memory-photo-grid">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="center-btn reveal">
+      <a href="memory-photos.html" class="btn btn--secondary">查看更多回憶照片 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── NEWS ───────────────────────────────────────────────── -->
+<section class="section">
+  <div class="container">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">Latest News</div>
+      <h2 class="section-title__main">最新消息</h2>
+    </div>
+    <div class="news-grid" id="home-news-grid">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="center-btn reveal">
+      <a href="news.html" class="btn btn--outline">查看所有消息 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── TIMELINE ───────────────────────────────────────────── -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">Timeline</div>
+      <h2 class="section-title__main">重要時程</h2>
+      <p class="section-title__sub">從籌備到重聚，一起見證這段旅程</p>
+    </div>
+    <div style="max-width:600px;margin-inline:auto;">
+      <div class="timeline-simple" id="home-timeline">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+    <div class="center-btn reveal">
+      <a href="timeline.html" class="btn btn--outline">查看完整大事記 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── EVENT PHOTOS ENTRY ────────────────────────────────── -->
+<section class="section section--dark">
+  <div class="container">
+    <div class="section-title">
+      <div class="section-title__eyebrow" style="color:var(--color-accent)">Event Photos</div>
+      <h2 class="section-title__main" style="color:#fff">活動照片</h2>
+      <p class="section-title__sub" style="color:rgba(255,255,255,.7)">重聚當日精彩畫面，珍藏美好記憶</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:700px;margin-inline:auto;">
+      <a href="event-photos.html?cat=dinner" class="highlight-card" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;text-decoration:none;">
+        <span class="highlight-card__icon">🥂</span>
+        <h3 class="highlight-card__title" style="color:#fff;">重聚餐會</h3>
+        <p class="highlight-card__desc" style="color:rgba(255,255,255,.65);">晚宴精彩花絮與同學合影</p>
+      </a>
+      <a href="event-photos.html?cat=school" class="highlight-card" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;text-decoration:none;">
+        <span class="highlight-card__icon">🏫</span>
+        <h3 class="highlight-card__title" style="color:#fff;">返校日</h3>
+        <p class="highlight-card__desc" style="color:rgba(255,255,255,.65);">重回校園、大合照留念</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── REGISTRATION CTA ───────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-banner reveal">
+      <div class="cta-banner__content">
+        <h2 class="cta-banner__title">準備好回來了嗎？</h2>
+        <p class="cta-banner__sub">三十年了，讓我們再聚首。立即完成報名，預留您的席位。</p>
+        <div class="btn-group" style="justify-content:center;">
+          <a href="registration.html" class="btn btn--primary btn--lg">立即報名</a>
+          <a href="event.html" class="btn btn--outline-light btn--lg">查看活動詳情</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ PREVIEW ────────────────────────────────────────── -->
+<section class="section section--alt">
+  <div class="container" style="max-width:760px;">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">FAQ</div>
+      <h2 class="section-title__main">常見問題</h2>
+    </div>
+    <div class="faq-list" id="home-faq">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="center-btn reveal">
+      <a href="faq.html" class="btn btn--outline">查看更多常見問題 →</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initCountdown('2026-12-19T18:00:00+08:00', 'countdown');
+
+  // Memory photos (6 items)
+  const photoGrid = document.getElementById('memory-photo-grid');
+  if (photoGrid) {
+    CK48_DATA.memoryPhotos.slice(0, 6).forEach(p => {
+      photoGrid.innerHTML += `
+        <div class="photo-card" data-lightbox="#" data-caption="${p.title}" role="button" tabindex="0" aria-label="查看${p.title}">
+          <div class="photo-placeholder">${p.emoji}</div>
+          <div class="photo-card__overlay"></div>
+          <div class="photo-card__info">
+            <div class="photo-card__title">${p.title}</div>
+            <div class="photo-card__cat">${p.category}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // News (3 items)
+  const newsGrid = document.getElementById('home-news-grid');
+  if (newsGrid) {
+    CK48_DATA.news.slice(0, 3).forEach(n => {
+      newsGrid.innerHTML += `
+        <article class="news-card reveal">
+          <div class="news-card__img">
+            <div class="news-card__img-placeholder">${n.coverEmoji}</div>
+          </div>
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span class="badge badge--news">${n.category}</span>
+              <span class="news-card__date">${formatDate(n.date)}</span>
+            </div>
+            <h3 class="news-card__title">${n.title}</h3>
+            <p class="news-card__summary">${n.summary}</p>
+            <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
+          </div>
+        </article>`;
+    });
+  }
+
+  // Timeline (5 items)
+  const tlEl = document.getElementById('home-timeline');
+  if (tlEl) {
+    CK48_DATA.timeline.slice(0, 5).forEach(item => {
+      tlEl.innerHTML += `
+        <div class="timeline-simple-item reveal">
+          <div class="timeline-simple__dot" ${item.highlight ? 'style="background:var(--color-secondary)"' : ''}></div>
+          <div class="timeline-simple__body">
+            <div class="timeline-simple__date">${formatDate(item.date)}</div>
+            <div class="timeline-simple__title">${item.title}</div>
+            <div class="timeline-simple__desc">${item.description}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // FAQ (3 items)
+  const faqEl = document.getElementById('home-faq');
+  if (faqEl) {
+    CK48_DATA.faq.slice(0, 3).forEach(f => {
+      faqEl.innerHTML += `
+        <div class="faq-item reveal">
+          <button class="faq-item__question" aria-expanded="false">
+            <span>${f.question}</span>
+            <span class="faq-item__icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">${f.answer}</div>
+          </div>
+        </div>`;
+    });
+    initFAQ();
+  }
+});
+
+function mockFindVerify() {
+  const cls = document.getElementById('fc-class').value;
+  const teacher = document.getElementById('fc-teacher').value.trim();
+  if (!cls || !teacher) {
+    document.getElementById('find-error').classList.add('show');
+    return;
+  }
+  document.getElementById('find-error').classList.remove('show');
+  document.getElementById('find-form-area').style.display = 'none';
+  document.getElementById('find-success').style.display = 'flex';
+}
+</script>
+</body>
+</html>

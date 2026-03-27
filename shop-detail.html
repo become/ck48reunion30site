@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品詳情 · 建中第48屆30年重聚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .product-detail { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
+    .product-detail__main-img { aspect-ratio:1/1; background:linear-gradient(135deg,#e8e2d8,#d4c9b8); border-radius:var(--radius-xl); display:flex;align-items:center;justify-content:center;font-size:120px; }
+    .product-detail__thumbs { display:flex; gap:8px; margin-top:10px; }
+    .thumb { width:60px; height:60px; border-radius:var(--radius-md); background:linear-gradient(135deg,#e8e2d8,#d4c9b8); display:flex;align-items:center;justify-content:center;font-size:24px; cursor:pointer; border:2px solid transparent; transition:border-color var(--transition); }
+    .thumb:hover, .thumb.active { border-color:var(--color-primary); }
+    .spec-group { margin-bottom:20px; }
+    .spec-label { font-size:14px; font-weight:700; color:var(--color-text); margin-bottom:8px; }
+    .spec-options { display:flex; flex-wrap:wrap; gap:8px; }
+    .spec-btn { padding:8px 16px; border:1.5px solid var(--color-border); border-radius:var(--radius-md); font-size:14px; font-weight:500; background:var(--color-surface); cursor:pointer; transition:all var(--transition); }
+    .spec-btn:hover { border-color:var(--color-primary); color:var(--color-primary); }
+    .spec-btn.active { background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
+    .add-cart-success { display:none; }
+    .add-cart-success.show { display:flex; }
+    @media(max-width:767px){.product-detail{grid-template-columns:1fr;gap:28px;}}
+  </style>
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="section">
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="index.html">首頁</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="shop.html">紀念商品</a>
+      <span class="breadcrumb__sep">/</span>
+      <span id="bc-product">商品詳情</span>
+    </nav>
+
+    <div class="product-detail" id="product-detail-wrap">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Related products -->
+<section class="section section--alt">
+  <div class="container">
+    <h2 style="font-size:22px;font-weight:700;color:var(--color-primary);margin-bottom:24px;">其他商品</h2>
+    <div class="shop-grid" id="related-products"></div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const params  = new URLSearchParams(location.search);
+  const slug    = params.get('slug') || CK48_DATA.products[0].slug;
+  const product = CK48_DATA.products.find(p => p.slug === slug) || CK48_DATA.products[0];
+
+  document.title = `${product.name} · 建中第48屆30年重聚`;
+  document.getElementById('bc-product').textContent = product.name;
+
+  const sizesHtml = product.sizes
+    ? `<div class="spec-group">
+        <div class="spec-label">尺寸</div>
+        <div class="spec-options">
+          ${product.sizes.map((s,i) => `<button class="spec-btn ${i===1?'active':''}" onclick="selectSpec(this)">${s}</button>`).join('')}
+        </div>
+       </div>` : '';
+  const colorsHtml = product.colors
+    ? `<div class="spec-group">
+        <div class="spec-label">顏色</div>
+        <div class="spec-options">
+          ${product.colors.map((c,i) => `<button class="spec-btn ${i===0?'active':''}" onclick="selectSpec(this)">${c}</button>`).join('')}
+        </div>
+       </div>` : '';
+
+  document.getElementById('product-detail-wrap').innerHTML = `
+    <div>
+      <div class="product-detail__main-img">${product.emoji}</div>
+      <div class="product-detail__thumbs">
+        <div class="thumb active">${product.emoji}</div>
+        <div class="thumb" style="font-size:20px;">🏷️</div>
+        <div class="thumb" style="font-size:20px;">📦</div>
+      </div>
+    </div>
+    <div>
+      <span class="badge badge--light" style="margin-bottom:12px;display:inline-flex;">${product.category}</span>
+      <h1 style="font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--color-primary);margin-bottom:8px;">${product.name}</h1>
+      <div style="font-size:28px;font-weight:700;color:var(--color-secondary);margin-bottom:20px;">NT$${product.price.toLocaleString()}</div>
+      <p style="font-size:16px;color:var(--color-text-muted);line-height:1.75;margin-bottom:24px;">${product.description}</p>
+      <hr class="divider" style="margin-block:20px;">
+      ${sizesHtml}
+      ${colorsHtml}
+      <div class="spec-group">
+        <div class="spec-label">數量</div>
+        <div class="qty-control">
+          <button class="qty-btn" data-qty="minus" aria-label="減少">−</button>
+          <input class="qty-num" type="number" value="1" min="1" max="10" aria-label="數量">
+          <button class="qty-btn" data-qty="plus" aria-label="增加">+</button>
+        </div>
+      </div>
+      <div id="add-success" class="status-box status-box--success add-cart-success" style="margin-bottom:16px;">
+        <div class="status-box__icon">✅</div>
+        <div>
+          <div class="status-box__title">已加入訂購清單</div>
+          <div class="status-box__desc">感謝您的預購！實際訂購流程將於報名時一併完成。</div>
+        </div>
+      </div>
+      <div class="btn-group" style="flex-direction:column;align-items:stretch;">
+        <button class="btn btn--primary btn--lg" onclick="addToCart()">加入訂購</button>
+        <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+      </div>
+      <p style="font-size:13px;color:var(--color-text-muted);margin-top:16px;line-height:1.6;">
+        💡 商品預購將於報名時一併處理，活動前寄送或現場領取。數量有限，售完為止。
+      </p>
+    </div>`;
+
+  initQtyControl();
+
+  // Related
+  const related = CK48_DATA.products.filter(p => p.slug !== slug).slice(0, 3);
+  const rp = document.getElementById('related-products');
+  related.forEach(p => {
+    rp.innerHTML += `
+      <article class="product-card">
+        <div class="product-card__img"><div class="product-card__img-placeholder">${p.emoji}</div></div>
+        <div class="product-card__body">
+          <h3 class="product-card__name">${p.name}</h3>
+          <p class="product-card__desc">${p.description}</p>
+          <div class="product-card__footer">
+            <div class="product-card__price">NT$${p.price.toLocaleString()}</div>
+            <a href="shop-detail.html?slug=${p.slug}" class="btn btn--outline btn--sm">查看</a>
+          </div>
+        </div>
+      </article>`;
+  });
+});
+
+function selectSpec(btn) {
+  const group = btn.closest('.spec-options');
+  group.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function addToCart() {
+  document.getElementById('add-success').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

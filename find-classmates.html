@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校友簽到 · 建中第48屆30年重聚</title>
+  <meta name="description" content="建中第48屆校友簽到，留下聯絡資訊，讓老同學找到你！">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── Page-specific styles ── */
+    .checkin-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* Form card */
+    .checkin-form-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: clamp(28px, 4vw, 44px);
+      box-shadow: 0 2px 20px rgba(31,58,95,.06);
+    }
+
+    /* Radio / checkbox group */
+    .radio-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .radio-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text);
+      transition: all var(--transition);
+      user-select: none;
+      background: var(--color-surface);
+    }
+    .radio-btn input[type="radio"],
+    .radio-btn input[type="checkbox"] { display: none; }
+    .radio-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .radio-btn.selected {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .radio-btn.selected-yes {
+      background: #2E7D55;
+      border-color: #2E7D55;
+      color: #fff;
+    }
+    .radio-btn.selected-no {
+      background: var(--color-secondary);
+      border-color: var(--color-secondary);
+      color: #fff;
+    }
+
+    /* Location chips */
+    .location-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .location-chip {
+      padding: 9px 20px;
+      border: 1.5px solid var(--color-border);
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      transition: all var(--transition);
+      background: var(--color-surface);
+    }
+    .location-chip:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .location-chip.selected {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Success state */
+    .checkin-success {
+      display: none;
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .checkin-success__icon { font-size: 72px; margin-bottom: 20px; line-height: 1; }
+    .checkin-success__title { font-size: 28px; font-weight: 800; color: var(--color-primary); margin-bottom: 12px; }
+    .checkin-success__sub { font-size: 17px; color: var(--color-text-muted); line-height: 1.7; margin-bottom: 32px; }
+
+    /* Sidebar cards */
+    .sidebar-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .sidebar-card__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-social-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: all var(--transition);
+    }
+    .sidebar-social-btn:last-child { margin-bottom: 0; }
+    .sidebar-social-btn--fb {
+      background: #EBF3FF;
+      color: #1877F2;
+      border: 1px solid rgba(24,119,242,.25);
+    }
+    .sidebar-social-btn--fb:hover {
+      background: #1877F2;
+      color: #fff;
+    }
+    .sidebar-social-btn--dc {
+      background: #EEEFFE;
+      color: #5865F2;
+      border: 1px solid rgba(88,101,242,.25);
+    }
+    .sidebar-social-btn--dc:hover {
+      background: #5865F2;
+      color: #fff;
+    }
+
+    /* Privacy note */
+    .privacy-note {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      line-height: 1.7;
+      margin-top: 20px;
+    }
+    .privacy-note a { color: var(--color-primary); }
+
+    /* RWD */
+    @media (max-width: 900px) {
+      .checkin-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 600px) {
+      .radio-group { gap: 8px; }
+      .radio-btn { padding: 8px 14px; font-size: 14px; }
+      .location-chip { padding: 8px 16px; font-size: 13px; }
+    }
+
+    /* Required star */
+    .form-field label span { color: var(--color-secondary); margin-left: 2px; }
+  </style>
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<!-- ── PAGE HERO ──────────────────────────────────────────────── -->
+<section class="page-hero">
+  <div class="container page-hero__content">
+    <div class="page-hero__eyebrow">Alumni Check-in</div>
+    <h1 class="page-hero__title">校友簽到</h1>
+    <p class="page-hero__sub">留下聯絡資訊，讓老同學找到你！也讓我們掌握人數，為你保留席位。</p>
+  </div>
+</section>
+
+<!-- ── MAIN SECTION ───────────────────────────────────────────── -->
+<section class="section">
+  <div class="container" style="max-width:1100px;">
+
+    <div class="checkin-layout">
+
+      <!-- ── LEFT: Form ─────────────────────────────────── -->
+      <div>
+
+        <!-- Form card -->
+        <div class="checkin-form-card reveal" id="checkin-form-card">
+
+          <!-- Form state -->
+          <div id="checkin-form">
+            <h2 style="font-size:20px;font-weight:700;color:var(--color-primary);margin-bottom:6px;">填寫聯絡資訊</h2>
+            <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:28px;">本次重聚，你在哪裡？請留下聯絡方式，方便後續通知與聯繫。</p>
+
+            <form id="checkin-form-el" novalidate>
+
+              <!-- Row 1: Name + Class -->
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label for="fc-name">中文姓名 <span>*</span></label>
+                  <input type="text" id="fc-name" class="form-control" placeholder="請輸入真實姓名" autocomplete="name" required>
+                  <div class="form-field__error" id="err-name">請輸入姓名</div>
+                </div>
+                <div class="form-field">
+                  <label for="fc-class">班級 <span>*</span></label>
+                  <select id="fc-class" class="form-control form-control--select" required>
+                    <option value="">請選擇班級</option>
+                    <option value="甲班">甲班</option>
+                    <option value="乙班">乙班</option>
+                    <option value="丙班">丙班</option>
+                    <option value="丁班">丁班</option>
+                    <option value="戊班">戊班</option>
+                    <option value="己班">己班</option>
+                    <option value="庚班">庚班</option>
+                    <option value="辛班">辛班</option>
+                    <option value="壬班">壬班</option>
+                    <option value="癸班">癸班</option>
+                    <option value="子班">子班</option>
+                    <option value="丑班">丑班</option>
+                    <option value="寅班">寅班</option>
+                    <option value="卯班">卯班</option>
+                    <option value="辰班">辰班</option>
+                    <option value="巳班">巳班</option>
+                    <option value="午班">午班</option>
+                    <option value="未班">未班</option>
+                    <option value="申班">申班</option>
+                    <option value="酉班">酉班</option>
+                  </select>
+                  <div class="form-field__error" id="err-class">請選擇班級</div>
+                </div>
+              </div>
+
+              <!-- Row 2: Phone + Email -->
+              <div class="form-grid form-grid--2">
+                <div class="form-field">
+                  <label for="fc-phone">手機號碼 <span>*</span></label>
+                  <input type="tel" id="fc-phone" class="form-control" placeholder="09XX-XXX-XXX" autocomplete="tel" required>
+                  <div class="form-field__error" id="err-phone">請輸入手機號碼</div>
+                </div>
+                <div class="form-field">
+                  <label for="fc-email">電子郵件 <span>*</span></label>
+                  <input type="email" id="fc-email" class="form-control" placeholder="your@email.com" autocomplete="email" required>
+                  <div class="form-field__error" id="err-email">請輸入有效的電子郵件</div>
+                </div>
+              </div>
+
+              <!-- Location -->
+              <div class="form-field">
+                <label>目前活動地點 <span>*</span></label>
+                <div class="location-chips" id="location-chips" role="group" aria-label="目前活動地點">
+                  <button type="button" class="location-chip" data-val="北部" onclick="selectLocation(this)">🏙️ 北部</button>
+                  <button type="button" class="location-chip" data-val="中部" onclick="selectLocation(this)">🌆 中部</button>
+                  <button type="button" class="location-chip" data-val="南部" onclick="selectLocation(this)">🌇 南部</button>
+                  <button type="button" class="location-chip" data-val="海外" onclick="selectLocation(this)">✈️ 海外</button>
+                  <button type="button" class="location-chip" data-val="其他" onclick="selectLocation(this)">📍 其他</button>
+                </div>
+                <input type="hidden" id="fc-location" required>
+                <div class="form-field__error" id="err-location">請選擇目前活動地點</div>
+              </div>
+
+              <!-- Dinner intention -->
+              <div class="form-field">
+                <label>是否有意願參加 12/19 重聚晚宴？ <span>*</span></label>
+                <div class="radio-group" id="dinner-group" role="group" aria-label="12/19晚宴意願">
+                  <label class="radio-btn" id="dinner-yes" onclick="selectRadio('dinner', 'yes', this)">
+                    <input type="radio" name="dinner" value="yes"> 🥂 有意願
+                  </label>
+                  <label class="radio-btn" id="dinner-no" onclick="selectRadio('dinner', 'no', this)">
+                    <input type="radio" name="dinner" value="no"> 暫時無法確定
+                  </label>
+                  <label class="radio-btn" id="dinner-skip" onclick="selectRadio('dinner', 'skip', this)">
+                    <input type="radio" name="dinner" value="skip"> 無法參加
+                  </label>
+                </div>
+                <input type="hidden" id="fc-dinner" required>
+                <div class="form-field__error" id="err-dinner">請選擇晚宴參與意願</div>
+              </div>
+
+              <!-- School visit intention -->
+              <div class="form-field">
+                <label>是否有意願參加 12/20 返校日？ <span>*</span></label>
+                <div class="radio-group" id="school-group" role="group" aria-label="12/20返校日意願">
+                  <label class="radio-btn" id="school-yes" onclick="selectRadio('school', 'yes', this)">
+                    <input type="radio" name="school" value="yes"> 🏫 有意願
+                  </label>
+                  <label class="radio-btn" id="school-no" onclick="selectRadio('school', 'no', this)">
+                    <input type="radio" name="school" value="no"> 暫時無法確定
+                  </label>
+                  <label class="radio-btn" id="school-skip" onclick="selectRadio('school', 'skip', this)">
+                    <input type="radio" name="school" value="skip"> 無法參加
+                  </label>
+                </div>
+                <input type="hidden" id="fc-school" required>
+                <div class="form-field__error" id="err-school">請選擇返校日參與意願</div>
+              </div>
+
+              <!-- Message -->
+              <div class="form-field">
+                <label for="fc-message">想要說的話 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（可不填）</span></label>
+                <textarea id="fc-message" class="form-control" rows="4" placeholder="給老同學的話、目前的狀態、希望再聯絡的人……都歡迎分享！"></textarea>
+              </div>
+
+              <!-- Error summary -->
+              <div class="status-box status-box--error" id="form-error" style="margin-bottom:16px;">
+                <div class="status-box__icon">⚠️</div>
+                <div>
+                  <div class="status-box__title">請確認填寫內容</div>
+                  <div class="status-box__desc" id="form-error-desc">請填寫所有必填欄位。</div>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <button type="button" class="btn btn--primary btn--lg" style="width:100%;justify-content:center;font-size:17px;" onclick="submitCheckin()">
+                ✅ 送出聯絡資訊
+              </button>
+
+              <div class="privacy-note">
+                🔒 <strong>個人資料保護聲明：</strong>您填寫的資料僅供建中第48屆30年重聚籌備團隊統計使用，不會對外公開或提供給第三方。
+                您可隨時透過 <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener">粉絲專頁</a> 聯繫我們要求刪除資料。
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Success state (hidden) -->
+          <div class="checkin-success" id="checkin-success">
+            <div class="checkin-success__icon">🎉</div>
+            <div class="checkin-success__title">感謝你的簽到！</div>
+            <div class="checkin-success__sub">
+              三十年了，很高興知道你在！<br>
+              籌備團隊將持續統計人數並寄送活動最新資訊。<br>
+              記得加入社群，隨時掌握最新消息。
+            </div>
+            <div class="btn-group" style="justify-content:center;flex-wrap:wrap;">
+              <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener" class="btn btn--primary btn--lg">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="margin-right:6px;"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                加入粉絲專頁
+              </a>
+              <a href="https://discord.gg/gHpBA9Kz" target="_blank" rel="noopener" class="btn btn--outline btn--lg">加入 Discord →</a>
+              <a href="index.html" class="btn btn--outline btn--lg">回首頁</a>
+            </div>
+          </div>
+
+        </div><!-- /checkin-form-card -->
+      </div>
+
+      <!-- ── RIGHT: Sidebar ─────────────────────────────── -->
+      <aside>
+
+        <!-- Why check-in -->
+        <div class="sidebar-card reveal">
+          <div class="sidebar-card__title">📋 為什麼要簽到？</div>
+          <ul style="font-size:14px;color:var(--color-text-muted);line-height:1.8;padding-left:18px;">
+            <li>讓我們掌握重聚人數，做好活動準備</li>
+            <li>方便籌備團隊寄送最新活動資訊</li>
+            <li>讓老同學有機會找到你</li>
+            <li>12/19 晚宴與 12/20 返校日需要統計人數</li>
+          </ul>
+        </div>
+
+        <!-- Community links -->
+        <div class="sidebar-card reveal reveal-delay-1">
+          <div class="sidebar-card__title">🌐 加入我們的社群</div>
+          <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener" class="sidebar-social-btn sidebar-social-btn--fb">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            建中48屆三十重聚粉絲專頁
+          </a>
+          <a href="https://discord.gg/gHpBA9Kz" target="_blank" rel="noopener" class="sidebar-social-btn sidebar-social-btn--dc">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+            校友互動平台 Discord
+          </a>
+          <p style="font-size:12px;color:var(--color-text-muted);margin-top:10px;line-height:1.6;">
+            在社群中與老同學互動、即時掌握活動消息、討論行程安排。
+          </p>
+        </div>
+
+        <!-- Event quick info -->
+        <div class="sidebar-card reveal reveal-delay-2">
+          <div class="sidebar-card__title">📅 活動時程</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="border-left:3px solid var(--color-accent);padding-left:14px;">
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--color-accent);margin-bottom:2px;">12/19（六）</div>
+              <div style="font-size:15px;font-weight:700;color:var(--color-primary);">重聚晚宴</div>
+              <div style="font-size:13px;color:var(--color-text-muted);">台北市 · 正式宴席</div>
+            </div>
+            <div style="border-left:3px solid var(--color-primary);padding-left:14px;">
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--color-primary);margin-bottom:2px;">12/20（日）</div>
+              <div style="font-size:15px;font-weight:700;color:var(--color-primary);">返校日</div>
+              <div style="font-size:13px;color:var(--color-text-muted);">建國高級中學 · 校園參訪 · 大合照</div>
+            </div>
+          </div>
+          <a href="event.html" style="display:inline-block;margin-top:16px;font-size:13px;color:var(--color-primary);font-weight:600;">查看完整活動資訊 →</a>
+        </div>
+
+      </aside>
+
+    </div><!-- /checkin-layout -->
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+/* ── Radio / chip selection helpers ── */
+let formState = {
+  location: '',
+  dinner: '',
+  school: ''
+};
+
+function selectLocation(chip) {
+  document.querySelectorAll('.location-chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  formState.location = chip.dataset.val;
+  document.getElementById('fc-location').value = formState.location;
+  clearError('location');
+}
+
+function selectRadio(group, val, labelEl) {
+  // Clear styling for this group
+  ['yes','no','skip'].forEach(v => {
+    const el = document.getElementById(group + '-' + v);
+    if (el) { el.classList.remove('selected','selected-yes','selected-no'); }
+  });
+  // Apply
+  if (val === 'yes') labelEl.classList.add('selected-yes');
+  else if (val === 'no') labelEl.classList.add('selected');
+  else labelEl.classList.add('selected-no');
+
+  formState[group] = val;
+  document.getElementById('fc-' + group).value = val;
+  clearError(group);
+}
+
+/* ── Validation helpers ── */
+function clearError(field) {
+  const errEl = document.getElementById('err-' + field);
+  const inputEl = document.getElementById('fc-' + field);
+  if (errEl) errEl.style.display = 'none';
+  if (inputEl) inputEl.classList.remove('form-control--error');
+}
+
+function showError(field, msg) {
+  const errEl = document.getElementById('err-' + field);
+  const inputEl = document.getElementById('fc-' + field);
+  if (errEl) { errEl.textContent = msg || errEl.textContent; errEl.style.display = 'block'; }
+  if (inputEl) inputEl.classList.add('form-control--error');
+  return false;
+}
+
+/* ── Submit ── */
+function submitCheckin() {
+  let valid = true;
+
+  // Clear all errors
+  ['name','class','phone','email','location','dinner','school'].forEach(f => clearError(f));
+  document.getElementById('form-error').classList.remove('show');
+
+  // Validate name
+  const name = document.getElementById('fc-name').value.trim();
+  if (!name) { showError('name', '請輸入姓名'); valid = false; }
+
+  // Validate class
+  const cls = document.getElementById('fc-class').value;
+  if (!cls) { showError('class', '請選擇班級'); valid = false; }
+
+  // Validate phone
+  const phone = document.getElementById('fc-phone').value.trim();
+  if (!phone) { showError('phone', '請輸入手機號碼'); valid = false; }
+
+  // Validate email
+  const email = document.getElementById('fc-email').value.trim();
+  if (!email || !email.includes('@')) { showError('email', '請輸入有效的電子郵件'); valid = false; }
+
+  // Validate location
+  if (!formState.location) { showError('location', '請選擇目前活動地點'); valid = false; }
+
+  // Validate dinner
+  if (!formState.dinner) { showError('dinner', '請選擇晚宴參與意願'); valid = false; }
+
+  // Validate school visit
+  if (!formState.school) { showError('school', '請選擇返校日參與意願'); valid = false; }
+
+  if (!valid) {
+    document.getElementById('form-error').classList.add('show');
+    // Scroll to first error
+    const firstErr = document.querySelector('.form-control--error, .form-field__error[style*="block"]');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // ── 送出到後端 API（後端上線後自動啟用；開發中使用 MOCK_MODE）──
+  const API_BASE = window.CK48_API_BASE || '';  // 設定為 '' 時走 same-origin（Spring Boot 整合後）
+  const USE_MOCK = !API_BASE && !window.CK48_USE_REAL_API;
+
+  const payload = {
+    name:            name,
+    classId:         cls,
+    phone:           phone,
+    email:           email,
+    location:        formState.location,
+    dinnerIntention: formState.dinner,
+    schoolIntention: formState.school,
+    message:         document.getElementById('fc-message').value.trim()
+  };
+
+  if (USE_MOCK) {
+    // ── Mock 模式（後端尚未啟動時）──────────────────
+    console.log('[MOCK] submitCheckin payload:', payload);
+    showSuccessState();
+    return;
+  }
+
+  // ── 真實 API 呼叫（Spring Boot 後端）──────────────
+  const submitBtn = document.querySelector('[onclick="submitCheckin()"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = '送出中…';
+
+  fetch(API_BASE + '/api/checkin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      showSuccessState();
+    } else {
+      document.getElementById('form-error-desc').textContent = data.message || '送出失敗，請稍後再試';
+      document.getElementById('form-error').classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = '✅ 送出聯絡資訊';
+    }
+  })
+  .catch(() => {
+    document.getElementById('form-error-desc').textContent = '網路錯誤，請確認連線後再試';
+    document.getElementById('form-error').classList.add('show');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '✅ 送出聯絡資訊';
+  });
+}
+
+function showSuccessState() {
+  document.getElementById('checkin-form').style.display = 'none';
+  document.getElementById('checkin-success').style.display = 'block';
+  window.scrollTo({ top: document.getElementById('checkin-form-card').offsetTop - 100, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

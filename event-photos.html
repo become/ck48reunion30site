@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活動照片 · 建中第48屆30年重聚</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container page-hero__content">
+    <div class="page-hero__eyebrow">Event Photos</div>
+    <h1 class="page-hero__title">活動照片</h1>
+    <p class="page-hero__sub">重聚當日精彩畫面，珍藏美好記憶</p>
+  </div>
+</section>
+
+<!-- Coming soon notice (before event) -->
+<section class="section section--alt">
+  <div class="container" style="max-width:700px;text-align:center;">
+    <div class="reveal">
+      <div style="font-size:64px;margin-bottom:20px;">📸</div>
+      <h2 style="font-size:28px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">活動照片將於重聚後上傳</h2>
+      <p style="font-size:16px;color:var(--color-text-muted);line-height:1.8;margin-bottom:28px;">
+        活動結束後，籌備委員會將整理精選照片上傳至本頁面，並同步更新 Google 相簿。<br>
+        敬請期待 2026/12/19–20 的精彩畫面！
+      </p>
+      <div class="btn-group" style="justify-content:center;">
+        <a href="registration.html" class="btn btn--primary btn--lg">立即報名参加</a>
+        <a href="memory-photos.html" class="btn btn--outline btn--lg">查看回憶照片</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category cards -->
+<section class="section">
+  <div class="container">
+    <div class="section-title reveal">
+      <h2 class="section-title__main">照片分類</h2>
+      <p class="section-title__sub">活動結束後將依以下分類整理</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;" class="reveal">
+      <div class="highlight-card">
+        <span class="highlight-card__icon">🥂</span>
+        <h3 class="highlight-card__title">重聚餐會</h3>
+        <p class="highlight-card__desc">晚宴精彩片段、老師致詞、同學合影</p>
+      </div>
+      <div class="highlight-card">
+        <span class="highlight-card__icon">🏫</span>
+        <h3 class="highlight-card__title">返校日</h3>
+        <p class="highlight-card__desc">重回校園、參觀母校、尋找青春足跡</p>
+      </div>
+      <div class="highlight-card">
+        <span class="highlight-card__icon">📸</span>
+        <h3 class="highlight-card__title">大合照</h3>
+        <p class="highlight-card__desc">全屆大合照及各班班級合影</p>
+      </div>
+      <div class="highlight-card">
+        <span class="highlight-card__icon">🎬</span>
+        <h3 class="highlight-card__title">花絮</h3>
+        <p class="highlight-card__desc">活動幕後花絮與輕鬆有趣的精彩片段</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Placeholder gallery (after event - mock "loading" state) -->
+<section class="section section--alt">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+      <h2 style="font-size:22px;font-weight:700;color:var(--color-primary);">預覽（活動後更新）</h2>
+      <div class="tabs" style="margin-bottom:0;" data-tabs>
+        <button class="tab-btn active">重聚餐會</button>
+        <button class="tab-btn">返校日</button>
+        <button class="tab-btn">大合照</button>
+        <button class="tab-btn">花絮</button>
+      </div>
+    </div>
+    <div class="tab-panel active">
+      <div class="photo-grid photo-grid--3" id="event-photos-grid"></div>
+    </div>
+    <div class="tab-panel">
+      <p style="color:var(--color-text-muted);text-align:center;padding:40px;">活動後更新</p>
+    </div>
+    <div class="tab-panel">
+      <p style="color:var(--color-text-muted);text-align:center;padding:40px;">活動後更新</p>
+    </div>
+    <div class="tab-panel">
+      <p style="color:var(--color-text-muted);text-align:center;padding:40px;">活動後更新</p>
+    </div>
+
+    <div style="margin-top:32px;text-align:center;">
+      <a href="#" class="btn btn--secondary btn--lg">前往 Google 相簿查看完整照片</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('event-photos-grid');
+  CK48_DATA.eventPhotos.filter(p => p.category === '重聚餐會').forEach(p => {
+    grid.innerHTML += `
+      <div class="photo-card reveal" role="button" tabindex="0">
+        <div class="photo-placeholder">${p.emoji}</div>
+        <div class="photo-card__overlay"></div>
+        <div class="photo-card__info">
+          <div class="photo-card__title">${p.title}</div>
+          <div class="photo-card__cat">${p.category}</div>
+        </div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
+  }, 100);
+  initTabs('[data-tabs]');
+});
+</script>
+</body>
+</html>
