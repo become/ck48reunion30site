@@ -626,7 +626,7 @@ p  { line-height: 1.75; }
 
 /* 統計儀錶板 */
 .strip-stats {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
   margin-bottom: 24px;
 }
 .strip-stat {
@@ -673,7 +673,10 @@ p  { line-height: 1.75; }
 /* 校友簽到 CTA */
 .strip-checkin {
   border-top: 1px solid rgba(255,255,255,.08);
-  padding-top: 20px;
+  padding-top: 24px;
+  text-align: center;
+  max-width: 480px;
+  margin-inline: auto;
 }
 .strip-checkin__title {
   font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px;
@@ -681,20 +684,9 @@ p  { line-height: 1.75; }
 .strip-checkin__desc {
   font-size: 12px; color: rgba(255,255,255,.50); line-height: 1.65; margin-bottom: 14px;
 }
-.strip-checkin__btn { display: block; width: 100%; text-align: center; }
+.strip-checkin__btn { display: inline-block; text-align: center; }
 
 /* RWD for strip */
-@media (max-width: 900px) {
-  .home-event-strip__inner {
-    grid-template-columns: 1fr; gap: 32px;
-  }
-  .strip-right {
-    border-left: none; padding-left: 0;
-    border-top: 1px solid rgba(255,255,255,.10); padding-top: 32px;
-  }
-  .strip-stats { grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .strip-social { display: none; } /* 手機版已在 footer 出現 */
-}
 @media (max-width: 600px) {
   .strip-stats { grid-template-columns: 1fr 1fr; }
   .event-info-boxes { gap: 8px; }
