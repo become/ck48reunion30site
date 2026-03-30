@@ -392,7 +392,7 @@ p  { line-height: 1.75; }
 /* ── Hero（全寬視覺橫幅）────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: clamp(420px, 52vw, 620px);
+  min-height: clamp(560px, 70vw, 820px);
   display: flex;
   align-items: center;
   background: #0d1f38;
@@ -423,7 +423,7 @@ p  { line-height: 1.75; }
   position: relative;
   z-index: 1;
   padding-block: clamp(64px, 8vw, 100px);
-  max-width: 660px;
+  max-width: 860px;
 }
 .hero__eyebrow {
   display: inline-flex;
@@ -455,7 +455,6 @@ p  { line-height: 1.75; }
 .hero__title em {
   font-style: normal;
   color: var(--color-accent);
-  display: block;
 }
 .hero__slogan {
   font-size: clamp(15px, 1.6vw, 20px);
@@ -586,7 +585,7 @@ p  { line-height: 1.75; }
   line-height: 1.1; font-variant-numeric: tabular-nums; margin-bottom: 4px;
 }
 .event-info-box__time { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.65); margin-bottom: 6px; }
-.event-info-box__place { font-size: clamp(11px, 1vw, 12px); color: rgba(255,255,255,.50); line-height: 1.5; }
+.event-info-box__place { font-size: clamp(12px, 1.1vw, 14px); color: rgba(255,255,255,.65); line-height: 1.5; white-space: nowrap; }
 
 /* 倒數計時器（左欄，左對齊） */
 .home-countdown { }
@@ -601,16 +600,16 @@ p  { line-height: 1.75; }
 .home-cd-unit { text-align: center; }
 .home-cd-num {
   display: block;
-  font-size: clamp(36px, 4vw, 54px); font-weight: 800; color: #fff;
+  font-size: clamp(52px, 7vw, 88px); font-weight: 800; color: #fff;
   line-height: 1; font-variant-numeric: tabular-nums; min-width: 2ch;
 }
 .home-cd-lbl {
-  font-size: 10px; color: rgba(255,255,255,.40);
-  margin-top: 6px; letter-spacing: .1em; text-transform: uppercase;
+  font-size: 12px; color: rgba(255,255,255,.40);
+  margin-top: 8px; letter-spacing: .1em; text-transform: uppercase;
 }
 .home-cd-sep {
-  font-size: clamp(24px, 3vw, 42px); font-weight: 700; color: var(--color-accent);
-  line-height: 1; padding-bottom: 18px; flex-shrink: 0;
+  font-size: clamp(36px, 5vw, 64px); font-weight: 700; color: var(--color-accent);
+  line-height: 1; padding-bottom: 24px; flex-shrink: 0;
 }
 .home-countdown__sub {
   margin-top: 14px; font-size: 11px; font-weight: 600; letter-spacing: .18em;
