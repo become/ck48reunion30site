@@ -27,19 +27,6 @@
   </div>
 </section>
 
-<section class="cta-section">
-  <div class="container">
-    <div class="cta-banner">
-      <div class="cta-banner__content">
-        <h2 class="cta-banner__title">把日期存入行事曆</h2>
-        <p class="cta-banner__sub">2026/12/19 重聚餐會 · 2026/12/20 返校日</p>
-        <div class="btn-group" style="justify-content:center;">
-          <a href="registration.html" class="btn btn--primary btn--lg">立即報名</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
@@ -54,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="timeline-item ${item.highlight ? 'timeline-item--highlight' : ''} reveal">
         ${isOdd ? `
           <div class="timeline-item__content">
-            <div class="timeline-item__date">${formatDate(item.date)}</div>
+            <div class="timeline-item__date">${item.date ? formatDate(item.date) : ''}</div>
             <div class="timeline-item__title">${item.title}</div>
             <div class="timeline-item__desc">${item.description}</div>
           </div>
@@ -64,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="timeline-item__spacer"></div>
           <div class="timeline-item__dot"><div class="timeline-item__dot-inner"></div></div>
           <div class="timeline-item__content">
-            <div class="timeline-item__date">${formatDate(item.date)}</div>
+            <div class="timeline-item__date">${item.date ? formatDate(item.date) : ''}</div>
             <div class="timeline-item__title">${item.title}</div>
             <div class="timeline-item__desc">${item.description}</div>
           </div>

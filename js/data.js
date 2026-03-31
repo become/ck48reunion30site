@@ -38,7 +38,7 @@ const CK48_DATA = {
       title: "尋找失聯同學，請大家幫幫忙",
       slug: "find-missing-alumni",
       date: "2026-07-10",
-      category: "找人",
+      category: "找人進度",
       summary: "籌備委員會正在努力聯繫所有同學，目前仍有部分班級聯絡名單不完整，請大家協助轉傳。",
       coverEmoji: "🔍",
       content: `<p>各位同學，</p>
@@ -50,7 +50,7 @@ const CK48_DATA = {
       title: "紀念商品預購開放中",
       slug: "merchandise-preorder",
       date: "2026-08-01",
-      category: "商品",
+      category: "公告",
       summary: "本次重聚紀念商品現已開放預購，包含紀念T恤、帽子、馬克杯等多項商品。",
       coverEmoji: "🎁",
       content: `<p>各位同學，</p>
@@ -83,9 +83,15 @@ const CK48_DATA = {
 
   timeline: [
     {
+      date: "2026-02-28",
+      title: "選出48屆建中重聚總召",
+      description: "經過多次討論，正式選出建中第48屆30年重聚總召集人，啟動籌備工作。",
+      highlight: false
+    },
+    {
       date: "2026-03-21",
-      title: "籌備會正式啟動",
-      description: "建中第48屆30年重聚籌備委員會正式成立，展開重聚活動規劃作業。",
+      title: "召開第一次籌備委員會",
+      description: "建中第48屆30年重聚籌備委員會正式成立並召開第一次會議，展開重聚活動規劃作業。",
       highlight: false
     },
     {
@@ -123,21 +129,27 @@ const CK48_DATA = {
       title: "返校日 🏫",
       description: "重回建中校園，參觀母校、班級大合照，重溫青春歲月。",
       highlight: true
+    },
+    {
+      date: "",
+      title: "故事持續進行中…",
+      description: "三十年的情誼，故事未完待續。期待與你相見。",
+      highlight: true
     }
   ],
 
   memoryPhotos: [
-    { id: 1, title: "建中紅樓晨景", category: "校園照片", emoji: "🏛️" },
-    { id: 2, title: "47年前的畢業典禮", category: "畢業照", emoji: "🎓" },
-    { id: 3, title: "甲班全班合影", category: "班級照片", emoji: "👥" },
+    { id: 1, title: "建中紅樓晨景", category: "校園點滴", emoji: "🏛️" },
+    { id: 2, title: "47年前的畢業典禮", category: "經典收藏", emoji: "🎓" },
+    { id: 3, title: "甲班全班合影", category: "校園點滴", emoji: "👥" },
     { id: 4, title: "合唱團公演", category: "社團活動", emoji: "🎵" },
-    { id: 5, title: "校慶運動會", category: "校園照片", emoji: "🏃" },
-    { id: 6, title: "圖書館讀書時光", category: "校園照片", emoji: "📚" },
-    { id: 7, title: "畢業舞會", category: "畢業照", emoji: "🌟" },
-    { id: 8, title: "乙班班遊", category: "班級照片", emoji: "🚌" },
+    { id: 5, title: "校慶運動會", category: "校園點滴", emoji: "🏃" },
+    { id: 6, title: "圖書館讀書時光", category: "校園點滴", emoji: "📚" },
+    { id: 7, title: "畢業舞會", category: "經典收藏", emoji: "🌟" },
+    { id: 8, title: "乙班班遊", category: "校園點滴", emoji: "🚌" },
     { id: 9, title: "籃球隊征戰", category: "社團活動", emoji: "🏀" },
-    { id: 10, title: "校友投稿：30年後", category: "校友投稿", emoji: "📷" },
-    { id: 11, title: "丙班同學聚餐", category: "班級照片", emoji: "🍜" },
+    { id: 10, title: "校友投稿：30年後", category: "經典收藏", emoji: "📷" },
+    { id: 11, title: "丙班同學聚餐", category: "校園點滴", emoji: "🍜" },
     { id: 12, title: "國樂社演奏會", category: "社團活動", emoji: "🎻" }
   ],
 

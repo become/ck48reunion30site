@@ -531,7 +531,8 @@ p  { line-height: 1.75; }
 
 /* ── Homepage Event Strip（左欄資訊 + 右欄儀錶板）────────────── */
 .home-event-strip {
-  background: var(--color-primary);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   padding-block: clamp(40px, 5vw, 64px);
 }
 .home-event-strip__inner {
@@ -625,24 +626,30 @@ p  { line-height: 1.75; }
 
 /* 統計儀錶板 */
 .strip-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-  margin-bottom: 24px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-bottom: 28px;
 }
 .strip-stat {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: var(--radius-md);
-  padding: clamp(12px, 1.6vw, 18px) 14px;
-  text-align: center; transition: background var(--transition);
+  background: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: clamp(16px, 2vw, 28px) 14px;
+  text-align: center;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
 }
-.strip-stat:hover { background: rgba(255,255,255,.10); }
+.strip-stat:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
 .strip-stat__num {
-  font-size: clamp(24px, 2.6vw, 34px); font-weight: 800;
-  color: var(--color-accent); line-height: 1; font-variant-numeric: tabular-nums;
+  font-size: clamp(32px, 3.5vw, 52px); font-weight: 800;
+  color: var(--color-primary); line-height: 1; font-variant-numeric: tabular-nums;
 }
+.strip-stat:last-child .strip-stat__num { color: var(--color-secondary); }
 .strip-stat__lbl {
-  font-size: 11px; color: rgba(255,255,255,.48);
-  margin-top: 5px; letter-spacing: .04em;
+  font-size: 12px; color: var(--color-text-muted);
+  margin-top: 8px; letter-spacing: .04em; font-weight: 500;
 }
 
 /* 社群連結 */
@@ -669,19 +676,16 @@ p  { line-height: 1.75; }
 .strip-social-link--dc { background: rgba(88,101,242,.12); border-color: rgba(88,101,242,.25); }
 .strip-social-link--dc:hover { background: rgba(88,101,242,.25); border-color: rgba(88,101,242,.45); }
 
-/* 校友簽到 CTA */
+/* 校友報到 CTA */
 .strip-checkin {
-  border-top: 1px solid rgba(255,255,255,.08);
+  border-top: 1px solid var(--color-border);
   padding-top: 24px;
   text-align: center;
   max-width: 480px;
   margin-inline: auto;
 }
-.strip-checkin__title {
-  font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px;
-}
 .strip-checkin__desc {
-  font-size: 12px; color: rgba(255,255,255,.50); line-height: 1.65; margin-bottom: 14px;
+  font-size: 13px; color: var(--color-text-muted); line-height: 1.65; margin-bottom: 16px;
 }
 .strip-checkin__btn { display: inline-block; text-align: center; }
 
