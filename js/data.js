@@ -139,17 +139,17 @@ const CK48_DATA = {
   ],
 
   memoryPhotos: [
-    { id: 1, title: "建中紅樓晨景", category: "校園照片", emoji: "🏛️" },
-    { id: 2, title: "47年前的畢業典禮", category: "畢業照", emoji: "🎓" },
-    { id: 3, title: "甲班全班合影", category: "班級照片", emoji: "👥" },
+    { id: 1, title: "建中紅樓晨景", category: "校園點滴", emoji: "🏛️" },
+    { id: 2, title: "47年前的畢業典禮", category: "經典收藏", emoji: "🎓" },
+    { id: 3, title: "甲班全班合影", category: "校園點滴", emoji: "👥" },
     { id: 4, title: "合唱團公演", category: "社團活動", emoji: "🎵" },
-    { id: 5, title: "校慶運動會", category: "校園照片", emoji: "🏃" },
-    { id: 6, title: "圖書館讀書時光", category: "校園照片", emoji: "📚" },
-    { id: 7, title: "畢業舞會", category: "畢業照", emoji: "🌟" },
-    { id: 8, title: "乙班班遊", category: "班級照片", emoji: "🚌" },
+    { id: 5, title: "校慶運動會", category: "校園點滴", emoji: "🏃" },
+    { id: 6, title: "圖書館讀書時光", category: "校園點滴", emoji: "📚" },
+    { id: 7, title: "畢業舞會", category: "經典收藏", emoji: "🌟" },
+    { id: 8, title: "乙班班遊", category: "校園點滴", emoji: "🚌" },
     { id: 9, title: "籃球隊征戰", category: "社團活動", emoji: "🏀" },
-    { id: 10, title: "校友投稿：30年後", category: "校友投稿", emoji: "📷" },
-    { id: 11, title: "丙班同學聚餐", category: "班級照片", emoji: "🍜" },
+    { id: 10, title: "校友投稿：30年後", category: "經典收藏", emoji: "📷" },
+    { id: 11, title: "丙班同學聚餐", category: "校園點滴", emoji: "🍜" },
     { id: 12, title: "國樂社演奏會", category: "社團活動", emoji: "🎻" }
   ],
 
