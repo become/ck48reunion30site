@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* ── Header scroll & mobile menu ───────────────────────────── */
-(function initHeader() {
+function initHeader() {
   const header = document.querySelector('.site-header');
   const menuBtn = document.querySelector('.header-menu-btn');
   const mobileMenu = document.querySelector('.mobile-menu');
@@ -40,7 +40,7 @@
       el.classList.add('active');
     }
   });
-})();
+}
 
 /* ── Countdown Timer ────────────────────────────────────────── */
 function initCountdown(targetDateStr, elementId) {
@@ -182,6 +182,7 @@ function initReveal() {
 
 /* ── Init all ───────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  initHeader();
   initFAQ();
   initTabs();
   initLightbox();
