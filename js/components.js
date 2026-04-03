@@ -16,6 +16,7 @@ const HEADER_HTML = `
       <a href="index.html"          class="header-nav__item">首頁</a>
       <a href="about.html"          class="header-nav__item">關於重聚</a>
       <a href="news.html"           class="header-nav__item">最新消息</a>
+      <a href="event.html"          class="header-nav__item">活動資訊</a>
       <a href="find-classmates.html" class="header-nav__item">校友報到</a>
       <a href="memory-photos.html"  class="header-nav__item">回憶照片</a>
       <a href="faq.html"            class="header-nav__item">FAQ</a>
@@ -32,6 +33,7 @@ const HEADER_HTML = `
     <a href="index.html"           class="mobile-menu__item">首頁</a>
     <a href="about.html"           class="mobile-menu__item">關於重聚</a>
     <a href="news.html"            class="mobile-menu__item">最新消息</a>
+    <a href="event.html"           class="mobile-menu__item">活動資訊</a>
     <a href="find-classmates.html" class="mobile-menu__item">校友報到</a>
     <a href="memory-photos.html"   class="mobile-menu__item">回憶照片</a>
     <a href="faq.html"             class="mobile-menu__item">FAQ</a>
@@ -64,6 +66,7 @@ const FOOTER_HTML = `
         <div class="footer-col__title">快速連結</div>
         <nav class="footer-nav">
           <a href="about.html"           class="footer-nav__item">關於重聚</a>
+          <a href="event.html"           class="footer-nav__item">活動資訊</a>
           <a href="find-classmates.html" class="footer-nav__item">校友報到</a>
           <a href="faq.html"             class="footer-nav__item">常見問題</a>
         </nav>
