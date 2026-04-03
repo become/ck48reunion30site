@@ -19,7 +19,6 @@ const HEADER_HTML = `
       <a href="find-classmates.html" class="header-nav__item">校友報到</a>
       <a href="memory-photos.html"  class="header-nav__item">回憶照片</a>
       <a href="event-photos.html"   class="header-nav__item">活動照片</a>
-      <a href="shop.html"           class="header-nav__item">紀念商品</a>
       <a href="faq.html"            class="header-nav__item">FAQ</a>
     </nav>
     <div class="header-actions">
@@ -37,7 +36,6 @@ const HEADER_HTML = `
     <a href="find-classmates.html" class="mobile-menu__item">校友報到</a>
     <a href="memory-photos.html"   class="mobile-menu__item">回憶照片</a>
     <a href="event-photos.html"    class="mobile-menu__item">活動照片</a>
-    <a href="shop.html"            class="mobile-menu__item">紀念商品</a>
     <a href="faq.html"             class="mobile-menu__item">FAQ</a>
   </div>
 </nav>`;
@@ -69,7 +67,6 @@ const FOOTER_HTML = `
         <nav class="footer-nav">
           <a href="about.html"           class="footer-nav__item">關於重聚</a>
           <a href="find-classmates.html" class="footer-nav__item">校友報到</a>
-          <a href="shop.html"            class="footer-nav__item">紀念商品</a>
           <a href="faq.html"             class="footer-nav__item">常見問題</a>
         </nav>
       </div>
