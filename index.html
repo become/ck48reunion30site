@@ -81,11 +81,11 @@
         <div class="strip-stat__lbl">年後重聚</div>
       </div>
       <div class="strip-stat">
-        <div class="strip-stat__num">1,623</div>
+        <div class="strip-stat__num" id="stat-total">—</div>
         <div class="strip-stat__lbl">位畢業生</div>
       </div>
       <div class="strip-stat">
-        <div class="strip-stat__num">159<sup style="font-size:.55em;vertical-align:super">+</sup></div>
+        <div class="strip-stat__num" id="stat-found">—</div>
         <div class="strip-stat__lbl">人已找到</div>
       </div>
     </div>
@@ -167,10 +167,11 @@
 <div id="footer-placeholder"></div>
 
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   initCountdown('2026-12-19T18:00:00+08:00', 'countdown');
 
   // Memory photos (8 items, 4x2 grid)
@@ -189,14 +190,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Stats
+  try {
+    const stats = await CK48_API.getStats();
+    const totalEl = document.getElementById('stat-total');
+    const foundEl = document.getElementById('stat-found');
+    if (totalEl) totalEl.textContent = stats.total.toLocaleString();
+    if (foundEl) foundEl.textContent = stats.found.toLocaleString();
+  } catch (e) {
+    console.warn('Stats unavailable', e);
+  }
+
   // News (3 items)
   const newsGrid = document.getElementById('home-news-grid');
   if (newsGrid) {
-    CK48_DATA.news.slice(0, 3).forEach(n => {
+    let newsList = [];
+    try {
+      newsList = await CK48_API.getNews();
+    } catch (e) {
+      newsList = CK48_DATA.news;
+    }
+    newsList.slice(0, 3).forEach(n => {
       newsGrid.innerHTML += `
         <article class="news-card">
           <div class="news-card__img">
-            <div class="news-card__img-placeholder">${n.coverEmoji}</div>
+            <div class="news-card__img-placeholder">${n.coverEmoji || '📰'}</div>
           </div>
           <div class="news-card__body">
             <div class="news-card__meta">
