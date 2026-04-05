@@ -5,7 +5,9 @@
    ============================================================ */
 
 const CK48_API = (() => {
-  const BASE = 'https://api.reunion30.tw';
+  const BASE = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://api.reunion30.tw';
   const HEADERS = { 'X-Tenant-Slug': 'ck48', 'Content-Type': 'application/json' };
 
   async function get(path) {
