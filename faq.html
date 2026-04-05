@@ -66,11 +66,12 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-// Extended FAQ with categories
-const FULL_FAQ = [
+// Fallback FAQ data
+const FALLBACK_FAQ = [
   { cat: '報名', question: '這次活動只有建中48屆可以參加嗎？', answer: '本次活動以建中第48屆校友為主辦對象。若您是48屆校友的配偶或重要伴侶，部分場次可酌情邀請同行，請於報名備註說明。' },
   { cat: '付款', question: '活動費用如何計算？', answer: '重聚餐會每人費用約新台幣3,000至4,000元（含晚宴、活動費用），確切金額將於報名開放時公告。返校日活動免費，但大合照印刷費用另計。' },
   { cat: '活動', question: '如何找到失聯的同班同學？', answer: '您可以透過本站「找同學」頁面進行驗證後，查詢班級同學的聯絡資訊。此外，也可以加入建中48屆校友臉書社團，在社群中尋找同學。' },
@@ -85,13 +86,18 @@ const FULL_FAQ = [
   { cat: '報名', question: '老師可以參加嗎？', answer: '籌備委員會歡迎48屆的授課老師及班導師受邀參加。若您知道老師的聯絡方式，可以邀請老師加入Facebook社團，由籌備委員會統一寄發邀請函。' }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let allFaq = [];
   let currentCat = 'all';
 
   function renderFAQ() {
     const list = document.getElementById('faq-list');
-    const items = currentCat === 'all' ? FULL_FAQ : FULL_FAQ.filter(f => f.cat === currentCat);
+    const items = currentCat === 'all' ? allFaq : allFaq.filter(f => f.cat === currentCat);
     list.innerHTML = '';
+    if (!items.length) {
+      list.innerHTML = '<p style="color:var(--color-text-muted);text-align:center;padding:40px 0;">找不到問題。</p>';
+      return;
+    }
     items.forEach(f => {
       list.innerHTML += `
         <div class="faq-item">
@@ -116,6 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Load from API, fallback to local data
+  try {
+    allFaq = await CK48_API.getFaq();
+  } catch (e) {
+    console.warn('API unavailable, using fallback data', e);
+    allFaq = FALLBACK_FAQ;
+  }
   renderFAQ();
 });
 </script>

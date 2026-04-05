@@ -49,16 +49,18 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let allNews = [];
   let currentCat = 'all';
   let searchQuery = '';
 
   function renderNews() {
     const grid = document.getElementById('news-grid');
-    const filtered = CK48_DATA.news.filter(n => {
+    const filtered = allNews.filter(n => {
       const matchCat  = currentCat === 'all' || n.category === currentCat;
       const matchSrch = !searchQuery || n.title.includes(searchQuery) || n.summary.includes(searchQuery);
       return matchCat && matchSrch;
@@ -68,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.innerHTML += `
         <article class="news-card reveal">
           <div class="news-card__img">
-            <div class="news-card__img-placeholder">${n.coverEmoji}</div>
+            <div class="news-card__img-placeholder">${n.coverEmoji || '📰'}</div>
           </div>
           <div class="news-card__body">
             <div class="news-card__meta">
@@ -81,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </article>`;
     });
-    // Re-trigger reveal
     document.querySelectorAll('.reveal:not(.revealed)').forEach(el => {
       setTimeout(() => el.classList.add('revealed'), 50);
     });
@@ -103,6 +104,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderNews();
   });
 
+  // Load from API, fallback to mock data
+  try {
+    allNews = await CK48_API.getNews();
+  } catch (e) {
+    console.warn('API unavailable, using mock data', e);
+    allNews = CK48_DATA.news;
+  }
   renderNews();
 });
 </script>
