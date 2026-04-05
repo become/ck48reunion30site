@@ -11,18 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set deploy target
         id: target
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
             echo "path=/var/www/ck48" >> $GITHUB_OUTPUT
-            echo "env=production" >> $GITHUB_OUTPUT
+            echo "host=ck48.reunion30.tw" >> $GITHUB_OUTPUT
           else
             echo "path=/var/www/test-ck48" >> $GITHUB_OUTPUT
-            echo "env=staging" >> $GITHUB_OUTPUT
+            echo "host=test-ck48.reunion30.tw" >> $GITHUB_OUTPUT
           fi
 
       - name: Setup SSH
@@ -37,8 +36,11 @@ jobs:
           rsync -avz --delete \
             --exclude='.git' \
             --exclude='.github' \
+            --exclude='node_modules' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ./ root@159.223.40.36:${{ steps.target.outputs.path }}/
 
-      - name: Done
-        run: echo "Deployed to ${{ steps.target.outputs.env }} (${{ steps.target.outputs.path }})"
+      - name: Summary
+        run: |
+          echo "Deployed to ${{ steps.target.outputs.host }}"
+          echo "Path: ${{ steps.target.outputs.path }}"
