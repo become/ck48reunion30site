@@ -41,6 +41,10 @@ const CK48_API = (() => {
       };
     },
 
+    async getStats() {
+      return get('/api/stats');
+    },
+
     async getFaq() {
       const items = await get('/api/faq');
       return items.map(f => ({
