@@ -54,5 +54,24 @@ const CK48_API = (() => {
         cat: f.category || '一般',
       }));
     },
+
+    async getClasses() {
+      return get('/api/classes');
+    },
+
+    async checkin(payload) {
+      const res = await fetch(BASE + '/api/checkin', {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(data.error || 'Checkin failed');
+        err.code = data.error;
+        throw err;
+      }
+      return data;
+    },
   };
 })();

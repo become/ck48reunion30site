@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>校友報到 · 建中第48屆30年重聚</title>
+  <script src="https://www.google.com/recaptcha/api.js?render=RECAPTCHA_SITE_KEY" async defer></script>
   <meta name="description" content="建中第48屆校友報到，留下聯絡資訊，讓老同學找到你！">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -228,27 +229,7 @@
                 <div class="form-field">
                   <label for="fc-class">班級 <span>*</span></label>
                   <select id="fc-class" class="form-control form-control--select" required>
-                    <option value="">請選擇班級</option>
-                    <option value="甲班">甲班</option>
-                    <option value="乙班">乙班</option>
-                    <option value="丙班">丙班</option>
-                    <option value="丁班">丁班</option>
-                    <option value="戊班">戊班</option>
-                    <option value="己班">己班</option>
-                    <option value="庚班">庚班</option>
-                    <option value="辛班">辛班</option>
-                    <option value="壬班">壬班</option>
-                    <option value="癸班">癸班</option>
-                    <option value="子班">子班</option>
-                    <option value="丑班">丑班</option>
-                    <option value="寅班">寅班</option>
-                    <option value="卯班">卯班</option>
-                    <option value="辰班">辰班</option>
-                    <option value="巳班">巳班</option>
-                    <option value="午班">午班</option>
-                    <option value="未班">未班</option>
-                    <option value="申班">申班</option>
-                    <option value="酉班">酉班</option>
+                    <option value="">載入中…</option>
                   </select>
                   <div class="form-field__error" id="err-class">請選擇班級</div>
                 </div>
@@ -424,15 +405,31 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
+const RECAPTCHA_SITE_KEY = 'RECAPTCHA_SITE_KEY'; // 替換成你的 site key
+
+/* ── 載入班級清單 ── */
+async function loadClasses() {
+  const sel = document.getElementById('fc-class');
+  try {
+    const classes = await CK48_API.getClasses();
+    sel.innerHTML = '<option value="">請選擇班級</option>';
+    classes.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.className + ' 班';
+      sel.appendChild(opt);
+    });
+  } catch (e) {
+    sel.innerHTML = '<option value="">載入失敗，請重新整理</option>';
+  }
+}
+
 /* ── Radio / chip selection helpers ── */
-let formState = {
-  location: '',
-  dinner: '',
-  school: ''
-};
+const formState = { location: '', dinner: '', school: '' };
 
 function selectLocation(chip) {
   document.querySelectorAll('.location-chip').forEach(c => c.classList.remove('selected'));
@@ -443,16 +440,13 @@ function selectLocation(chip) {
 }
 
 function selectRadio(group, val, labelEl) {
-  // Clear styling for this group
   ['yes','no','skip'].forEach(v => {
     const el = document.getElementById(group + '-' + v);
-    if (el) { el.classList.remove('selected','selected-yes','selected-no'); }
+    if (el) el.classList.remove('selected','selected-yes','selected-no');
   });
-  // Apply
   if (val === 'yes') labelEl.classList.add('selected-yes');
   else if (val === 'no') labelEl.classList.add('selected');
   else labelEl.classList.add('selected-no');
-
   formState[group] = val;
   document.getElementById('fc-' + group).value = val;
   clearError(group);
@@ -469,101 +463,93 @@ function clearError(field) {
 function showError(field, msg) {
   const errEl = document.getElementById('err-' + field);
   const inputEl = document.getElementById('fc-' + field);
-  if (errEl) { errEl.textContent = msg || errEl.textContent; errEl.style.display = 'block'; }
+  if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
   if (inputEl) inputEl.classList.add('form-control--error');
-  return false;
+}
+
+function validatePhone(phone) {
+  return /^09\d{8}$/.test(phone.replace(/[-\s]/g, ''));
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 /* ── Submit ── */
-function submitCheckin() {
+async function submitCheckin() {
   let valid = true;
-
-  // Clear all errors
   ['name','class','phone','email','location','dinner','school'].forEach(f => clearError(f));
   document.getElementById('form-error').classList.remove('show');
 
-  // Validate name
-  const name = document.getElementById('fc-name').value.trim();
-  if (!name) { showError('name', '請輸入姓名'); valid = false; }
-
-  // Validate class
-  const cls = document.getElementById('fc-class').value;
-  if (!cls) { showError('class', '請選擇班級'); valid = false; }
-
-  // Validate phone
-  const phone = document.getElementById('fc-phone').value.trim();
-  if (!phone) { showError('phone', '請輸入手機號碼'); valid = false; }
-
-  // Validate email
+  const name  = document.getElementById('fc-name').value.trim();
+  const cls   = document.getElementById('fc-class').value;
+  const phone = document.getElementById('fc-phone').value.trim().replace(/[-\s]/g, '');
   const email = document.getElementById('fc-email').value.trim();
-  if (!email || !email.includes('@')) { showError('email', '請輸入有效的電子郵件'); valid = false; }
 
-  // Validate location
+  if (!name)  { showError('name',  '請輸入姓名'); valid = false; }
+  if (!cls)   { showError('class', '請選擇班級'); valid = false; }
+
+  if (!phone && !email) {
+    showError('phone', '手機與 Email 至少填一項'); valid = false;
+  } else {
+    if (phone && !validatePhone(phone)) { showError('phone', '手機格式錯誤，例：0912345678'); valid = false; }
+    if (email && !validateEmail(email)) { showError('email', '請輸入有效的電子郵件'); valid = false; }
+  }
+
   if (!formState.location) { showError('location', '請選擇目前活動地點'); valid = false; }
-
-  // Validate dinner
-  if (!formState.dinner) { showError('dinner', '請選擇晚宴參與意願'); valid = false; }
-
-  // Validate school visit
-  if (!formState.school) { showError('school', '請選擇返校日參與意願'); valid = false; }
+  if (!formState.dinner)   { showError('dinner',   '請選擇晚宴參與意願'); valid = false; }
+  if (!formState.school)   { showError('school',   '請選擇返校日參與意願'); valid = false; }
 
   if (!valid) {
     document.getElementById('form-error').classList.add('show');
-    // Scroll to first error
-    const firstErr = document.querySelector('.form-control--error, .form-field__error[style*="block"]');
-    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.querySelector('.form-control--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
 
-  // ── 送出到後端 API（後端上線後自動啟用；開發中使用 MOCK_MODE）──
-  const API_BASE = window.CK48_API_BASE || '';  // 設定為 '' 時走 same-origin（Spring Boot 整合後）
-  const USE_MOCK = !API_BASE && !window.CK48_USE_REAL_API;
-
-  const payload = {
-    name:            name,
-    classId:         cls,
-    phone:           phone,
-    email:           email,
-    location:        formState.location,
-    dinnerIntention: formState.dinner,
-    schoolIntention: formState.school,
-    message:         document.getElementById('fc-message').value.trim()
-  };
-
-  if (USE_MOCK) {
-    // ── Mock 模式（後端尚未啟動時）──────────────────
-    console.log('[MOCK] submitCheckin payload:', payload);
-    showSuccessState();
-    return;
-  }
-
-  // ── 真實 API 呼叫（Spring Boot 後端）──────────────
   const submitBtn = document.querySelector('[onclick="submitCheckin()"]');
   submitBtn.disabled = true;
   submitBtn.textContent = '送出中…';
 
-  fetch(API_BASE + '/api/checkin', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      showSuccessState();
-    } else {
-      document.getElementById('form-error-desc').textContent = data.message || '送出失敗，請稍後再試';
-      document.getElementById('form-error').classList.add('show');
-      submitBtn.disabled = false;
-      submitBtn.textContent = '✅ 送出聯絡資訊';
+  try {
+    // Get reCAPTCHA token
+    let recaptchaToken = '';
+    if (typeof grecaptcha !== 'undefined' && RECAPTCHA_SITE_KEY !== 'RECAPTCHA_SITE_KEY') {
+      recaptchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'checkin' });
     }
-  })
-  .catch(() => {
-    document.getElementById('form-error-desc').textContent = '網路錯誤，請確認連線後再試';
+
+    const payload = {
+      name,
+      classId: cls,
+      phone:   phone || null,
+      email:   email || null,
+      location: formState.location,
+      message: document.getElementById('fc-message').value.trim() || null,
+      answers: {
+        dinner:       formState.dinner,
+        school_visit: formState.school,
+      },
+      recaptchaToken,
+    };
+
+    const res = await CK48_API.checkin(payload);
+    showSuccessState();
+
+  } catch (err) {
+    const code = err?.code || '';
+    let msg = '送出失敗，請稍後再試';
+    if (code === 'NAME_NOT_FOUND') {
+      msg = '查無此姓名，請確認班級與姓名是否正確';
+      showError('name', msg);
+    } else if (code === 'ALREADY_SUBMITTED') {
+      msg = '您已填寫過了，感謝您的參與！';
+    } else if (code === 'RECAPTCHA_FAILED') {
+      msg = '安全驗證失敗，請重新嘗試';
+    }
+    document.getElementById('form-error-desc').textContent = msg;
     document.getElementById('form-error').classList.add('show');
     submitBtn.disabled = false;
     submitBtn.textContent = '✅ 送出聯絡資訊';
-  });
+  }
 }
 
 function showSuccessState() {
@@ -571,6 +557,8 @@ function showSuccessState() {
   document.getElementById('checkin-success').style.display = 'block';
   window.scrollTo({ top: document.getElementById('checkin-form-card').offsetTop - 100, behavior: 'smooth' });
 }
+
+document.addEventListener('DOMContentLoaded', loadClasses);
 </script>
 </body>
 </html>
