@@ -186,6 +186,47 @@
 
     /* Required star */
     .form-field label span { color: var(--color-secondary); margin-left: 2px; }
+
+    /* Error modal */
+    .error-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .error-modal-overlay.open { display: flex; }
+    .error-modal {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      padding: 36px 32px 28px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 12px 48px rgba(0,0,0,.18);
+      animation: modalIn .18s ease;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .error-modal__icon { font-size: 48px; line-height: 1; margin-bottom: 16px; }
+    .error-modal__title { font-size: 18px; font-weight: 700; color: var(--color-primary); margin-bottom: 10px; }
+    .error-modal__msg { font-size: 15px; color: var(--color-text-muted); line-height: 1.7; margin-bottom: 24px; }
+    .error-modal__close {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .error-modal__close:hover { opacity: .88; }
   </style>
 </head>
 <body class="page-top">
@@ -305,15 +346,6 @@
                 <textarea id="fc-message" class="form-control" rows="4" placeholder="給老同學的話、目前的狀態、希望再聯絡的人……都歡迎分享！"></textarea>
               </div>
 
-              <!-- Error summary -->
-              <div class="status-box status-box--error" id="form-error" style="margin-bottom:16px;">
-                <div class="status-box__icon">⚠️</div>
-                <div>
-                  <div class="status-box__title">請確認填寫內容</div>
-                  <div class="status-box__desc" id="form-error-desc">請填寫所有必填欄位。</div>
-                </div>
-              </div>
-
               <!-- Submit -->
               <button type="button" class="btn btn--primary btn--lg" style="width:100%;justify-content:center;font-size:17px;" onclick="submitCheckin()">
                 ✅ 送出聯絡資訊
@@ -430,6 +462,16 @@
   </div>
 </section>
 
+<!-- Error modal -->
+<div class="error-modal-overlay" id="error-modal-overlay" onclick="closeErrorModal(event)">
+  <div class="error-modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="error-modal__icon">⚠️</div>
+    <div class="error-modal__title" id="modal-title">送出失敗</div>
+    <div class="error-modal__msg" id="modal-msg"></div>
+    <button class="error-modal__close" onclick="document.getElementById('error-modal-overlay').classList.remove('open')">確定</button>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
 <script src="js/api.js"></script>
@@ -506,7 +548,6 @@ function validateEmail(email) {
 async function submitCheckin() {
   let valid = true;
   ['name','class','phone','email','location','dinner','school'].forEach(f => clearError(f));
-  document.getElementById('form-error').classList.remove('show');
 
   const name  = document.getElementById('fc-name').value.trim();
   const cls   = document.getElementById('fc-class').value;
@@ -528,7 +569,6 @@ async function submitCheckin() {
   if (!formState.school)   { showError('school',   '請選擇返校日參與意願'); valid = false; }
 
   if (!valid) {
-    document.getElementById('form-error').classList.add('show');
     document.querySelector('.form-control--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
@@ -574,14 +614,21 @@ async function submitCheckin() {
       return;
     }
 
-    if (code === 'NAME_NOT_FOUND') {
-      showError('name', msg);
-    }
-    document.getElementById('form-error-desc').textContent = msg;
-    document.getElementById('form-error').classList.add('show');
+    showErrorModal(msg);
     submitBtn.disabled = false;
     submitBtn.textContent = '✅ 送出聯絡資訊';
   }
+}
+
+function showErrorModal(msg) {
+  document.getElementById('modal-msg').textContent = msg;
+  document.getElementById('error-modal-overlay').classList.add('open');
+}
+
+function closeErrorModal(e) {
+  // Close only when clicking the overlay backdrop, not the modal box itself
+  if (e && e.target !== document.getElementById('error-modal-overlay')) return;
+  document.getElementById('error-modal-overlay').classList.remove('open');
 }
 
 function showState(stateId) {
