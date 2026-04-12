@@ -67,8 +67,9 @@ const CK48_API = (() => {
       });
       const data = await res.json();
       if (!res.ok) {
-        const err = new Error(data.error || 'Checkin failed');
-        err.code = data.error;
+        const err = new Error(data.error || '送出失敗，請稍後再試');
+        err.code = data.code || null;
+        err.message = data.error || err.message;
         throw err;
       }
       return data;
