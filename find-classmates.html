@@ -238,13 +238,13 @@
               <!-- Row 2: Phone + Email -->
               <div class="form-grid form-grid--2">
                 <div class="form-field">
-                  <label for="fc-phone">手機號碼 <span>*</span></label>
-                  <input type="tel" id="fc-phone" class="form-control" placeholder="09XX-XXX-XXX" autocomplete="tel" required>
+                  <label for="fc-phone">手機號碼 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（與 Email 至少填一項）</span></label>
+                  <input type="tel" id="fc-phone" class="form-control" placeholder="09XX-XXX-XXX" autocomplete="tel">
                   <div class="form-field__error" id="err-phone">請輸入手機號碼</div>
                 </div>
                 <div class="form-field">
-                  <label for="fc-email">電子郵件 <span>*</span></label>
-                  <input type="email" id="fc-email" class="form-control" placeholder="your@email.com" autocomplete="email" required>
+                  <label for="fc-email">電子郵件 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（與手機至少填一項）</span></label>
+                  <input type="email" id="fc-email" class="form-control" placeholder="your@email.com" autocomplete="email">
                   <div class="form-field__error" id="err-email">請輸入有效的電子郵件</div>
                 </div>
               </div>
@@ -342,6 +342,33 @@
                 加入粉絲專頁
               </a>
               <a href="https://discord.gg/gHpBA9Kz" target="_blank" rel="noopener" class="btn btn--outline btn--lg">加入 Discord →</a>
+              <a href="index.html" class="btn btn--outline btn--lg">回首頁</a>
+            </div>
+          </div>
+
+          <!-- Already approved state (hidden) -->
+          <div class="checkin-success" id="checkin-approved">
+            <div class="checkin-success__icon">✅</div>
+            <div class="checkin-success__title">你的資料已經確認！</div>
+            <div class="checkin-success__sub">
+              班召已確認你的報到資訊，感謝你的參與！<br>
+              記得加入社群，隨時掌握最新消息。
+            </div>
+            <div class="btn-group" style="justify-content:center;flex-wrap:wrap;">
+              <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener" class="btn btn--primary btn--lg">加入粉絲專頁</a>
+              <a href="index.html" class="btn btn--outline btn--lg">回首頁</a>
+            </div>
+          </div>
+
+          <!-- Already pending state (hidden) -->
+          <div class="checkin-success" id="checkin-pending">
+            <div class="checkin-success__icon">⏳</div>
+            <div class="checkin-success__title">你的資料確認中</div>
+            <div class="checkin-success__sub">
+              你已填寫過報到資訊，目前正在等待班召確認。<br>
+              確認後會更新狀態，感謝你的耐心等待！
+            </div>
+            <div class="btn-group" style="justify-content:center;flex-wrap:wrap;">
               <a href="index.html" class="btn btn--outline btn--lg">回首頁</a>
             </div>
           </div>
@@ -532,18 +559,23 @@ async function submitCheckin() {
     };
 
     const res = await CK48_API.checkin(payload);
-    showSuccessState();
+    showState('checkin-success');
 
   } catch (err) {
     const code = err?.code || '';
-    let msg = '送出失敗，請稍後再試';
+    const msg = err?.message || '送出失敗，請稍後再試';
+
+    if (code === 'ALREADY_APPROVED') {
+      showState('checkin-approved');
+      return;
+    }
+    if (code === 'ALREADY_PENDING') {
+      showState('checkin-pending');
+      return;
+    }
+
     if (code === 'NAME_NOT_FOUND') {
-      msg = '查無此姓名，請確認班級與姓名是否正確';
       showError('name', msg);
-    } else if (code === 'ALREADY_SUBMITTED') {
-      msg = '您已填寫過了，感謝您的參與！';
-    } else if (code === 'RECAPTCHA_FAILED') {
-      msg = '安全驗證失敗，請重新嘗試';
     }
     document.getElementById('form-error-desc').textContent = msg;
     document.getElementById('form-error').classList.add('show');
@@ -552,9 +584,11 @@ async function submitCheckin() {
   }
 }
 
-function showSuccessState() {
+function showState(stateId) {
   document.getElementById('checkin-form').style.display = 'none';
-  document.getElementById('checkin-success').style.display = 'block';
+  ['checkin-success', 'checkin-approved', 'checkin-pending'].forEach(id => {
+    document.getElementById(id).style.display = id === stateId ? 'block' : 'none';
+  });
   window.scrollTo({ top: document.getElementById('checkin-form-card').offsetTop - 100, behavior: 'smooth' });
 }
 
