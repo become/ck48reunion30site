@@ -105,10 +105,10 @@ npx prisma db push      # 更新 DB + 重新產生 Prisma client
 
 ### 部署到正式伺服器
 
+#### 一般更新（無 schema 異動）
+
 ```bash
-# 1. 推送程式碼
-git add .
-git commit -m "..."
+# 1. 本地推送程式碼
 git push origin main
 
 # 2. SSH 到伺服器
@@ -117,29 +117,41 @@ ssh root@159.223.40.36
 # 3. 在伺服器上執行
 cd /var/www/reunion30-node
 git pull
+npm install
+npm run build:prod   # prisma generate + tsc
+pm2 restart reunion30-api
 
-# 如果 schema 有變更
-npx prisma db push
-
-# 如果需要重新 seed（謹慎：會新增資料）
-npm run db:seed
-
-# 重新 build 並重啟
-npm run build
-pm2 restart reunion30-node
-
-# 確認狀態
+# 4. 確認狀態
 pm2 status
-pm2 logs reunion30-node --lines 20
+pm2 logs reunion30-api --lines 20
+```
+
+#### Schema 有異動時
+
+在 `npm run build:prod` 前加一步：
+
+```bash
+git pull
+npm install
+npx prisma db push   # ← 先更新 DB schema
+npm run build:prod
+pm2 restart reunion30-api
+```
+
+#### 首次啟動（全新環境）
+
+```bash
+pm2 start ecosystem.config.js
+pm2 save   # 讓 PM2 開機自動啟動
 ```
 
 ### 常用 PM2 指令（伺服器上）
 
 ```bash
-pm2 status                          # 查看所有程序狀態
-pm2 restart reunion30-node          # 重啟
-pm2 logs reunion30-node --lines 50  # 查看最新 log
-pm2 stop reunion30-node             # 停止
+pm2 status                         # 查看所有程序狀態
+pm2 restart reunion30-api          # 重啟
+pm2 logs reunion30-api --lines 50  # 查看最新 log
+pm2 stop reunion30-api             # 停止
 ```
 
 ### 常用 API 測試指令
