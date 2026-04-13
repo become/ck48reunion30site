@@ -89,6 +89,7 @@ const FOOTER_HTML = `
     <div class="footer-bottom">
       <div>© 2026 建中第48屆30年重聚籌備委員會 · All rights reserved.</div>
       <div class="footer-hashtag">#CK48Reunion #三十再聚少年依舊</div>
+      <div id="site-version" style="font-size:11px;opacity:.45;margin-top:4px;"></div>
     </div>
   </div>
 </footer>`;
@@ -114,4 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inject lightbox
   document.body.insertAdjacentHTML('beforeend', LIGHTBOX_HTML);
+
+  // Load version (generated at deploy time, absent in local dev)
+  fetch('js/version.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      const el = document.getElementById('site-version');
+      if (el && d?.version) el.textContent = d.version;
+    })
+    .catch(() => {});
 });

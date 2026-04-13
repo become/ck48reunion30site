@@ -31,6 +31,10 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H 159.223.40.36 >> ~/.ssh/known_hosts
 
+      - name: Generate version
+        run: |
+          echo "{\"version\":\"v.$(date -u +%Y%m%d%H)\"}" > js/version.json
+
       - name: Deploy via rsync
         run: |
           rsync -avz --delete \
@@ -43,4 +47,4 @@ jobs:
       - name: Summary
         run: |
           echo "Deployed to ${{ steps.target.outputs.host }}"
-          echo "Path: ${{ steps.target.outputs.path }}"
+          echo "Version: v.$(date -u +%Y%m%d%H)"
