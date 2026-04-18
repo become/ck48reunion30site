@@ -715,10 +715,38 @@ p  { line-height: 1.75; }
   align-self: stretch;
   min-height: 80px;
 }
-.strip-connect-card { text-align: center; padding: 8px; }
-.strip-connect-card__icon { display: flex; justify-content: center; margin-bottom: 12px; }
-.strip-connect-card__title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.strip-connect-card__desc { font-size: 13px; color: rgba(255,255,255,.60); line-height: 1.65; margin-bottom: 18px; }
+.strip-connect-card {
+  text-align: center;
+  padding: clamp(20px, 2.5vw, 32px) clamp(16px, 2vw, 28px);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.strip-connect-card:hover {
+  background: rgba(255,255,255,.10);
+  border-color: rgba(176,141,87,.40);
+  transform: translateY(-2px);
+}
+.strip-connect-card__step {
+  position: absolute;
+  top: 10px; right: 14px;
+  font-size: 52px; font-weight: 800;
+  color: rgba(255,255,255,.05);
+  line-height: 1;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.strip-connect-card__icon {
+  display: flex; justify-content: center;
+  color: var(--color-accent);
+  margin-bottom: 14px;
+}
+.strip-connect-card__title { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+.strip-connect-card__desc { font-size: 13px; color: rgba(255,255,255,.60); line-height: 1.7; margin-bottom: 20px; }
 
 /* RWD for strip */
 @media (max-width: 640px) {
