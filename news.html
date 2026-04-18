@@ -39,11 +39,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="pagination">
-      <button class="page-btn active">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn page-btn--wide">下一頁 →</button>
-    </div>
+    <div class="pagination" id="pagination"></div>
   </div>
 </section>
 
@@ -54,37 +50,74 @@
 <script src="js/main.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+  const PAGE_SIZE = 9;
   let allNews = [];
   let currentCat = 'all';
   let searchQuery = '';
+  let currentPage = 1;
+
+  function getFiltered() {
+    return allNews.filter(n => {
+      const matchCat  = currentCat === 'all' || n.category === currentCat;
+      const matchSrch = !searchQuery || n.title.includes(searchQuery) || (n.summary || '').includes(searchQuery);
+      return matchCat && matchSrch;
+    });
+  }
 
   function renderNews() {
     const grid = document.getElementById('news-grid');
-    const filtered = allNews.filter(n => {
-      const matchCat  = currentCat === 'all' || n.category === currentCat;
-      const matchSrch = !searchQuery || n.title.includes(searchQuery) || n.summary.includes(searchQuery);
-      return matchCat && matchSrch;
-    });
-    grid.innerHTML = filtered.length ? '' : '<p style="color:var(--color-text-muted);grid-column:1/-1;text-align:center;padding:40px 0;">找不到符合的消息。</p>';
-    filtered.forEach(n => {
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+    grid.innerHTML = pageItems.length ? '' : '<p style="color:var(--color-text-muted);grid-column:1/-1;text-align:center;padding:40px 0;">找不到符合的消息。</p>';
+    pageItems.forEach(n => {
+      const date = n.publishedAt ? formatDate(n.publishedAt) : (n.date ? formatDate(n.date) : '');
       grid.innerHTML += `
         <article class="news-card reveal">
-          <div class="news-card__img">
-            <div class="news-card__img-placeholder">${n.coverEmoji || '📰'}</div>
-          </div>
           <div class="news-card__body">
             <div class="news-card__meta">
               <span class="badge badge--news">${n.category}</span>
-              <span class="news-card__date">${formatDate(n.date)}</span>
+              <span class="news-card__date">${date}</span>
             </div>
             <h2 class="news-card__title">${n.title}</h2>
-            <p class="news-card__summary">${n.summary}</p>
+            <p class="news-card__summary">${n.summary || ''}</p>
             <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
           </div>
         </article>`;
     });
     document.querySelectorAll('.reveal:not(.revealed)').forEach(el => {
       setTimeout(() => el.classList.add('revealed'), 50);
+    });
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const el = document.getElementById('pagination');
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    let html = '';
+    if (currentPage > 1) {
+      html += `<button class="page-btn page-btn--wide" data-page="${currentPage - 1}">← 上一頁</button>`;
+    }
+    for (let i = 1; i <= totalPages; i++) {
+      if (totalPages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== totalPages) {
+        if (i === currentPage - 3 || i === currentPage + 3) html += `<span style="align-self:center;color:var(--color-text-muted)">…</span>`;
+        continue;
+      }
+      html += `<button class="page-btn${i === currentPage ? ' active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    if (currentPage < totalPages) {
+      html += `<button class="page-btn page-btn--wide" data-page="${currentPage + 1}">下一頁 →</button>`;
+    }
+    el.innerHTML = html;
+    el.querySelectorAll('[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.dataset.page);
+        renderNews();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     });
   }
 
@@ -94,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentCat = btn.dataset.cat;
+      currentPage = 1;
       renderNews();
     });
   });
@@ -101,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Search
   document.getElementById('news-search').addEventListener('input', e => {
     searchQuery = e.target.value.trim();
+    currentPage = 1;
     renderNews();
   });
 

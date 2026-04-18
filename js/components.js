@@ -6,11 +6,7 @@ const HEADER_HTML = `
 <header class="site-header" id="site-header">
   <div class="header-inner">
     <a href="index.html" class="header-logo">
-      <div class="header-logo__emblem">CK</div>
-      <div class="header-logo__text">
-        <div class="header-logo__name">建中第48屆</div>
-        <div class="header-logo__sub">30年重聚 · CK48 Reunion</div>
-      </div>
+      <img src="images/logo.png" alt="建中第48屆 30年重聚" class="header-logo__img">
     </a>
     <nav class="header-nav" aria-label="主選單">
       <a href="index.html"          class="header-nav__item">首頁</a>

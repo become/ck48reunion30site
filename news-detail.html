@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    .article-hero { aspect-ratio:16/7; background:linear-gradient(135deg,#e8e2d8,#d4c9b8); border-radius:var(--radius-lg); display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:36px; }
     .article-body p { margin-bottom:18px; font-size:17px; line-height:1.85; }
     .article-nav { display:flex;justify-content:space-between;gap:16px;margin-top:48px;padding-top:32px;border-top:1px solid var(--color-border); }
     .article-nav a { font-size:14px;font-weight:600;color:var(--color-primary); display:flex;align-items:center;gap:6px; }
@@ -74,11 +73,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.title = `${news.title} · 建中第48屆30年重聚`;
   document.getElementById('bc-title').textContent = news.title;
 
+  const articleDate = news.publishedAt ? formatDate(news.publishedAt) : (news.date ? formatDate(news.date) : '');
   document.getElementById('article-wrap').innerHTML = `
-    <div class="article-hero">${news.coverEmoji || '📰'}</div>
     <div class="news-card__meta" style="margin-bottom:12px;">
       <span class="badge badge--news">${news.category}</span>
-      <span class="news-card__date">${formatDate(news.date)}</span>
+      <span class="news-card__date">${articleDate}</span>
     </div>
     <h1 style="font-size:clamp(24px,3.5vw,38px);color:var(--color-primary);margin-bottom:28px;line-height:1.25;">${news.title}</h1>
     <div class="article-body">${news.content || ''}</div>
@@ -90,24 +89,44 @@ document.addEventListener('DOMContentLoaded', async () => {
       <a href="news.html" class="btn btn--outline">← 返回消息列表</a>
     </div>`;
 
-  // Related
-  const related = allNews.filter(n => n.slug !== slug).slice(0, 3);
+  // Related: prev + next, fill missing with random
+  const others = allNews.filter(n => n.slug !== slug);
+  const picks = [];
+
+  function pickRandom(exclude) {
+    const pool = others.filter(n => !exclude.find(p => p.slug === n.slug));
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+  }
+
+  const prevItem = prev || pickRandom(picks);
+  if (prevItem) picks.push(prevItem);
+
+  const nextItem = (next && !picks.find(p => p.slug === next.slug)) ? next : pickRandom(picks);
+  if (nextItem) picks.push(nextItem);
+
+  const thirdItem = pickRandom(picks);
+  if (thirdItem) picks.push(thirdItem);
+
   const rg = document.getElementById('related-news');
-  related.forEach(n => {
-    rg.innerHTML += `
-      <article class="news-card">
-        <div class="news-card__img"><div class="news-card__img-placeholder">${n.coverEmoji || '📰'}</div></div>
-        <div class="news-card__body">
-          <div class="news-card__meta">
-            <span class="badge badge--news">${n.category}</span>
-            <span class="news-card__date">${formatDate(n.date)}</span>
+  if (picks.length === 0) {
+    rg.closest('section').style.display = 'none';
+  } else {
+    picks.forEach(n => {
+      const date = n.publishedAt ? formatDate(n.publishedAt) : (n.date ? formatDate(n.date) : '');
+      rg.innerHTML += `
+        <article class="news-card">
+          <div class="news-card__body">
+            <div class="news-card__meta">
+              <span class="badge badge--news">${n.category}</span>
+              <span class="news-card__date">${date}</span>
+            </div>
+            <h3 class="news-card__title">${n.title}</h3>
+            <p class="news-card__summary">${n.summary || ''}</p>
+            <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
           </div>
-          <h3 class="news-card__title">${n.title}</h3>
-          <p class="news-card__summary">${n.summary}</p>
-          <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
-        </div>
-      </article>`;
-  });
+        </article>`;
+    });
+  }
 });
 </script>
 </body>
