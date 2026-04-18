@@ -61,9 +61,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       CK48_API.getNews(),
     ]);
   } catch (e) {
+    // 404 = article doesn't exist, show not-found; other errors = API down, use mock
+    if (e.message && e.message.includes('404')) {
+      document.getElementById('article-wrap').innerHTML = `
+        <div style="text-align:center;padding:60px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">📭</div>
+          <h2 style="color:var(--color-primary);margin-bottom:12px;">找不到此文章</h2>
+          <p style="color:var(--color-text-muted);margin-bottom:28px;">此消息不存在或已被移除。</p>
+          <a href="news.html" class="btn btn--outline">← 返回消息列表</a>
+        </div>`;
+      document.getElementById('related-news').closest('section').style.display = 'none';
+      return;
+    }
     console.warn('API unavailable, using mock data', e);
     allNews = CK48_DATA.news;
-    news = allNews.find(n => n.slug === slug) || allNews[0];
+    news = allNews.find(n => n.slug === slug);
+    if (!news) {
+      document.getElementById('article-wrap').innerHTML = `
+        <div style="text-align:center;padding:60px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">📭</div>
+          <h2 style="color:var(--color-primary);margin-bottom:12px;">找不到此文章</h2>
+          <p style="color:var(--color-text-muted);margin-bottom:28px;">此消息不存在或已被移除。</p>
+          <a href="news.html" class="btn btn--outline">← 返回消息列表</a>
+        </div>`;
+      document.getElementById('related-news').closest('section').style.display = 'none';
+      return;
+    }
   }
 
   const idx  = allNews.findIndex(n => n.slug === news.slug);
