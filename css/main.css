@@ -400,7 +400,7 @@ p  { line-height: 1.75; }
 /* ── Hero（全寬視覺橫幅）────────────────────────────────────── */
 .hero {
   position: relative;
-  min-height: clamp(560px, 70vw, 820px);
+  min-height: clamp(560px, 70vw, 620px);
   display: flex;
   align-items: center;
   background: #0d1f38;
@@ -693,37 +693,32 @@ p  { line-height: 1.75; }
 .strip-social-link--dc { background: rgba(88,101,242,.12); border-color: rgba(88,101,242,.25); }
 .strip-social-link--dc:hover { background: rgba(88,101,242,.25); border-color: rgba(88,101,242,.45); }
 
-/* 校友報到 CTA */
+/* 校友連線 CTA */
 .strip-checkin {
   border-top: 1px solid rgba(255,255,255,.10);
   padding-top: 28px;
 }
-.strip-event-row {
+.strip-connect-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--color-accent);
+  text-align: center; margin-bottom: 20px;
+}
+.strip-connect-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 3vw, 56px);
+  grid-template-columns: 1fr auto 1fr;
+  gap: clamp(20px, 3vw, 48px);
   align-items: center;
 }
-.strip-event-chips { display: flex; flex-direction: column; gap: 10px; }
-.strip-event-chip {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(176,141,87,.25);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  transition: background var(--transition);
+.strip-connect-divider {
+  width: 1px;
+  background: rgba(255,255,255,.12);
+  align-self: stretch;
+  min-height: 80px;
 }
-.strip-event-chip:hover { background: rgba(255,255,255,.12); }
-.strip-event-chip__icon { font-size: 22px; flex-shrink: 0; }
-.strip-event-chip__name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-.strip-event-chip__date { font-size: 12px; color: rgba(255,255,255,.55); }
-.strip-cta { text-align: center; }
-.strip-checkin__desc {
-  font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.65; margin-bottom: 20px;
-}
-.strip-checkin__btn { display: inline-block; text-align: center; }
+.strip-connect-card { text-align: center; padding: 8px; }
+.strip-connect-card__icon { display: flex; justify-content: center; margin-bottom: 12px; }
+.strip-connect-card__title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.strip-connect-card__desc { font-size: 13px; color: rgba(255,255,255,.60); line-height: 1.65; margin-bottom: 18px; }
 
 /* RWD for strip */
 @media (max-width: 640px) {
@@ -732,7 +727,8 @@ p  { line-height: 1.75; }
   .event-info-box { padding: 12px; }
   .event-info-box__date { font-size: 13px; }
   .strip-social { display: flex; flex-direction: column; }
-  .strip-event-row { grid-template-columns: 1fr; gap: 20px; }
+  .strip-connect-grid { grid-template-columns: 1fr; }
+  .strip-connect-divider { width: auto; height: 1px; min-height: unset; }
 }
 
 /* ── Countdown ──────────────────────────────────────────────── */
