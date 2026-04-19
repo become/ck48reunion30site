@@ -84,7 +84,7 @@ const FOOTER_HTML = `
     </div>
     <div class="footer-bottom">
       <div>© 2026 建中第48屆30年重聚籌備委員會 · All rights reserved.</div>
-      <div class="footer-hashtag">#CK48Reunion #三十再聚少年依舊</div>
+      <div class="footer-hashtag">#CK48Reunion30 #建中48屆三十重聚</div>
       <div id="site-version" style="font-size:11px;opacity:.45;margin-top:4px;"></div>
     </div>
   </div>
@@ -93,9 +93,15 @@ const FOOTER_HTML = `
 const LIGHTBOX_HTML = `
 <div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true" aria-label="圖片檢視">
   <div class="lightbox-inner">
+    <button class="lightbox-prev" aria-label="上一張">&#8249;</button>
     <button class="lightbox-close" aria-label="關閉">✕</button>
-    <div class="photo-placeholder" style="width:600px;max-width:90vw;height:400px;border-radius:8px;font-size:80px;">🖼️</div>
-    <div class="lightbox-caption"></div>
+    <button class="lightbox-next" aria-label="下一張">&#8250;</button>
+    <img class="lightbox-img" src="" alt="" />
+    <div class="lightbox-caption">
+      <div class="lightbox-caption__title"></div>
+      <div class="lightbox-caption__desc"></div>
+      <a class="lightbox-share" href="#" target="_blank" rel="noopener">分享這張照片 →</a>
+    </div>
   </div>
 </div>`;
 

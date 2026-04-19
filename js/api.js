@@ -59,6 +59,12 @@ const CK48_API = (() => {
       return get('/api/classes');
     },
 
+    async getMemoryPhotos({ category, shuffle = true } = {}) {
+      let qs = shuffle ? '?shuffle=1' : '?';
+      if (category && category !== 'all') qs += `&category=${encodeURIComponent(category)}`;
+      return get(`/api/photos${qs}`);
+    },
+
     async checkin(payload) {
       const res = await fetch(BASE + '/api/checkin', {
         method: 'POST',

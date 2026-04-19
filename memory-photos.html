@@ -21,14 +21,19 @@
 
 <section class="section">
   <div class="container">
-    <div data-tabs>
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="all">全部</button>
-        <button class="tab-btn" data-tab="校園點滴">校園點滴</button>
-        <button class="tab-btn" data-tab="經典收藏">經典收藏</button>
-        <button class="tab-btn" data-tab="社團活動">社團活動</button>
-      </div>
-      <div class="photo-grid photo-grid--3" id="memory-grid"></div>
+    <div class="tabs" id="cat-tabs" style="margin-bottom:32px;">
+      <button class="tab-btn active" data-cat="all">全部</button>
+      <button class="tab-btn" data-cat="校園點滴">校園點滴</button>
+      <button class="tab-btn" data-cat="經典收藏">經典收藏</button>
+      <button class="tab-btn" data-cat="社團活動">社團活動</button>
+    </div>
+
+    <div class="photo-grid photo-grid--3" id="memory-grid">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div id="empty-msg" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
+      此分類目前沒有照片。
     </div>
 
     <div style="margin-top:48px;text-align:center;" class="reveal">
@@ -36,8 +41,7 @@
         📷 更多精彩回憶照片收錄於 Google 相簿，歡迎前往查看及投稿。
       </p>
       <div class="btn-group" style="justify-content:center;">
-        <a href="#" class="btn btn--secondary btn--lg">前往 Google 相簿</a>
-        <a href="#" class="btn btn--outline btn--lg">投稿照片</a>
+        <a href="#" id="google-album-btn" class="btn btn--secondary btn--lg">前往 Google 相簿</a>
       </div>
     </div>
   </div>
@@ -45,45 +49,105 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let allPhotos = [];
   let currentCat = 'all';
+
+  // Load photos
+  try {
+    allPhotos = await CK48_API.getMemoryPhotos({ shuffle: true });
+  } catch (e) {
+    console.warn('API unavailable, using placeholder data', e);
+    allPhotos = CK48_DATA.memoryPhotos.map(p => ({
+      id: null, title: p.title, story: '', category: p.category,
+      thumbUrl: null, largeUrl: null, _emoji: p.emoji,
+      aspectRatio: 1, width: 1, height: 1,
+    }));
+  }
+
+  // Register photos in lightbox system
+  setLightboxPhotos(allPhotos);
+  initLightbox();
+  initLightboxDeepLink();
+
+  function getFiltered() {
+    return currentCat === 'all' ? allPhotos : allPhotos.filter(p => p.category === currentCat);
+  }
 
   function renderPhotos() {
     const grid = document.getElementById('memory-grid');
-    const items = currentCat === 'all'
-      ? CK48_DATA.memoryPhotos
-      : CK48_DATA.memoryPhotos.filter(p => p.category === currentCat);
+    const emptyMsg = document.getElementById('empty-msg');
+    const filtered = getFiltered();
     grid.innerHTML = '';
-    items.forEach(p => {
-      grid.innerHTML += `
-        <div class="photo-card reveal" role="button" tabindex="0"
-             aria-label="${p.title}" data-caption="${p.title} · ${p.category}">
-          <div class="photo-placeholder">${p.emoji}</div>
-          <div class="photo-card__overlay"></div>
-          <div class="photo-card__info">
-            <div class="photo-card__title">${p.title}</div>
-            <div class="photo-card__cat">${p.category}</div>
-          </div>
-        </div>`;
+
+    if (filtered.length === 0) {
+      emptyMsg.style.display = '';
+      return;
+    }
+    emptyMsg.style.display = 'none';
+
+    filtered.forEach(p => {
+      // Find global index in allPhotos for lightbox nav
+      const globalIdx = allPhotos.indexOf(p);
+      const isPortrait = p.aspectRatio != null && p.aspectRatio < 0.75;
+      const portraitClass = isPortrait ? ' photo-card--portrait' : '';
+
+      if (p.thumbUrl) {
+        grid.innerHTML += `
+          <div class="photo-card reveal${portraitClass}" role="button" tabindex="0"
+               aria-label="${p.title || ''}"
+               data-lightbox="1" data-photo-index="${globalIdx}">
+            <img src="${p.thumbUrl}" alt="${p.title || ''}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+            <div class="photo-card__overlay"></div>
+            <div class="photo-card__info">
+              <div class="photo-card__title">${p.title || ''}</div>
+              ${p.category ? `<div class="photo-card__cat">${p.category}</div>` : ''}
+            </div>
+          </div>`;
+      } else {
+        // Fallback emoji placeholder
+        grid.innerHTML += `
+          <div class="photo-card reveal${portraitClass}" role="button" tabindex="0"
+               aria-label="${p.title || ''}"
+               data-lightbox="1" data-photo-index="${globalIdx}">
+            <div class="photo-placeholder">${p._emoji || '🖼️'}</div>
+            <div class="photo-card__overlay"></div>
+            <div class="photo-card__info">
+              <div class="photo-card__title">${p.title || ''}</div>
+              ${p.category ? `<div class="photo-card__cat">${p.category}</div>` : ''}
+            </div>
+          </div>`;
+      }
     });
+
     setTimeout(() => {
       document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
     }, 50);
+
+    // Re-bind lightbox after rendering
+    initLightbox();
   }
 
-  document.querySelectorAll('[data-tab]').forEach(btn => {
+  // Category tabs
+  document.querySelectorAll('[data-cat]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      currentCat = btn.dataset.tab;
+      currentCat = btn.dataset.cat;
       renderPhotos();
     });
   });
 
   renderPhotos();
+
+  // Check for ?photo=id deep link
+  const params = new URLSearchParams(location.search);
+  const photoId = params.get('photo');
+  if (photoId) openLightboxById(photoId);
 });
 </script>
 </body>

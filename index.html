@@ -194,19 +194,45 @@
 document.addEventListener('DOMContentLoaded', async () => {
   initCountdown('2026-12-19T18:00:00+08:00', 'countdown');
 
-  // Memory photos (8 items, 4x2 grid)
+  // Memory photos (up to 8, from API; fallback to mock)
   const photoGrid = document.getElementById('memory-photo-grid');
   if (photoGrid) {
-    CK48_DATA.memoryPhotos.slice(0, 8).forEach(p => {
-      photoGrid.innerHTML += `
-        <div class="photo-card" data-lightbox="#" data-caption="${p.title}" role="button" tabindex="0" aria-label="查看${p.title}">
-          <div class="photo-placeholder">${p.emoji}</div>
-          <div class="photo-card__overlay"></div>
-          <div class="photo-card__info">
-            <div class="photo-card__title">${p.title}</div>
-            <div class="photo-card__cat">${p.category}</div>
-          </div>
-        </div>`;
+    let photoList = [];
+    try {
+      photoList = await CK48_API.getMemoryPhotos({ shuffle: true });
+    } catch (e) {
+      photoList = CK48_DATA.memoryPhotos.map(p => ({
+        id: null, title: p.title, story: '', category: p.category,
+        thumbUrl: null, _emoji: p.emoji, aspectRatio: 1,
+      }));
+    }
+    setLightboxPhotos(photoList);
+    initLightbox();
+    photoList.slice(0, 8).forEach((p, idx) => {
+      const isPortrait = p.aspectRatio != null && p.aspectRatio < 0.75;
+      if (p.thumbUrl) {
+        photoGrid.innerHTML += `
+          <div class="photo-card${isPortrait ? ' photo-card--portrait' : ''}" role="button" tabindex="0"
+               aria-label="${p.title || ''}" data-lightbox="1" data-photo-index="${idx}">
+            <img src="${p.thumbUrl}" alt="${p.title || ''}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+            <div class="photo-card__overlay"></div>
+            <div class="photo-card__info">
+              <div class="photo-card__title">${p.title || ''}</div>
+              <div class="photo-card__cat">${p.category || ''}</div>
+            </div>
+          </div>`;
+      } else {
+        photoGrid.innerHTML += `
+          <div class="photo-card" role="button" tabindex="0"
+               aria-label="${p.title || ''}" data-lightbox="1" data-photo-index="${idx}">
+            <div class="photo-placeholder">${p._emoji || '🖼️'}</div>
+            <div class="photo-card__overlay"></div>
+            <div class="photo-card__info">
+              <div class="photo-card__title">${p.title || ''}</div>
+              <div class="photo-card__cat">${p.category || ''}</div>
+            </div>
+          </div>`;
+      }
     });
   }
 
