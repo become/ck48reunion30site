@@ -59,10 +59,17 @@ const CK48_API = (() => {
       return get('/api/classes');
     },
 
-    async getMemoryPhotos({ category, shuffle = true } = {}) {
-      let qs = shuffle ? '?shuffle=1' : '?';
-      if (category && category !== 'all') qs += `&category=${encodeURIComponent(category)}`;
-      return get(`/api/photos${qs}`);
+    async getMemoryPhotos({ album, tag, q, shuffle = true } = {}) {
+      const params = new URLSearchParams();
+      if (shuffle) params.set('shuffle', '1');
+      if (album && album !== 'all') params.set('album', album);
+      if (tag) params.set('tag', tag);
+      if (q) params.set('q', q);
+      return get(`/api/photos?${params.toString()}`);
+    },
+
+    async getPhotoTags() {
+      return get('/api/photos/tags');
     },
 
     async checkin(payload) {

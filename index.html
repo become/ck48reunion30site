@@ -199,10 +199,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (photoGrid) {
     let photoList = [];
     try {
-      photoList = await CK48_API.getMemoryPhotos({ shuffle: true });
+      photoList = await CK48_API.getMemoryPhotos({ album: '回憶照片', shuffle: true });
     } catch (e) {
       photoList = CK48_DATA.memoryPhotos.map(p => ({
-        id: null, title: p.title, story: '', category: p.category,
+        id: null, title: p.title, story: '', tags: [],
         thumbUrl: null, _emoji: p.emoji, aspectRatio: 1,
       }));
     }

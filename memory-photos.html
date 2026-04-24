@@ -3,47 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>回憶照片 · 建中第48屆30年重聚</title>
+  <title>照片相簿 · 建中第48屆30年重聚</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── Filter bar ───────────────────────────────────────────── */
+    .photo-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .photo-filter__search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+    .photo-filter__search input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: var(--color-text);
+      width: 100%;
+      font-family: inherit;
+    }
+    .photo-filter__search svg { color: var(--color-text-muted); flex-shrink: 0; }
+    .photo-filter__albums {
+      display: flex;
+      gap: 6px;
+    }
+    .album-btn {
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text-muted);
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .album-btn.active, .album-btn:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+      background: rgba(200,160,80,.08);
+    }
+    /* ── Tags bar ────────────────────────────────────────────── */
+    .tags-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tags-bar::-webkit-scrollbar { display: none; }
+    .tags-bar__label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text-muted);
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+    .tag-pill.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #fff;
+    }
+    .tag-pill:hover:not(.active) {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+    /* ── Photo card tags (one line) ──────────────────────────── */
+    .photo-card__tags {
+      display: flex;
+      gap: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-top: 4px;
+      max-height: 22px;
+    }
+    .photo-card__tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.2);
+      color: rgba(255,255,255,.9);
+      flex-shrink: 0;
+    }
+    /* ── Results count ────────────────────────────────────────── */
+    .results-count {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body class="page-top">
 <div id="header-placeholder"></div>
 
 <section class="page-hero">
   <div class="container page-hero__content">
-    <div class="page-hero__eyebrow">Memory Photos</div>
-    <h1 class="page-hero__title">回憶照片</h1>
-    <p class="page-hero__sub">那些年，我們一起在建中的青春歲月</p>
+    <div class="page-hero__eyebrow">Photo Albums</div>
+    <h1 class="page-hero__title">照片相簿</h1>
+    <p class="page-hero__sub">回憶過去，珍藏現在</p>
   </div>
 </section>
 
 <section class="section">
   <div class="container">
-    <div class="tabs" id="cat-tabs" style="margin-bottom:32px;">
-      <button class="tab-btn active" data-cat="all">全部</button>
-      <button class="tab-btn" data-cat="校園點滴">校園點滴</button>
-      <button class="tab-btn" data-cat="經典收藏">經典收藏</button>
-      <button class="tab-btn" data-cat="社團活動">社團活動</button>
-    </div>
 
-    <div class="photo-grid photo-grid--3" id="memory-grid">
-      <!-- Rendered by JS -->
-    </div>
-
-    <div id="empty-msg" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
-      此分類目前沒有照片。
-    </div>
-
-    <div style="margin-top:48px;text-align:center;" class="reveal">
-      <p style="font-size:16px;color:var(--color-text-muted);margin-bottom:20px;">
-        📷 更多精彩回憶照片收錄於 Google 相簿，歡迎前往查看及投稿。
-      </p>
-      <div class="btn-group" style="justify-content:center;">
-        <a href="#" id="google-album-btn" class="btn btn--secondary btn--lg">前往 Google 相簿</a>
+    <!-- Filter bar -->
+    <div class="photo-filter">
+      <div class="photo-filter__search">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="搜尋標題、說明…" autocomplete="off">
+      </div>
+      <div class="photo-filter__albums">
+        <button class="album-btn active" data-album="all">全部</button>
+        <button class="album-btn" data-album="回憶照片">回憶照片</button>
+        <button class="album-btn" data-album="重聚活動">重聚活動</button>
       </div>
     </div>
+
+    <!-- Tags bar -->
+    <div class="tags-bar" id="tags-bar" style="display:none;">
+      <span class="tags-bar__label">標籤：</span>
+    </div>
+
+    <!-- Results count -->
+    <div class="results-count" id="results-count"></div>
+
+    <!-- Grid -->
+    <div class="photo-grid photo-grid--3" id="memory-grid"></div>
+
+    <div id="empty-msg" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
+      沒有符合條件的照片。
+    </div>
+
   </div>
 </section>
 
@@ -55,34 +180,105 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   let allPhotos = [];
-  let currentCat = 'all';
+  let allTags = [];
+  let currentAlbum = 'all';
+  let currentTag = '';
+  let currentQ = '';
+  let searchTimer = null;
 
-  // Load photos
+  // Load all photos (shuffled)
   try {
     allPhotos = await CK48_API.getMemoryPhotos({ shuffle: true });
   } catch (e) {
-    console.warn('API unavailable, using placeholder data', e);
+    console.warn('API unavailable', e);
     allPhotos = CK48_DATA.memoryPhotos.map(p => ({
-      id: null, title: p.title, story: '', category: p.category,
-      thumbUrl: null, largeUrl: null, _emoji: p.emoji,
-      aspectRatio: 1, width: 1, height: 1,
+      id: null, title: p.title, story: '', tags: [],
+      thumbUrl: null, _emoji: p.emoji, aspectRatio: 1,
     }));
   }
 
-  // Register photos in lightbox system
+  // Load tags
+  try {
+    allTags = await CK48_API.getPhotoTags();
+  } catch (e) {}
+
   setLightboxPhotos(allPhotos);
   initLightbox();
   initLightboxDeepLink();
 
+  // Render tags bar
+  renderTagsBar();
+
+  // Initial render
+  renderPhotos();
+
+  // Album filter
+  document.querySelectorAll('.album-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.album-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentAlbum = btn.dataset.album;
+      currentTag = '';
+      renderTagsBar();
+      renderPhotos();
+    });
+  });
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      currentQ = e.target.value.trim();
+      renderPhotos();
+    }, 300);
+  });
+
+  function renderTagsBar() {
+    const bar = document.getElementById('tags-bar');
+    if (!allTags.length) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+
+    // Clear old tag pills (keep label)
+    Array.from(bar.querySelectorAll('.tag-pill')).forEach(el => el.remove());
+
+    allTags.forEach(tag => {
+      const pill = document.createElement('button');
+      pill.className = 'tag-pill' + (currentTag === tag ? ' active' : '');
+      pill.textContent = tag;
+      pill.addEventListener('click', () => {
+        currentTag = currentTag === tag ? '' : tag;
+        renderTagsBar();
+        renderPhotos();
+      });
+      bar.appendChild(pill);
+    });
+  }
+
   function getFiltered() {
-    return currentCat === 'all' ? allPhotos : allPhotos.filter(p => p.category === currentCat);
+    return allPhotos.filter(p => {
+      if (currentAlbum !== 'all' && p.album !== currentAlbum) return false;
+      if (currentTag && !(p.tags || []).includes(currentTag)) return false;
+      if (currentQ) {
+        const q = currentQ.toLowerCase();
+        const inTitle = (p.title || '').toLowerCase().includes(q);
+        const inStory = (p.story || '').toLowerCase().includes(q);
+        if (!inTitle && !inStory) return false;
+      }
+      return true;
+    });
   }
 
   function renderPhotos() {
     const grid = document.getElementById('memory-grid');
     const emptyMsg = document.getElementById('empty-msg');
+    const countEl = document.getElementById('results-count');
     const filtered = getFiltered();
+
     grid.innerHTML = '';
+
+    countEl.textContent = filtered.length
+      ? `共 ${filtered.length} 張照片`
+      : '';
 
     if (filtered.length === 0) {
       emptyMsg.style.display = '';
@@ -91,10 +287,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     emptyMsg.style.display = 'none';
 
     filtered.forEach(p => {
-      // Find global index in allPhotos for lightbox nav
       const globalIdx = allPhotos.indexOf(p);
       const isPortrait = p.aspectRatio != null && p.aspectRatio < 0.75;
       const portraitClass = isPortrait ? ' photo-card--portrait' : '';
+      const tagsHtml = (p.tags || []).length
+        ? `<div class="photo-card__tags">${(p.tags).map(t => `<span class="photo-card__tag">${t}</span>`).join('')}</div>`
+        : '';
 
       if (p.thumbUrl) {
         grid.innerHTML += `
@@ -105,11 +303,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="photo-card__overlay"></div>
             <div class="photo-card__info">
               <div class="photo-card__title">${p.title || ''}</div>
-              ${p.category ? `<div class="photo-card__cat">${p.category}</div>` : ''}
+              ${tagsHtml}
             </div>
           </div>`;
       } else {
-        // Fallback emoji placeholder
         grid.innerHTML += `
           <div class="photo-card reveal${portraitClass}" role="button" tabindex="0"
                aria-label="${p.title || ''}"
@@ -118,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="photo-card__overlay"></div>
             <div class="photo-card__info">
               <div class="photo-card__title">${p.title || ''}</div>
-              ${p.category ? `<div class="photo-card__cat">${p.category}</div>` : ''}
+              ${tagsHtml}
             </div>
           </div>`;
       }
@@ -127,24 +324,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
     }, 50);
-
-    // Re-bind lightbox after rendering
     initLightbox();
   }
 
-  // Category tabs
-  document.querySelectorAll('[data-cat]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentCat = btn.dataset.cat;
-      renderPhotos();
-    });
-  });
-
-  renderPhotos();
-
-  // Check for ?photo=id deep link
+  // Deep link ?photo=id
   const params = new URLSearchParams(location.search);
   const photoId = params.get('photo');
   if (photoId) openLightboxById(photoId);
