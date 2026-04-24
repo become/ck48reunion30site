@@ -207,32 +207,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         thumbUrl: null, _emoji: p.emoji, aspectRatio: 1,
       }));
     }
-    setLightboxPhotos(photoList);
-    initLightbox();
-    photoList.slice(0, 8).forEach((p, idx) => {
+    photoList.slice(0, 8).forEach((p) => {
       const isPortrait = p.aspectRatio != null && p.aspectRatio < 0.75;
+      const href = p.id ? `memory-photos.html?photo=${p.id}` : 'memory-photos.html';
       if (p.thumbUrl) {
         photoGrid.innerHTML += `
-          <div class="photo-card${isPortrait ? ' photo-card--portrait' : ''}" role="button" tabindex="0"
-               aria-label="${p.title || ''}" data-lightbox="1" data-photo-index="${idx}">
+          <a href="${href}" class="photo-card${isPortrait ? ' photo-card--portrait' : ''}"
+             aria-label="${p.title || ''}">
             <img src="${p.thumbUrl}" alt="${p.title || ''}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
             <div class="photo-card__overlay"></div>
             <div class="photo-card__info">
               <div class="photo-card__title">${p.title || ''}</div>
-              <div class="photo-card__cat">${p.category || ''}</div>
             </div>
-          </div>`;
+          </a>`;
       } else {
         photoGrid.innerHTML += `
-          <div class="photo-card" role="button" tabindex="0"
-               aria-label="${p.title || ''}" data-lightbox="1" data-photo-index="${idx}">
+          <a href="${href}" class="photo-card" aria-label="${p.title || ''}">
             <div class="photo-placeholder">${p._emoji || '🖼️'}</div>
             <div class="photo-card__overlay"></div>
             <div class="photo-card__info">
               <div class="photo-card__title">${p.title || ''}</div>
-              <div class="photo-card__cat">${p.category || ''}</div>
             </div>
-          </div>`;
+          </a>`;
       }
     });
   }
