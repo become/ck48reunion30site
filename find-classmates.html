@@ -379,12 +379,12 @@
             </div>
           </div>
 
-          <!-- Already approved state (hidden) -->
+          <!-- Approved state (hidden) — auto-approved or already approved -->
           <div class="checkin-success" id="checkin-approved">
             <div class="checkin-success__icon">✅</div>
-            <div class="checkin-success__title">你的資料已經確認！</div>
+            <div class="checkin-success__title">報到成功！</div>
             <div class="checkin-success__sub">
-              班召已確認你的報到資訊，感謝你的參與！<br>
+              你的資料已確認，感謝你的填寫！<br>
               記得加入社群，隨時掌握最新消息。
             </div>
             <div class="btn-group" style="justify-content:center;flex-wrap:wrap;">
@@ -600,7 +600,7 @@ async function submitCheckin() {
     };
 
     const res = await CK48_API.checkin(payload);
-    showState('checkin-success');
+    showState(res.autoApproved ? 'checkin-approved' : 'checkin-success');
 
   } catch (err) {
     const code = err?.code || '';
