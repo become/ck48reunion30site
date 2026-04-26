@@ -40,7 +40,7 @@ const FOOTER_HTML = `
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-brand__logo">
-          <div class="footer-brand__emblem">CK</div>
+          <img src="images/favico.ico" alt="CK48" style="width:40px;height:40px;object-fit:contain;">
           <div>
             <div class="footer-brand__name">建中第48屆</div>
             <div class="footer-brand__sub">30年重聚 · CK48 Reunion</div>
@@ -69,7 +69,7 @@ const FOOTER_HTML = `
         <div class="footer-col__title">活動資訊</div>
         <div class="footer-info">
           <div>📅 重聚餐會：2026/12/19</div>
-          <div>🏫 返校日：2026/12/20</div>
+          <div>🏫 返校園遊會：2026/12/20</div>
           <div>📍 地點：台北市（詳見活動資訊）</div>
           <div style="margin-top:8px">
             <a href="https://www.facebook.com/profile.php?id=61576521592339" target="_blank" rel="noopener" style="color:rgba(255,255,255,.85);text-decoration:underline;">三十重聚粉絲專頁 →</a>
