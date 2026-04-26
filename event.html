@@ -51,6 +51,9 @@
     @media (min-width: 640px) {
       .event-day-grid { grid-template-columns: 1fr 1fr !important; }
     }
+    @media (max-width: 639px) {
+      .event-day-badge { display: none; }
+    }
   </style>
 </head>
 <body class="page-top">
@@ -78,7 +81,7 @@
             <div class="event-card__date">2026/12/19</div>
             <div class="event-card__name">重聚餐會（六）</div>
           </div>
-          <span class="badge badge--accent">Day 1</span>
+          <span class="badge badge--accent event-day-badge">Day 1</span>
         </div>
         <div class="event-card__body">
           <div class="info-card" style="margin-bottom:16px;">
@@ -108,7 +111,7 @@
             <div class="event-card__date">2026/12/20</div>
             <div class="event-card__name">返校日園遊會（日）</div>
           </div>
-          <span class="badge badge--primary">Day 2</span>
+          <span class="badge badge--primary event-day-badge">Day 2</span>
         </div>
         <div class="event-card__body">
           <div class="info-card" style="margin-bottom:16px;">
