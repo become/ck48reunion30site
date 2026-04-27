@@ -32,6 +32,38 @@ function initHeader() {
     });
   }
 
+  // Share button
+  const shareBtn   = document.getElementById('share-btn');
+  const sharePanel = document.getElementById('share-panel');
+  if (shareBtn && sharePanel) {
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = sharePanel.classList.toggle('open');
+      shareBtn.setAttribute('aria-expanded', String(open));
+      if (open) {
+        const url = encodeURIComponent(location.href);
+        document.getElementById('share-line').href = `https://social-plugins.line.me/lineit/share?url=${url}`;
+        document.getElementById('share-fb').href   = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+      }
+    });
+    document.getElementById('share-copy').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(location.href); } catch { /* ignore */ }
+      sharePanel.classList.remove('open');
+      shareBtn.setAttribute('aria-expanded', 'false');
+      const toast = document.getElementById('share-toast');
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('header-share').contains(e.target)) {
+        sharePanel.classList.remove('open');
+        shareBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
   // Active nav item
   const path = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.header-nav__item, .mobile-menu__item').forEach(el => {

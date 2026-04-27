@@ -17,6 +17,35 @@ const HEADER_HTML = `
       <a href="faq.html"            class="header-nav__item">FAQ</a>
     </nav>
     <div class="header-actions">
+      <div class="header-share" id="header-share">
+        <button class="header-share__btn" id="share-btn" aria-label="分享此頁面" aria-expanded="false">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <path stroke-linecap="round" d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98"/>
+          </svg>
+          分享
+        </button>
+        <div class="header-share__panel" id="share-panel" role="menu">
+          <a id="share-line" href="#" target="_blank" rel="noopener" class="share-option share-option--line" role="menuitem">
+            <span class="share-option__icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.105.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            </span>
+            分享到 LINE
+          </a>
+          <a id="share-fb" href="#" target="_blank" rel="noopener" class="share-option share-option--fb" role="menuitem">
+            <span class="share-option__icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </span>
+            分享到 Facebook
+          </a>
+          <button id="share-copy" class="share-option share-option--copy" role="menuitem">
+            <span class="share-option__icon">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </span>
+            複製連結
+          </button>
+        </div>
+      </div>
       <button class="header-menu-btn" aria-label="開啟選單" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -115,6 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inject lightbox
   document.body.insertAdjacentHTML('beforeend', LIGHTBOX_HTML);
+
+  // Inject share toast
+  document.body.insertAdjacentHTML('beforeend', '<div class="share-copy-toast" id="share-toast">連結已複製！</div>');
 
   // Load version (generated at deploy time, absent in local dev)
   fetch('js/version.json')
