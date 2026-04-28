@@ -1065,31 +1065,41 @@ p  { line-height: 1.75; }
 /* ── Highlight Cards ────────────────────────────────────────── */
 .highlight-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 .highlight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: var(--shadow-md);
-  border-top: 3px solid var(--color-accent);
+  padding: 22px 24px;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
   transition: transform var(--transition), box-shadow var(--transition);
 }
-.highlight-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.highlight-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .highlight-card__icon {
-  font-size: 40px;
-  margin-bottom: 16px;
-  display: block;
+  font-size: 26px;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(200,160,80,.1);
+  border-radius: 14px;
 }
+.highlight-card__body { flex: 1; min-width: 0; }
 .highlight-card__title {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--color-primary);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
+  line-height: 1.3;
 }
-.highlight-card__desc { font-size: 14px; color: var(--color-text-muted); line-height: 1.6; }
+.highlight-card__desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.65; }
 
 /* ── Find Classmates ────────────────────────────────────────── */
 .find-form-wrap {
@@ -1574,7 +1584,6 @@ p  { line-height: 1.75; }
   .footer-bottom { flex-direction: column; text-align: center; }
   .news-grid { grid-template-columns: 1fr; }
   .photo-grid { grid-template-columns: repeat(2, 1fr); }
-  .highlight-grid { grid-template-columns: 1fr 1fr; }
   .form-grid--2 { grid-template-columns: 1fr; }
   .shop-grid { grid-template-columns: 1fr 1fr; }
   .countdown-unit { min-width: 56px; }
