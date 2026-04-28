@@ -1070,6 +1070,7 @@ p  { line-height: 1.75; }
 }
 .highlight-card {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
   gap: 16px;
   background: var(--color-surface);
@@ -1593,6 +1594,7 @@ p  { line-height: 1.75; }
 @media (max-width: 480px) {
   .photo-grid { grid-template-columns: 1fr; }
   .highlight-grid { grid-template-columns: 1fr; }
+  .highlight-card { flex-direction: row; }
   .shop-grid { grid-template-columns: 1fr; }
   .hero__stats { grid-template-columns: repeat(2, 1fr); }
   .hero__cta { flex-direction: column; }
