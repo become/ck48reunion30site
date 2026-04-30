@@ -87,5 +87,24 @@ const CK48_API = (() => {
       }
       return data;
     },
+
+    async getSurvey(slug) {
+      return get(`/api/surveys/${slug}`);
+    },
+
+    async submitSurvey(slug, payload) {
+      const res = await fetch(BASE + `/api/surveys/${slug}/respond`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(data.error || '送出失敗，請稍後再試');
+        err.code = data.code || null;
+        throw err;
+      }
+      return data;
+    },
   };
 })();
