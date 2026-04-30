@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>意願調查 | 建中48屆30重聚</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .survey-wrap { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    .survey-banner {
+      width: 100%; aspect-ratio: 2/1; object-fit: cover;
+      border-radius: var(--radius-xl); margin-bottom: 32px;
+    }
+    .survey-title { font-size: clamp(22px, 4vw, 32px); font-weight: 800; color: var(--color-text); margin-bottom: 12px; }
+    .survey-desc  { font-size: 16px; line-height: 1.8; color: var(--color-text-muted); margin-bottom: 32px; }
+
+    /* Identity card */
+    .identity-card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); padding: 28px; margin-bottom: 28px;
+    }
+    .identity-card__title { font-size: 13px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--color-accent); margin-bottom: 16px; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; font-weight: 600; color: var(--color-text-muted); }
+    .field select, .field input[type="text"] {
+      border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      padding: 10px 14px; font-size: 15px; font-family: inherit;
+      color: var(--color-text); background: var(--color-bg);
+      transition: border-color var(--transition);
+    }
+    .field select:focus, .field input[type="text"]:focus {
+      outline: none; border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px;
+    }
+    .question-card__img {
+      width: 100%; max-height: 260px; object-fit: cover;
+      border-radius: var(--radius-md); margin-bottom: 16px;
+    }
+    .question-label {
+      font-size: 17px; font-weight: 600; color: var(--color-text); margin-bottom: 6px;
+    }
+    .question-required { color: #e53e3e; margin-left: 4px; }
+    .question-desc { font-size: 14px; color: var(--color-text-muted); margin-bottom: 16px; line-height: 1.6; }
+
+    /* Boolean toggle */
+    .bool-group { display: flex; gap: 10px; }
+    .bool-btn {
+      flex: 1; padding: 12px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--color-border); background: var(--color-bg);
+      font-size: 15px; font-weight: 600; cursor: pointer; text-align: center;
+      transition: all var(--transition); color: var(--color-text-muted);
+    }
+    .bool-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .bool-btn.selected-yes { border-color: #38a169; background: #f0fff4; color: #276749; }
+    .bool-btn.selected-no  { border-color: #e53e3e; background: #fff5f5; color: #c53030; }
+
+    /* Number input */
+    .num-wrap { display: flex; align-items: center; gap: 12px; }
+    .num-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--color-border);
+      background: var(--color-bg); font-size: 20px; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; color: var(--color-text);
+      transition: all var(--transition);
+    }
+    .num-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .num-display {
+      font-size: 24px; font-weight: 700; color: var(--color-text);
+      min-width: 48px; text-align: center;
+    }
+
+    /* Choice */
+    .choice-group { display: flex; flex-direction: column; gap: 8px; }
+    .choice-btn {
+      padding: 12px 16px; border-radius: var(--radius-md); border: 1.5px solid var(--color-border);
+      background: var(--color-bg); font-size: 15px; cursor: pointer; text-align: left;
+      transition: all var(--transition); color: var(--color-text);
+    }
+    .choice-btn:hover { border-color: var(--color-primary); }
+    .choice-btn.selected { border-color: var(--color-primary); background: rgba(var(--color-primary-rgb),.07); color: var(--color-primary); font-weight: 600; }
+
+    /* Text input */
+    .text-input {
+      width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      padding: 12px 14px; font-size: 15px; font-family: inherit; resize: vertical;
+      min-height: 80px; box-sizing: border-box;
+    }
+    .text-input:focus { outline: none; border-color: var(--color-primary); }
+
+    /* Submit area */
+    .submit-area { margin-top: 32px; }
+    .submit-btn {
+      width: 100%; padding: 16px; border: none; border-radius: var(--radius-lg);
+      background: var(--color-primary); color: white; font-size: 18px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background var(--transition);
+    }
+    .submit-btn:hover:not(:disabled) { background: var(--color-primary-dark, #1a3a6b); }
+    .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .submit-error { margin-top: 12px; font-size: 14px; color: #e53e3e; text-align: center; }
+
+    /* States */
+    .state { display: none; text-align: center; padding: 60px 20px; }
+    .state.active { display: block; }
+    .state__icon { font-size: 64px; margin-bottom: 16px; }
+    .state__title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .state__desc  { font-size: 16px; color: var(--color-text-muted); }
+
+    .loading-dots::after { content: '…'; animation: dots 1.2s infinite; }
+    @keyframes dots { 0%,20%{content:'.'} 40%{content:'..'} 60%,100%{content:'...'} }
+  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YJYP34JVKM');
+  </script>
+</head>
+<body>
+<div id="header-placeholder"></div>
+
+<main class="survey-wrap">
+
+  <!-- Loading -->
+  <div id="state-loading" class="state active">
+    <div class="state__icon">📋</div>
+    <div class="state__title loading-dots">載入中</div>
+  </div>
+
+  <!-- Error -->
+  <div id="state-error" class="state">
+    <div class="state__icon">😢</div>
+    <div class="state__title" id="error-title">找不到問卷</div>
+    <div class="state__desc" id="error-desc">請確認連結是否正確</div>
+  </div>
+
+  <!-- Closed -->
+  <div id="state-closed" class="state">
+    <div class="state__icon">⏰</div>
+    <div class="state__title">問卷已截止</div>
+    <div class="state__desc">感謝你的關注，此問卷已不再接受填寫。</div>
+  </div>
+
+  <!-- Already responded -->
+  <div id="state-done" class="state">
+    <div class="state__icon">✅</div>
+    <div class="state__title">已收到你的回覆</div>
+    <div class="state__desc">感謝填寫！如有任何問題請聯繫籌備團隊。</div>
+  </div>
+
+  <!-- Success -->
+  <div id="state-success" class="state">
+    <div class="state__icon">🎉</div>
+    <div class="state__title">送出成功！</div>
+    <div class="state__desc">感謝你的填寫，我們已收到你的回覆。</div>
+  </div>
+
+  <!-- Survey form -->
+  <div id="state-form" class="state">
+
+    <!-- Survey header -->
+    <div style="text-align:left">
+      <img id="survey-banner" class="survey-banner" src="" alt="" style="display:none">
+      <h1 class="survey-title" id="survey-title"></h1>
+      <p class="survey-desc" id="survey-desc"></p>
+    </div>
+
+    <!-- Identity -->
+    <div class="identity-card">
+      <div class="identity-card__title">📋 填寫人資料</div>
+
+      <div style="margin-bottom:16px">
+        <div class="field">
+          <label>身份</label>
+          <div class="bool-group" id="type-group">
+            <button class="bool-btn selected-yes" id="btn-alumni" onclick="selectType('ALUMNI')">校友</button>
+            <button class="bool-btn" id="btn-external" onclick="selectType('EXTERNAL')">外部人士</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="inp-name">中文姓名 <span class="question-required">*</span></label>
+          <input id="inp-name" type="text" placeholder="請輸入姓名">
+        </div>
+        <div class="field" id="field-class">
+          <label for="inp-class">班級 <span class="question-required">*</span></label>
+          <select id="inp-class">
+            <option value="">請選擇班級…</option>
+          </select>
+        </div>
+        <div class="field" id="field-ext-cat" style="display:none">
+          <label for="inp-ext-cat">身份類別 <span class="question-required">*</span></label>
+          <select id="inp-ext-cat">
+            <option value="">請選擇…</option>
+            <option value="校友">校友</option>
+            <option value="老師">老師</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions rendered here -->
+    <div id="questions-wrap"></div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button class="submit-btn" id="submit-btn" onclick="submitSurvey()">送出回覆</button>
+      <div class="submit-error" id="submit-error"></div>
+    </div>
+
+  </div><!-- /state-form -->
+</main>
+
+<div id="footer-placeholder"></div>
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let survey = null
+  let answers = {}         // { questionId: { valueBoolean, valueNumber, valueText } }
+  let respondentType = 'ALUMNI'
+
+  function showState(id) {
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'))
+    document.getElementById('state-' + id).classList.add('active')
+  }
+
+  // ── Identity helpers ───────────────────────────────────────────────────────
+  function selectType(type) {
+    respondentType = type
+    document.getElementById('btn-alumni').className   = 'bool-btn' + (type === 'ALUMNI'    ? ' selected-yes' : '')
+    document.getElementById('btn-external').className = 'bool-btn' + (type === 'EXTERNAL'  ? ' selected-yes' : '')
+    document.getElementById('field-class').style.display    = type === 'ALUMNI'   ? '' : 'none'
+    document.getElementById('field-ext-cat').style.display  = type === 'EXTERNAL' ? '' : 'none'
+  }
+
+  // ── Load classes ───────────────────────────────────────────────────────────
+  async function loadClasses() {
+    try {
+      const classes = await CK48_API.getClasses()
+      const sel = document.getElementById('inp-class')
+      classes.forEach(c => {
+        const opt = document.createElement('option')
+        opt.value = c.id
+        opt.textContent = c.className
+        sel.appendChild(opt)
+      })
+    } catch(e) {}
+  }
+
+  // ── Render questions ───────────────────────────────────────────────────────
+  function renderQuestions(questions) {
+    const wrap = document.getElementById('questions-wrap')
+    wrap.innerHTML = ''
+    questions.forEach(q => {
+      answers[q.id] = {}
+      const card = document.createElement('div')
+      card.className = 'question-card'
+      card.innerHTML = `
+        ${q.imageUrl ? `<img class="question-card__img" src="${q.imageUrl}" alt="${q.label}">` : ''}
+        <div class="question-label">${q.label}${q.required ? '<span class="question-required">*</span>' : ''}</div>
+        ${q.description ? `<div class="question-desc">${q.description}</div>` : ''}
+        <div id="q-input-${q.id}"></div>
+      `
+      wrap.appendChild(card)
+
+      const inputWrap = document.getElementById('q-input-' + q.id)
+
+      if (q.type === 'boolean') {
+        inputWrap.innerHTML = `
+          <div class="bool-group">
+            <button class="bool-btn" id="q-${q.id}-yes" onclick="setBool('${q.id}', true)">✓ 是</button>
+            <button class="bool-btn" id="q-${q.id}-no"  onclick="setBool('${q.id}', false)">✕ 否</button>
+          </div>`
+
+      } else if (q.type === 'number') {
+        answers[q.id].valueNumber = 0
+        inputWrap.innerHTML = `
+          <div class="num-wrap">
+            <button class="num-btn" onclick="addNum('${q.id}', -1)">−</button>
+            <div class="num-display" id="q-${q.id}-display">0</div>
+            <button class="num-btn" onclick="addNum('${q.id}', 1)">＋</button>
+          </div>`
+
+      } else if (q.type === 'choice') {
+        const opts = Array.isArray(q.options) ? q.options : []
+        inputWrap.innerHTML = `<div class="choice-group">${
+          opts.map(o => `<button class="choice-btn" id="q-${q.id}-${encodeURIComponent(o)}" onclick="setChoice('${q.id}', this, '${o.replace(/'/g, "\\'")}')">${o}</button>`).join('')
+        }</div>`
+
+      } else if (q.type === 'text') {
+        inputWrap.innerHTML = `
+          <textarea class="text-input" placeholder="請輸入…"
+            oninput="answers['${q.id}'].valueText = this.value"></textarea>`
+      }
+    })
+  }
+
+  // ── Answer setters ─────────────────────────────────────────────────────────
+  function setBool(qId, val) {
+    answers[qId].valueBoolean = val
+    document.getElementById('q-' + qId + '-yes').className = 'bool-btn' + (val === true  ? ' selected-yes' : '')
+    document.getElementById('q-' + qId + '-no').className  = 'bool-btn' + (val === false ? ' selected-no'  : '')
+  }
+
+  function addNum(qId, delta) {
+    const cur = answers[qId].valueNumber ?? 0
+    const next = Math.max(0, cur + delta)
+    answers[qId].valueNumber = next
+    document.getElementById('q-' + qId + '-display').textContent = next
+  }
+
+  function setChoice(qId, btn, val) {
+    answers[qId].valueText = val
+    btn.closest('.choice-group').querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'))
+    btn.classList.add('selected')
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  async function submitSurvey() {
+    const name = document.getElementById('inp-name').value.trim()
+    if (!name) return showError('請填寫姓名')
+
+    const classId = respondentType === 'ALUMNI' ? document.getElementById('inp-class').value : null
+    if (respondentType === 'ALUMNI' && !classId) return showError('請選擇班級')
+
+    const extCat = respondentType === 'EXTERNAL' ? document.getElementById('inp-ext-cat').value : null
+    if (respondentType === 'EXTERNAL' && !extCat) return showError('請選擇身份類別')
+
+    // Validate required questions
+    for (const q of survey.questions) {
+      if (!q.required) continue
+      const a = answers[q.id] || {}
+      const filled = a.valueBoolean !== undefined || (a.valueNumber !== undefined && a.valueNumber !== null) || (a.valueText && a.valueText.trim())
+      if (!filled) return showError(`「${q.label}」為必填項目`)
+    }
+
+    const payload = {
+      name,
+      classId: classId || null,
+      respondentType,
+      externalCategory: extCat || null,
+      answers: survey.questions.map(q => ({
+        questionId: q.id,
+        ...answers[q.id],
+      })),
+    }
+
+    const btn = document.getElementById('submit-btn')
+    btn.disabled = true
+    btn.textContent = '送出中…'
+    document.getElementById('submit-error').textContent = ''
+
+    try {
+      await CK48_API.submitSurvey(survey.slug, payload)
+      showState('success')
+    } catch(e) {
+      btn.disabled = false
+      btn.textContent = '送出回覆'
+      if (e.code === 'ALREADY_RESPONDED') return showState('done')
+      showError(e.message || '送出失敗，請稍後再試')
+    }
+  }
+
+  function showError(msg) {
+    document.getElementById('submit-error').textContent = msg
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  async function init() {
+    const slug = new URLSearchParams(location.search).get('s')
+    if (!slug) {
+      document.getElementById('error-title').textContent = '找不到問卷'
+      document.getElementById('error-desc').textContent = '請確認連結是否正確'
+      return showState('error')
+    }
+
+    try {
+      survey = await CK48_API.getSurvey(slug)
+    } catch(e) {
+      if (e.message?.includes('410') || e.message?.includes('Survey has closed')) return showState('closed')
+      document.getElementById('error-title').textContent = '問卷不存在或已關閉'
+      document.getElementById('error-desc').textContent = '請確認連結是否正確'
+      return showState('error')
+    }
+
+    // Update page title & OG
+    document.title = `${survey.title} | 建中48屆30重聚`
+    if (survey.metaTitle)       document.title = survey.metaTitle
+    if (survey.metaDescription) document.querySelector('meta[name="description"]')?.setAttribute('content', survey.metaDescription)
+
+    // Populate header
+    if (survey.imageUrl) {
+      const img = document.getElementById('survey-banner')
+      img.src = survey.imageUrl
+      img.style.display = ''
+    }
+    document.getElementById('survey-title').textContent = survey.title
+    document.getElementById('survey-desc').textContent  = survey.description || ''
+
+    await loadClasses()
+    renderQuestions(survey.questions)
+    showState('form')
+  }
+
+  document.addEventListener('DOMContentLoaded', init)
+</script>
+</body>
+</html>

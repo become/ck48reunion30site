@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>商品詳情 · 建中第48屆30年重聚</title>
+  <title>紀念商品 | 建中48屆30重聚</title>
+  <meta name="description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
+  <meta name="robots" content="index, follow">
+  <!-- Open Graph (updated dynamically after product loads) -->
+  <meta property="og:type"        content="website">
+  <meta property="og:site_name"   content="建中48屆30重聚">
+  <meta property="og:locale"      content="zh_TW">
+  <meta property="og:title"       content="紀念商品 | 建中48屆30重聚">
+  <meta property="og:description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
+  <meta property="og:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="紀念商品 | 建中48屆30重聚">
+  <meta name="twitter:description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
+  <meta name="twitter:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
   <link rel="icon" href="images/favico.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,6 +40,14 @@
     .add-cart-success.show { display:flex; }
     @media(max-width:767px){.product-detail{grid-template-columns:1fr;gap:28px;}}
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YJYP34JVKM');
+  </script>
 </head>
 <body class="page-top">
 <div id="header-placeholder"></div>
@@ -62,7 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const slug    = params.get('slug') || CK48_DATA.products[0].slug;
   const product = CK48_DATA.products.find(p => p.slug === slug) || CK48_DATA.products[0];
 
-  document.title = `${product.name} · 建中第48屆30年重聚`;
+  document.title = `${product.name} | 建中48屆30重聚`;
+  const ogTitle = `${product.name} | 建中48屆30重聚`;
+  const ogDesc  = product.description || '建中48屆30年重聚紀念商品，留下這份珍貴的記憶。';
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', ogTitle);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', ogDesc);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', ogTitle);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', ogDesc);
   document.getElementById('bc-product').textContent = product.name;
 
   const sizesHtml = product.sizes

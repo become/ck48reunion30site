@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>消息內頁 · 建中第48屆30年重聚</title>
+  <title>最新消息 | 建中48屆30重聚</title>
+  <meta name="description" content="建中48屆30年重聚最新公告與活動消息。">
+  <meta name="robots" content="index, follow">
+  <!-- Open Graph (updated dynamically after article loads) -->
+  <meta property="og:type"        content="article">
+  <meta property="og:site_name"   content="建中48屆30重聚">
+  <meta property="og:locale"      content="zh_TW">
+  <meta property="og:title"       content="最新消息 | 建中48屆30重聚">
+  <meta property="og:description" content="建中48屆30年重聚最新公告與活動消息。">
+  <meta property="og:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="最新消息 | 建中48屆30重聚">
+  <meta name="twitter:description" content="建中48屆30年重聚最新公告與活動消息。">
+  <meta name="twitter:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
   <link rel="icon" href="images/favico.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,6 +30,14 @@
     .article-nav a { font-size:14px;font-weight:600;color:var(--color-primary); display:flex;align-items:center;gap:6px; }
     .article-nav a:hover { color:var(--color-accent); }
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YJYP34JVKM');
+  </script>
 </head>
 <body class="page-top">
 <div id="header-placeholder"></div>
@@ -94,7 +118,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prev = allNews[idx - 1];
   const next = allNews[idx + 1];
 
-  document.title = `${news.title} · 建中第48屆30年重聚`;
+  document.title = `${news.title} | 建中48屆30重聚`;
+  const ogTitle = `${news.title} | 建中48屆30重聚`;
+  const ogDesc  = news.summary || news.body?.replace(/<[^>]+>/g,'').slice(0,120) || '建中48屆30年重聚最新消息';
+  const ogUrl   = `https://ck48.reunion30.tw/news-detail.html?slug=${news.slug}`;
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', ogTitle);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', ogDesc);
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', ogUrl);
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', ogTitle);
+  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', ogDesc);
+  document.querySelector('meta[name="description"]')?.setAttribute('content', ogDesc);
   document.getElementById('bc-title').textContent = news.title;
 
   const articleDate = news.publishedAt ? formatDate(news.publishedAt) : (news.date ? formatDate(news.date) : '');
