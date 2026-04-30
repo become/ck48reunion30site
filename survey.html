@@ -185,7 +185,7 @@
     <div class="identity-card">
       <div class="identity-card__title">📋 填寫人資料</div>
 
-      <div style="margin-bottom:16px">
+      <div style="margin-bottom:16px" id="identity-type-wrap">
         <div class="field">
           <label>身份</label>
           <div class="bool-group" id="type-group">
@@ -416,6 +416,11 @@
     }
     document.getElementById('survey-title').textContent = survey.title
     document.getElementById('survey-desc').textContent  = survey.description || ''
+
+    if (!survey.allowExternal) {
+      document.getElementById('identity-type-wrap').style.display = 'none'
+      selectType('ALUMNI')
+    }
 
     await loadClasses()
     renderQuestions(survey.questions)
