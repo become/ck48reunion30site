@@ -451,7 +451,7 @@
       img.style.display = ''
     }
     document.getElementById('survey-title').textContent = survey.title
-    document.getElementById('survey-desc').textContent  = survey.description || ''
+    document.getElementById('survey-desc').innerHTML  = survey.description || ''
 
     if (!survey.allowExternal) {
       document.getElementById('identity-type-wrap').style.display = 'none'
