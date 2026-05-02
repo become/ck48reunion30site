@@ -889,7 +889,7 @@ p  { line-height: 1.75; }
 .news-card__overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0,0,0,0.50);
 }
 .news-card--with-img .news-card__body {
   position: relative;
