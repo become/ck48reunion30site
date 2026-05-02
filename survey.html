@@ -225,6 +225,14 @@
     <div class="submit-area">
       <button class="submit-btn" id="submit-btn" onclick="submitSurvey()">送出回覆</button>
       <div class="submit-error" id="submit-error"></div>
+      <div id="confirm-update" style="display:none;margin-top:20px;padding:20px;background:#fffbeb;border:1.5px solid #f59e0b;border-radius:var(--radius-lg);text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
+        <p style="font-size:15px;font-weight:600;color:var(--color-text);margin-bottom:16px;">你已填寫過此問卷，是否要更新你的回覆？</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="cancelUpdate()" style="padding:10px 28px;border:1.5px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-bg);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--color-text);">取消</button>
+          <button onclick="forceUpdate()" style="padding:10px 28px;border:none;border-radius:var(--radius-md);background:var(--color-primary);color:white;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">更新回覆</button>
+        </div>
+      </div>
     </div>
 
   </div><!-- /state-form -->
@@ -238,6 +246,7 @@
   let survey = null
   let answers = {}         // { questionId: { valueBoolean, valueNumber, valueText } }
   let respondentType = 'ALUMNI'
+  let pendingPayload = null
 
   function showState(id) {
     document.querySelectorAll('.state').forEach(el => el.classList.remove('active'))
@@ -376,8 +385,35 @@
     } catch(e) {
       btn.disabled = false
       btn.textContent = '送出回覆'
-      if (e.code === 'ALREADY_RESPONDED') return showState('done')
+      if (e.code === 'ALREADY_RESPONDED') {
+        pendingPayload = payload
+        document.getElementById('confirm-update').style.display = ''
+        return
+      }
       showError(e.message || '送出失敗，請稍後再試')
+    }
+  }
+
+  function cancelUpdate() {
+    document.getElementById('confirm-update').style.display = 'none'
+    pendingPayload = null
+  }
+
+  async function forceUpdate() {
+    if (!pendingPayload) return
+    document.getElementById('confirm-update').style.display = 'none'
+    const btn = document.getElementById('submit-btn')
+    btn.disabled = true
+    btn.textContent = '更新中…'
+    document.getElementById('submit-error').textContent = ''
+    try {
+      await CK48_API.submitSurvey(survey.slug, { ...pendingPayload, force: true })
+      pendingPayload = null
+      showState('success')
+    } catch(e) {
+      btn.disabled = false
+      btn.textContent = '送出回覆'
+      showError(e.message || '更新失敗，請稍後再試')
     }
   }
 
