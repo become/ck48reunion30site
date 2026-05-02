@@ -331,40 +331,9 @@
                 <div class="form-field__error" id="err-location">請選擇目前活動地點</div>
               </div>
 
-              <!-- Dinner intention -->
-              <div class="form-field">
-                <label>是否有意願參加 12/19 重聚晚宴？ <span>*</span></label>
-                <div class="radio-group" id="dinner-group" role="group" aria-label="12/19晚宴意願">
-                  <label class="radio-btn" id="dinner-yes" onclick="selectRadio('dinner', 'yes', this)">
-                    <input type="radio" name="dinner" value="yes"> 🥂 有意願
-                  </label>
-                  <label class="radio-btn" id="dinner-no" onclick="selectRadio('dinner', 'no', this)">
-                    <input type="radio" name="dinner" value="no"> 暫時無法確定
-                  </label>
-                  <label class="radio-btn" id="dinner-skip" onclick="selectRadio('dinner', 'skip', this)">
-                    <input type="radio" name="dinner" value="skip"> 無法參加
-                  </label>
-                </div>
-                <input type="hidden" id="fc-dinner" required>
-                <div class="form-field__error" id="err-dinner">請選擇晚宴參與意願</div>
-              </div>
-
-              <!-- School visit intention -->
-              <div class="form-field">
-                <label>是否有意願參加 12/20 返校日園遊會？ <span>*</span></label>
-                <div class="radio-group" id="school-group" role="group" aria-label="12/20返校日意願">
-                  <label class="radio-btn" id="school-yes" onclick="selectRadio('school', 'yes', this)">
-                    <input type="radio" name="school" value="yes"> 🏫 有意願
-                  </label>
-                  <label class="radio-btn" id="school-no" onclick="selectRadio('school', 'no', this)">
-                    <input type="radio" name="school" value="no"> 暫時無法確定
-                  </label>
-                  <label class="radio-btn" id="school-skip" onclick="selectRadio('school', 'skip', this)">
-                    <input type="radio" name="school" value="skip"> 無法參加
-                  </label>
-                </div>
-                <input type="hidden" id="fc-school" required>
-                <div class="form-field__error" id="err-school">請選擇返校日園遊會參與意願</div>
+              <!-- Survey questions (dynamic) -->
+              <div id="survey-questions-container">
+                <p style="color:var(--color-text-muted);font-size:14px;padding:4px 0;">載入問卷中…</p>
               </div>
 
               <!-- Message -->
@@ -504,6 +473,11 @@
 <script src="js/main.js"></script>
 <script>
 const RECAPTCHA_SITE_KEY = 'RECAPTCHA_SITE_KEY'; // 替換成你的 site key
+const SURVEY_SLUG = 'reunion-party-2026';
+
+/* ── Survey state ── */
+let surveyData = null;
+const surveyState = {}; // questionId → value
 
 /* ── 載入班級清單 ── */
 async function loadClasses() {
@@ -520,6 +494,140 @@ async function loadClasses() {
   } catch (e) {
     sel.innerHTML = '<option value="">載入失敗，請重新整理</option>';
   }
+}
+
+/* ── 載入並渲染問卷題目 ── */
+async function loadSurveyQuestions() {
+  const container = document.getElementById('survey-questions-container');
+  try {
+    surveyData = await CK48_API.getSurvey(SURVEY_SLUG);
+    if (surveyData && surveyData.questions && surveyData.questions.length > 0) {
+      renderSurveyQuestions(container, surveyData.questions);
+    } else {
+      renderFallbackQuestions(container);
+    }
+  } catch (e) {
+    console.warn('Survey unavailable, showing fallback questions', e);
+    surveyData = null;
+    renderFallbackQuestions(container);
+  }
+}
+
+function getOptionClass(index, total) {
+  if (total <= 1) return 'selected';
+  if (index === 0) return 'selected-yes';
+  if (index === total - 1) return 'selected-no';
+  return 'selected';
+}
+
+function renderSurveyQuestions(container, questions) {
+  container.innerHTML = '';
+  questions.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'form-field';
+    const reqHtml = q.required ? '<span>*</span>' : '';
+
+    if (q.type === 'choice') {
+      const opts = Array.isArray(q.options) ? q.options : [];
+      const total = opts.length;
+      div.innerHTML = `
+        <label>${q.label} ${reqHtml}</label>
+        <div class="radio-group" role="group">
+          ${opts.map((opt, i) => `
+            <label class="radio-btn" data-question="${q.id}" data-value="${opt}"
+                   onclick="selectSurveyChoice('${q.id}', '${opt}', this, ${total}, ${i})">
+              <input type="radio" name="sq_${q.id}" value="${opt}"> ${opt}
+            </label>`).join('')}
+        </div>
+        <div class="form-field__error" id="err-survey-${q.id}">請選擇此項目</div>`;
+    } else if (q.type === 'boolean') {
+      div.innerHTML = `
+        <label>${q.label} ${reqHtml}</label>
+        <div class="radio-group" role="group">
+          <label class="radio-btn" data-question="${q.id}" data-value="true"
+                 onclick="selectSurveyBoolean('${q.id}', true, this)">
+            <input type="radio" name="sq_${q.id}" value="true"> 是
+          </label>
+          <label class="radio-btn" data-question="${q.id}" data-value="false"
+                 onclick="selectSurveyBoolean('${q.id}', false, this)">
+            <input type="radio" name="sq_${q.id}" value="false"> 否
+          </label>
+        </div>
+        <div class="form-field__error" id="err-survey-${q.id}">請選擇此項目</div>`;
+    } else if (q.type === 'text') {
+      div.innerHTML = `
+        <label for="sq-text-${q.id}">${q.label} ${reqHtml}</label>
+        <textarea id="sq-text-${q.id}" class="form-control" rows="3"
+                  oninput="surveyState['${q.id}']=this.value;hideSurveyError('${q.id}')"></textarea>
+        <div class="form-field__error" id="err-survey-${q.id}">請填寫此項目</div>`;
+    } else if (q.type === 'number') {
+      div.innerHTML = `
+        <label for="sq-num-${q.id}">${q.label} ${reqHtml}</label>
+        <input type="number" id="sq-num-${q.id}" class="form-control"
+               oninput="surveyState['${q.id}']=parseInt(this.value)||null;hideSurveyError('${q.id}')">
+        <div class="form-field__error" id="err-survey-${q.id}">請填寫此項目</div>`;
+    }
+    container.appendChild(div);
+  });
+}
+
+function renderFallbackQuestions(container) {
+  container.innerHTML = `
+    <div class="form-field">
+      <label>是否有意願參加 12/19 重聚晚宴？ <span>*</span></label>
+      <div class="radio-group" id="dinner-group" role="group" aria-label="12/19晚宴意願">
+        <label class="radio-btn" id="dinner-yes" onclick="selectRadio('dinner','yes',this)">
+          <input type="radio" name="dinner" value="yes"> 🥂 有意願
+        </label>
+        <label class="radio-btn" id="dinner-no" onclick="selectRadio('dinner','no',this)">
+          <input type="radio" name="dinner" value="no"> 暫時無法確定
+        </label>
+        <label class="radio-btn" id="dinner-skip" onclick="selectRadio('dinner','skip',this)">
+          <input type="radio" name="dinner" value="skip"> 無法參加
+        </label>
+      </div>
+      <input type="hidden" id="fc-dinner">
+      <div class="form-field__error" id="err-dinner">請選擇晚宴參與意願</div>
+    </div>
+    <div class="form-field">
+      <label>是否有意願參加 12/20 返校日園遊會？ <span>*</span></label>
+      <div class="radio-group" id="school-group" role="group" aria-label="12/20返校日意願">
+        <label class="radio-btn" id="school-yes" onclick="selectRadio('school','yes',this)">
+          <input type="radio" name="school" value="yes"> 🏫 有意願
+        </label>
+        <label class="radio-btn" id="school-no" onclick="selectRadio('school','no',this)">
+          <input type="radio" name="school" value="no"> 暫時無法確定
+        </label>
+        <label class="radio-btn" id="school-skip" onclick="selectRadio('school','skip',this)">
+          <input type="radio" name="school" value="skip"> 無法參加
+        </label>
+      </div>
+      <input type="hidden" id="fc-school">
+      <div class="form-field__error" id="err-school">請選擇返校日園遊會參與意願</div>
+    </div>`;
+}
+
+function selectSurveyChoice(questionId, value, labelEl, total, index) {
+  document.querySelectorAll(`[data-question="${questionId}"]`).forEach(el => {
+    el.classList.remove('selected', 'selected-yes', 'selected-no');
+  });
+  labelEl.classList.add(getOptionClass(index, total));
+  surveyState[questionId] = value;
+  hideSurveyError(questionId);
+}
+
+function selectSurveyBoolean(questionId, value, labelEl) {
+  document.querySelectorAll(`[data-question="${questionId}"]`).forEach(el => {
+    el.classList.remove('selected', 'selected-yes', 'selected-no');
+  });
+  labelEl.classList.add(value ? 'selected-yes' : 'selected-no');
+  surveyState[questionId] = value;
+  hideSurveyError(questionId);
+}
+
+function hideSurveyError(questionId) {
+  const el = document.getElementById('err-survey-' + questionId);
+  if (el) el.style.display = 'none';
 }
 
 /* ── Radio / chip selection helpers ── */
@@ -542,7 +650,8 @@ function selectRadio(group, val, labelEl) {
   else if (val === 'no') labelEl.classList.add('selected');
   else labelEl.classList.add('selected-no');
   formState[group] = val;
-  document.getElementById('fc-' + group).value = val;
+  const fc = document.getElementById('fc-' + group);
+  if (fc) fc.value = val;
   clearError(group);
 }
 
@@ -572,7 +681,17 @@ function validateEmail(email) {
 /* ── Submit ── */
 async function submitCheckin() {
   let valid = true;
-  ['name','class','phone','email','location','dinner','school'].forEach(f => clearError(f));
+
+  // Clear base field errors
+  ['name','class','phone','email','location'].forEach(f => clearError(f));
+
+  // Clear survey / fallback errors
+  if (surveyData) {
+    surveyData.questions.forEach(q => hideSurveyError(q.id));
+  } else {
+    clearError('dinner');
+    clearError('school');
+  }
 
   const name  = document.getElementById('fc-name').value.trim();
   const cls   = document.getElementById('fc-class').value;
@@ -590,8 +709,23 @@ async function submitCheckin() {
   }
 
   if (!formState.location) { showError('location', '請選擇目前活動地點'); valid = false; }
-  if (!formState.dinner)   { showError('dinner',   '請選擇晚宴參與意願'); valid = false; }
-  if (!formState.school)   { showError('school',   '請選擇返校日參與意願'); valid = false; }
+
+  // Validate survey questions or fallback
+  if (surveyData) {
+    surveyData.questions.forEach(q => {
+      if (!q.required) return;
+      const val = surveyState[q.id];
+      const hasVal = val !== undefined && val !== null && val !== '';
+      if (!hasVal) {
+        const errEl = document.getElementById('err-survey-' + q.id);
+        if (errEl) errEl.style.display = 'block';
+        valid = false;
+      }
+    });
+  } else {
+    if (!formState.dinner) { showError('dinner', '請選擇晚宴參與意願'); valid = false; }
+    if (!formState.school) { showError('school', '請選擇返校日參與意願'); valid = false; }
+  }
 
   if (!valid) {
     document.querySelector('.form-control--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -603,11 +737,32 @@ async function submitCheckin() {
   submitBtn.textContent = '送出中…';
 
   try {
-    // Get reCAPTCHA token
     let recaptchaToken = '';
     if (typeof grecaptcha !== 'undefined' && RECAPTCHA_SITE_KEY !== 'RECAPTCHA_SITE_KEY') {
       recaptchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'checkin' });
     }
+
+    // Build survey answers array
+    const surveyAnswers = [];
+    if (surveyData) {
+      surveyData.questions.forEach(q => {
+        const val = surveyState[q.id];
+        if (val === undefined || val === null) return;
+        if (q.type === 'boolean') {
+          surveyAnswers.push({ questionId: q.id, valueBoolean: val });
+        } else if (q.type === 'number') {
+          surveyAnswers.push({ questionId: q.id, valueNumber: val });
+        } else {
+          surveyAnswers.push({ questionId: q.id, valueText: String(val) });
+        }
+      });
+    }
+
+    // Legacy answers JSON for fallback mode
+    const answers = surveyData ? {} : {
+      dinner:       formState.dinner,
+      school_visit: formState.school,
+    };
 
     const payload = {
       name,
@@ -616,10 +771,9 @@ async function submitCheckin() {
       email:   email || null,
       location: formState.location,
       message: document.getElementById('fc-message').value.trim() || null,
-      answers: {
-        dinner:       formState.dinner,
-        school_visit: formState.school,
-      },
+      answers,
+      surveySlug:    surveyData ? SURVEY_SLUG : null,
+      surveyAnswers,
       recaptchaToken,
     };
 
@@ -630,14 +784,8 @@ async function submitCheckin() {
     const code = err?.code || '';
     const msg = err?.message || '送出失敗，請稍後再試';
 
-    if (code === 'ALREADY_APPROVED') {
-      showState('checkin-approved');
-      return;
-    }
-    if (code === 'ALREADY_PENDING') {
-      showState('checkin-pending');
-      return;
-    }
+    if (code === 'ALREADY_APPROVED') { showState('checkin-approved'); return; }
+    if (code === 'ALREADY_PENDING')  { showState('checkin-pending');  return; }
 
     showErrorModal(msg);
     submitBtn.disabled = false;
@@ -651,7 +799,6 @@ function showErrorModal(msg) {
 }
 
 function closeErrorModal(e) {
-  // Close only when clicking the overlay backdrop, not the modal box itself
   if (e && e.target !== document.getElementById('error-modal-overlay')) return;
   document.getElementById('error-modal-overlay').classList.remove('open');
 }
@@ -664,7 +811,10 @@ function showState(stateId) {
   window.scrollTo({ top: document.getElementById('checkin-form-card').offsetTop - 100, behavior: 'smooth' });
 }
 
-document.addEventListener('DOMContentLoaded', loadClasses);
+document.addEventListener('DOMContentLoaded', () => {
+  loadClasses();
+  loadSurveyQuestions();
+});
 </script>
 </body>
 </html>
