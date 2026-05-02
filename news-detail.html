@@ -25,7 +25,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
+    .article-cover { width:100%; max-height:420px; object-fit:cover; border-radius:var(--radius-xl); margin-bottom:32px; }
     .article-body p { margin-bottom:18px; font-size:17px; line-height:1.85; }
+    .article-body img { max-width:100%; border-radius:var(--radius-md); margin:8px 0; }
     .article-nav { display:flex;justify-content:space-between;gap:16px;margin-top:48px;padding-top:32px;border-top:1px solid var(--color-border); }
     .article-nav a { font-size:14px;font-weight:600;color:var(--color-primary); display:flex;align-items:center;gap:6px; }
     .article-nav a:hover { color:var(--color-accent); }
@@ -118,20 +120,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   const prev = allNews[idx - 1];
   const next = allNews[idx + 1];
 
-  document.title = `${news.title} | 建中48屆30重聚`;
   const ogTitle = `${news.title} | 建中48屆30重聚`;
-  const ogDesc  = news.summary || news.body?.replace(/<[^>]+>/g,'').slice(0,120) || '建中48屆30年重聚最新消息';
+  const ogDesc  = news.summary || (news.content || '').replace(/<[^>]+>/g,'').slice(0,120) || '建中48屆30年重聚最新消息';
   const ogUrl   = `https://ck48.reunion30.tw/news-detail.html?slug=${news.slug}`;
+  const ogImg   = news.coverImageUrl || 'https://ck48.reunion30.tw/images/og-default.jpg';
+
+  document.title = ogTitle;
+  document.querySelector('meta[name="description"]')?.setAttribute('content', ogDesc);
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', ogTitle);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', ogDesc);
   document.querySelector('meta[property="og:url"]')?.setAttribute('content', ogUrl);
+  document.querySelector('meta[property="og:image"]')?.setAttribute('content', ogImg);
   document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', ogTitle);
   document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', ogDesc);
-  document.querySelector('meta[name="description"]')?.setAttribute('content', ogDesc);
+  document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', ogImg);
   document.getElementById('bc-title').textContent = news.title;
 
   const articleDate = news.publishedAt ? formatDate(news.publishedAt) : (news.date ? formatDate(news.date) : '');
   document.getElementById('article-wrap').innerHTML = `
+    ${news.coverImageUrl ? `<img class="article-cover" src="${news.coverImageUrl}" alt="${news.title}">` : ''}
     <div class="news-card__meta" style="margin-bottom:12px;">
       <span class="badge badge--news">${news.category}</span>
       <span class="news-card__date">${articleDate}</span>
@@ -170,8 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     picks.forEach(n => {
       const date = n.publishedAt ? formatDate(n.publishedAt) : (n.date ? formatDate(n.date) : '');
+      const hasImg = !!n.coverImageUrl;
       rg.innerHTML += `
-        <article class="news-card">
+        <article class="news-card${hasImg ? ' news-card--with-img' : ''}">
           <div class="news-card__body">
             <div class="news-card__meta">
               <span class="badge badge--news">${n.category}</span>
@@ -181,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p class="news-card__summary">${n.summary || ''}</p>
             <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
           </div>
+          ${hasImg ? `<img class="news-card__thumb" src="${n.coverImageUrl}" alt="${n.title}" loading="lazy">` : ''}
         </article>`;
     });
   }
