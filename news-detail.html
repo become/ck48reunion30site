@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const date = n.publishedAt ? formatDate(n.publishedAt) : (n.date ? formatDate(n.date) : '');
       const hasImg = !!n.coverImageUrl;
       rg.innerHTML += `
-        <article class="news-card${hasImg ? ' news-card--with-img' : ''}">
+        <a href="news-detail.html?slug=${n.slug}" class="news-card${hasImg ? ' news-card--with-img' : ''}">
           ${hasImg ? `<img class="news-card__bg" src="${n.coverImageUrl}" alt="" loading="lazy">
           <div class="news-card__overlay"></div>` : ''}
           <div class="news-card__body">
@@ -189,9 +189,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
             <h3 class="news-card__title">${n.title}</h3>
             <p class="news-card__summary">${n.summary || ''}</p>
-            <a href="news-detail.html?slug=${n.slug}" class="news-card__link">閱讀更多 →</a>
           </div>
-        </article>`;
+        </a>`;
     });
   }
 });
