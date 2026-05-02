@@ -871,17 +871,16 @@ p  { line-height: 1.75; }
 }
 .news-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .news-card--with-img {
-  flex-direction: row;
+  flex-direction: column;
   border-left: none;
 }
 .news-card__thumb {
-  width: 120px;
-  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-}
-@media (max-width: 480px) {
-  .news-card__thumb { width: 90px; }
+  flex-shrink: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: block;
 }
 .news-card__body {
   padding: 22px 24px 24px;
