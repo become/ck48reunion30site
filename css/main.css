@@ -462,9 +462,9 @@ p  { line-height: 1.75; }
   inset: 0;
   background: linear-gradient(
     105deg,
-    rgba(8,20,36,0.84) 0%,
-    rgba(8,20,36,0.62) 50%,
-    rgba(8,20,36,0.28) 100%
+    rgba(8,20,36,0.68) 0%,
+    rgba(8,20,36,0.45) 50%,
+    rgba(8,20,36,0.15) 100%
   );
 }
 .hero__content {
@@ -483,6 +483,7 @@ p  { line-height: 1.75; }
   text-transform: uppercase;
   color: var(--color-accent);
   margin-bottom: 20px;
+  animation: heroFadeUp 1s ease both 0.4s;
 }
 .hero__eyebrow::before {
   content: '';
@@ -499,6 +500,7 @@ p  { line-height: 1.75; }
   margin: 0 0 14px;
   color: #fff;
   letter-spacing: .01em;
+  animation: heroFadeUp 1s ease both 0.65s;
 }
 .hero__title em {
   font-style: normal;
@@ -510,6 +512,7 @@ p  { line-height: 1.75; }
   font-weight: 500;
   letter-spacing: .12em;
   margin-bottom: 40px;
+  animation: heroFadeUp 0.7s ease both 0.45s;
 }
 .hero__cta {
   display: flex;
@@ -546,6 +549,73 @@ p  { line-height: 1.75; }
 @media (max-width: 600px) {
   .hero__cta { flex-direction: column; }
   .hero__cta .btn { text-align: center; justify-content: center; }
+}
+
+/* ── Hero entrance animations ───────────────────────────────── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroFadeFromRight {
+  from { opacity: 0; transform: translateX(56px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes heroDropBounce {
+  0%   { opacity: 0; transform: translateY(-90px) scaleY(0.88); }
+  46%  { opacity: 1; transform: translateY(18px) scaleY(1.06); }
+  63%  { transform: translateY(-9px) scaleY(0.97); }
+  78%  { transform: translateY(5px) scaleY(1.02); }
+  89%  { transform: translateY(-2px) scaleY(1); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+.hero-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.82em;
+  background: rgba(255,255,255,.8);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: cursorBlink 0.7s step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.event-info-boxes { animation: heroFadeFromRight 0.85s cubic-bezier(0.22,0.61,0.36,1) both 1.9s; }
+.home-countdown   { animation: heroDropBounce 1s ease both 2.6s; }
+
+/* ── Hero scroll hint ───────────────────────────────────────── */
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: heroFadeUp 0.7s ease both 3.4s;
+  cursor: pointer;
+}
+.hero-scroll-hint__text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+.hero-scroll-hint__arrow {
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid rgba(255,255,255,.35);
+  border-bottom: 2px solid rgba(255,255,255,.35);
+  transform: rotate(45deg);
+  animation: scrollBounce 1.8s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: rotate(45deg) translate(0,0); opacity: .35; }
+  50%       { transform: rotate(45deg) translate(3px,3px); opacity: .75; }
 }
 
 /* ── Page Hero (inner pages) ────────────────────────────────── */
@@ -1590,11 +1660,14 @@ p  { line-height: 1.75; }
   .hero__cd-num { font-size: 28px; }
 }
 @media (max-width: 767px) {
-  /* Hero: mobile — stack vertically */
+  /* Hero: mobile — full-screen immersive */
   .hero {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
-    min-height: auto;
+    min-height: 88vh;
+    min-height: 88svh;
+    align-items: flex-end;
+    padding-bottom: 72px;
   }
   .hero__banner-panel {
     height: clamp(240px, 56vw, 380px);

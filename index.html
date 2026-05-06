@@ -48,6 +48,11 @@
          loading="eager">
   </div>
   <div class="hero__overlay" aria-hidden="true"></div>
+  <!-- scroll hint — hidden once user scrolls -->
+  <div class="hero-scroll-hint" id="hero-scroll-hint" aria-hidden="true" onclick="window.scrollBy({top:window.innerHeight,behavior:'smooth'})">
+    <span class="hero-scroll-hint__text">往下滑</span>
+    <span class="hero-scroll-hint__arrow"></span>
+  </div>
   <div class="container hero__content">
     <h1 class="hero__title">建中48屆 <em>三十重聚</em></h1>
     <p class="hero__slogan">有筆有劍三十載，亦俠亦狂再少年</p>
@@ -225,8 +230,88 @@
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
+// Hero typewriter — title types char-by-char, slogan follows
+function heroTypewriter() {
+  const titleEl = document.querySelector('.hero__title');
+  const sloganEl = document.querySelector('.hero__slogan');
+  if (!titleEl || !sloganEl) return;
+
+  // Cancel CSS fade-up; we control these elements
+  titleEl.style.animation = 'none';
+  titleEl.style.opacity = '0';
+  sloganEl.style.animation = 'none';
+  sloganEl.style.opacity = '0';
+
+  // Extract text from DOM nodes (handles mixed text + <em>)
+  let beforeEm = '', emText = '';
+  titleEl.childNodes.forEach(n => {
+    if (n.nodeType === 3) beforeEm += n.textContent;
+    else if (n.nodeName === 'EM') emText = n.textContent;
+  });
+  const sloganText = sloganEl.textContent;
+
+  const chars = [
+    ...beforeEm.split('').map(ch => ({ ch, em: false })),
+    ...emText.split('').map(ch => ({ ch, em: true })),
+  ];
+
+  titleEl.innerHTML = '';
+  titleEl.style.opacity = '1';
+
+  function buildHTML(upTo) {
+    let html = '', inEm = false;
+    for (let j = 0; j <= upTo; j++) {
+      if (!inEm && chars[j].em) { html += '<em>'; inEm = true; }
+      html += chars[j].ch;
+    }
+    if (inEm) html += '</em>';
+    return html;
+  }
+
+  let i = 0;
+  function typeTitle() {
+    if (i >= chars.length) {
+      titleEl.innerHTML = buildHTML(chars.length - 1);
+      setTimeout(startSlogan, 80);
+      return;
+    }
+    titleEl.innerHTML = buildHTML(i) + '<span class="hero-cursor" aria-hidden="true"></span>';
+    i++;
+    setTimeout(typeTitle, 80);
+  }
+
+  function startSlogan() {
+    sloganEl.style.opacity = '1';
+    let k = 0;
+    function typeSlogan() {
+      if (k > sloganText.length) {
+        sloganEl.textContent = sloganText; // remove cursor
+        return;
+      }
+      sloganEl.innerHTML = sloganText.slice(0, k) + '<span class="hero-cursor" aria-hidden="true"></span>';
+      k++;
+      setTimeout(typeSlogan, 65);
+    }
+    typeSlogan();
+  }
+
+  setTimeout(typeTitle, 700); // start after eyebrow fades in
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  heroTypewriter();
   initCountdown('2026-12-19T18:00:00+08:00', 'countdown');
+
+  // Hide scroll hint after first scroll
+  const scrollHint = document.getElementById('hero-scroll-hint');
+  if (scrollHint) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        scrollHint.style.opacity = '0';
+        scrollHint.style.pointerEvents = 'none';
+      }
+    }, { passive: true });
+  }
 
   // Memory photos (up to 8, from API; fallback to mock)
   const photoGrid = document.getElementById('memory-photo-grid');
