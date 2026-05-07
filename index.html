@@ -43,9 +43,12 @@
 <!-- ── HERO ─────────────────────────────────────────────────── -->
 <section class="hero" id="hero" aria-label="主視覺">
   <div class="hero__bg">
-    <img src="images/hero-banner.jpg"
-         alt="建中紅樓 — 三十年，我們再聚首"
-         loading="eager">
+    <picture>
+      <source media="(max-width: 767px)" srcset="images/hero-banner-mobile.jpg">
+      <img src="images/hero-banner.jpg"
+           alt="建中紅樓 — 三十年，我們再聚首"
+           loading="eager">
+    </picture>
   </div>
   <div class="hero__overlay" aria-hidden="true"></div>
   <!-- scroll hint — hidden once user scrolls -->
