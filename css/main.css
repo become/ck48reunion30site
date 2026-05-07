@@ -8,7 +8,7 @@
   --color-primary:    #1F3A5F;
   --color-secondary:  #7A2E3A;
   --color-accent:     #B08D57;
-  --color-bg:         #F7F3EE;
+  --color-bg:         #EDE6DB;
   --color-surface:    #FFFFFF;
   --color-text:       #222222;
   --color-text-muted: #666666;
@@ -650,7 +650,7 @@ p  { line-height: 1.75; }
 /* ── Homepage Event Strip（左欄資訊 + 右欄儀錶板）────────────── */
 .home-event-strip {
   background: linear-gradient(135deg, #0f2340 0%, var(--color-primary) 55%, #1d3f6b 100%);
-  border-bottom: none;
+  border-bottom: 2px solid rgba(176,141,87,0.55);
   padding-block: clamp(40px, 5vw, 64px);
 }
 .home-event-strip__inner {
@@ -1198,7 +1198,7 @@ p  { line-height: 1.75; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(200,160,80,.1);
+  background: rgba(176,141,87,.18);
   border-radius: 14px;
 }
 .highlight-card__body { flex: 1; min-width: 0; }
