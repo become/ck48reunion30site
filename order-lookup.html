@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>訂單查詢 | 建中48屆30重聚</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .lookup-card {
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-sm);
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    @media(max-width:480px){ .lookup-card { padding: 24px 18px; } }
+    .lookup-icon {
+      width: 56px; height: 56px;
+      background: rgba(31,58,95,.08);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin: 0 auto 20px;
+    }
+    .lookup-title {
+      text-align: center;
+      font-size: 20px; font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 6px;
+    }
+    .lookup-desc {
+      text-align: center;
+      font-size: 13px; color: var(--color-text-muted);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-label {
+      font-size: 13px; font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: 6px; display: block;
+    }
+    .input-hint {
+      font-size: 12px; color: var(--color-text-muted);
+      margin-top: 4px;
+    }
+    .lookup-divider {
+      text-align: center;
+      font-size: 13px; color: var(--color-text-muted);
+      margin: 24px 0 20px;
+      position: relative;
+    }
+    .lookup-divider::before {
+      content: '';
+      position: absolute; top: 50%; left: 0; right: 0;
+      height: 1px; background: var(--color-border);
+    }
+    .lookup-divider span {
+      background: #fff; padding: 0 12px; position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main class="page-content">
+  <div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+
+    <div class="lookup-card">
+      <div class="lookup-icon">📦</div>
+      <div class="lookup-title">訂單查詢</div>
+      <div class="lookup-desc">
+        輸入訂單代號與密碼即可查看訂單狀態<br>
+        <span style="font-size:12px;">訂單代號與密碼請參考訂單建立通知信</span>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="transfer-code">訂單代號</label>
+        <input id="transfer-code" class="form-control" type="text"
+          placeholder="例：CK480001"
+          autocomplete="off" autocapitalize="characters" spellcheck="false"
+          style="text-transform:uppercase; font-family: var(--font-mono, monospace); letter-spacing: 2px;">
+        <div class="input-hint">格式：CK48 + 四位數字</div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label" for="order-password">訂單密碼</label>
+        <input id="order-password" class="form-control" type="text"
+          placeholder="例：A3K7M2"
+          autocomplete="off" autocapitalize="characters" spellcheck="false"
+          style="text-transform:uppercase; font-family: var(--font-mono, monospace); letter-spacing: 3px;">
+        <div class="input-hint">六位英數密碼，請參考訂單建立通知信</div>
+      </div>
+
+      <button id="lookup-btn" class="btn btn--primary" style="width:100%; margin-top:8px;">
+        查詢訂單
+      </button>
+
+      <div class="lookup-divider"><span>或</span></div>
+
+      <p style="text-align:center; font-size:13px; color:var(--color-text-muted);">
+        若您已有訂單連結，請直接點擊信件中的連結<br>
+        或前往 <a href="shop.html" style="color:var(--color-primary);">商品選購</a> 建立新訂單
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+(function () {
+  function swalError(title, text) {
+    Swal.fire({ icon: 'error', title, text, confirmButtonColor: 'var(--color-primary)' });
+  }
+
+  const codeInput = document.getElementById('transfer-code');
+  const pwInput   = document.getElementById('order-password');
+  const btn       = document.getElementById('lookup-btn');
+
+  // Auto-uppercase
+  [codeInput, pwInput].forEach(el => {
+    el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
+  });
+
+  // Allow Enter to submit
+  [codeInput, pwInput].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLookup(); });
+  });
+
+  btn.addEventListener('click', doLookup);
+
+  async function doLookup() {
+    const transferCode = codeInput.value.trim().toUpperCase();
+    const password     = pwInput.value.trim().toUpperCase();
+
+    if (!transferCode) {
+      codeInput.classList.add('form-control--error');
+      codeInput.focus();
+      swalError('請填寫訂單代號', '');
+      return;
+    }
+    if (!password) {
+      pwInput.classList.add('form-control--error');
+      pwInput.focus();
+      swalError('請填寫訂單密碼', '');
+      return;
+    }
+
+    codeInput.classList.remove('form-control--error');
+    pwInput.classList.remove('form-control--error');
+
+    btn.disabled = true;
+    btn.textContent = '查詢中…';
+
+    try {
+      const data = await CK48_API.lookupOrder(transferCode, password);
+
+      // Cache password so order.html doesn't ask again
+      sessionStorage.setItem('order_pw_' + data.hashid, password);
+
+      window.location.href = 'order.html?id=' + data.hashid;
+    } catch (e) {
+      const msg = e.message || '查詢失敗';
+      if (msg.includes('訂單代號') || msg.includes('密碼')) {
+        codeInput.classList.add('form-control--error');
+        pwInput.classList.add('form-control--error');
+        swalError('查詢失敗', '訂單代號或密碼不正確，請確認後再試。');
+      } else {
+        swalError('查詢失敗', msg);
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '查詢訂單';
+    }
+  }
+})();
+</script>
+</body>
+</html>

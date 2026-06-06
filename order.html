@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>訂單查詢 | 建中48屆30重聚</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .flow-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    @media(max-width:480px){ .flow-card { padding: 20px 16px; } }
+
+    /* Progress steps */
+    .order-steps { display: flex; align-items: center; margin-bottom: 28px; }
+    .order-step  { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .order-step__dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid var(--color-border);
+      background: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--color-text-muted);
+      position: relative; z-index: 1;
+    }
+    .order-step.done  .order-step__dot { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .order-step.active .order-step__dot { background: var(--color-secondary); border-color: var(--color-secondary); color: #fff; }
+    .order-step__label { font-size: 11px; color: var(--color-text-muted); margin-top: 5px; white-space: nowrap; }
+    .order-step.active .order-step__label { color: var(--color-secondary); font-weight: 700; }
+    .order-step.done  .order-step__label { color: var(--color-primary); font-weight: 600; }
+    .step-line { flex: 1; height: 2px; background: var(--color-border); margin-bottom: 22px; min-width: 16px; }
+    .step-line.done { background: var(--color-primary); }
+
+    /* Transfer code bar */
+    .transfer-bar {
+      background: rgba(176,141,87,.08); border: 1px solid rgba(176,141,87,.3);
+      border-radius: var(--radius-md); padding: 12px 16px;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .transfer-bar__label { font-size: 13px; color: var(--color-text-muted); flex-shrink: 0; }
+    .transfer-bar__code  { font-size: 20px; font-weight: 800; color: var(--color-primary); letter-spacing: 2px; }
+    .transfer-bar__hint  { font-size: 13px; color: var(--color-text-muted); }
+
+    /* Product rows */
+    .product-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--color-border); }
+    .product-row:last-child { border-bottom: none; }
+    .product-row__img { width: 52px; height: 52px; border-radius: var(--radius-md); background: #f0ede8; display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; flex-shrink: 0; }
+    .product-row__img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-row__name { flex: 1; font-weight: 600; font-size: 15px; color: var(--color-primary); line-height: 1.4; }
+    .product-row__meta { font-size: 12px; color: var(--color-text-muted); margin-top: 2px; }
+    .product-row__price { font-size: 14px; color: var(--color-text-muted); }
+    .qty-control { display: inline-flex; align-items: center; gap: 8px; }
+    .qty-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--color-border);
+      background: #fff; color: var(--color-primary);
+      font-size: 20px; font-weight: 400; line-height: 1;
+      cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .qty-btn:hover:not(:disabled) { border-color: var(--color-primary); background: rgba(31,58,95,.08); }
+    .qty-btn:disabled { opacity: .25; cursor: not-allowed; }
+    .qty-num {
+      width: 48px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; color: var(--color-primary);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: #f7f6f3;
+      user-select: none; pointer-events: none;
+    }
+    .total-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 4px; font-size: 18px; font-weight: 700; }
+    .total-row span:last-child { color: var(--color-secondary); }
+
+    /* Order summary table */
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .summary-table th { text-align: left; padding: 6px 0 10px; border-bottom: 2px solid var(--color-border); font-weight: 600; color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .summary-table td { padding: 10px 0; border-bottom: 1px solid var(--color-border); }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .summary-table .summary-total td { font-weight: 700; padding-top: 14px; font-size: 15px; }
+    .summary-table .summary-total td:last-child { color: var(--color-secondary); }
+
+    /* Completed banner */
+    .completed-banner {
+      text-align: center; padding: 40px 24px;
+    }
+    .completed-banner__icon { font-size: 60px; margin-bottom: 16px; }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YJYP34JVKM');
+  </script>
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="section section--alt">
+  <div class="container" style="max-width:620px;">
+
+    <!-- Password gate -->
+    <div id="auth-gate" style="max-width:420px;margin:0 auto;padding-top:20px;">
+      <nav class="breadcrumb">
+        <a href="index.html">首頁</a>
+        <span class="breadcrumb__sep">/</span>
+        <a href="shop.html">紀念商品</a>
+        <span class="breadcrumb__sep">/</span>
+        <span>訂單查詢</span>
+      </nav>
+      <div class="flow-card" style="text-align:center;padding:36px 28px;">
+        <div style="width:60px;height:60px;border-radius:50%;background:rgba(31,58,95,.08);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 20px;">🔐</div>
+        <h1 style="font-size:22px;font-weight:800;color:var(--color-primary);margin-bottom:6px;">訂單查詢</h1>
+        <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:24px;">請輸入信件中的訂單密碼</p>
+        <div class="form-field" style="margin-bottom:16px;text-align:left;">
+          <label class="form-field__label">訂單密碼</label>
+          <input class="form-control" type="text" id="pw-input" placeholder="6 位英數密碼"
+            autocomplete="off" maxlength="6"
+            style="text-align:center;letter-spacing:4px;font-size:22px;font-weight:700;text-transform:uppercase;">
+        </div>
+        <div id="auth-error" class="status-box status-box--error" style="display:none;margin-bottom:16px;text-align:left;">
+          <div class="status-box__icon">⚠️</div>
+          <div class="status-box__desc" id="auth-error-msg"></div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="auth-btn" style="width:100%;">確認</button>
+      </div>
+    </div>
+
+    <!-- Order view (after auth) -->
+    <div id="order-view" style="display:none;">
+      <nav class="breadcrumb">
+        <a href="index.html">首頁</a>
+        <span class="breadcrumb__sep">/</span>
+        <a href="shop.html">紀念商品</a>
+        <span class="breadcrumb__sep">/</span>
+        <span>我的訂單</span>
+      </nav>
+
+      <!-- Transfer code bar (shown when payment needed) -->
+      <div id="transfer-code-bar" class="transfer-bar" style="display:none;">
+        <span class="transfer-bar__label">訂單代碼</span>
+        <span class="transfer-bar__code" id="transfer-code"></span>
+        <span class="transfer-bar__hint">轉帳備註請填此代碼</span>
+      </div>
+
+      <!-- Progress steps -->
+      <div class="order-steps" id="order-steps"></div>
+
+      <!-- BROWSING: product selection -->
+      <div id="status-browsing" style="display:none;">
+        <div id="buyer-info-bar" class="flow-card" style="margin-bottom:12px;padding:14px 20px;"></div>
+        <div class="flow-card">
+          <h2 style="font-size:17px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">選擇商品</h2>
+          <div id="product-rows"></div>
+          <div class="total-row">
+            <span>合計</span>
+            <span id="total-amount">NT$0</span>
+          </div>
+          <div id="address-section" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--color-border);">
+            <div style="font-size:14px;font-weight:700;color:var(--color-primary);margin-bottom:14px;">收件資訊</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+              <div class="form-field">
+                <label class="form-field__label">收件人 <span style="color:var(--color-secondary)">*</span></label>
+                <input class="form-control" type="text" id="recipient-name" placeholder="收件人姓名" maxlength="50" autocomplete="off">
+              </div>
+              <div class="form-field">
+                <label class="form-field__label">收件人電話 <span style="color:var(--color-secondary)">*</span></label>
+                <input class="form-control" type="tel" id="recipient-phone" placeholder="0912345678" maxlength="20" autocomplete="off">
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;margin-bottom:12px;">
+              <div class="form-field">
+                <label class="form-field__label">郵遞區號 <span style="color:var(--color-secondary)">*</span></label>
+                <input class="form-control" type="text" id="postal-code" placeholder="100" maxlength="6" autocomplete="off" style="letter-spacing:2px;">
+              </div>
+              <div class="form-field">
+                <label class="form-field__label">地址 <span style="color:var(--color-secondary)">*</span></label>
+                <input class="form-control" type="text" id="shipping-address" placeholder="縣市、鄉鎮市區、路街、門號" maxlength="200" autocomplete="off">
+              </div>
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--color-border);">
+            <label class="form-field__label">訂單備註（選填）</label>
+            <textarea class="form-control" id="order-notes" rows="2" placeholder="如有特殊需求或說明，請填寫於此" maxlength="500" style="resize:none;"></textarea>
+          </div>
+        </div>
+        <div id="confirm-error" class="status-box status-box--error" style="display:none;margin-top:12px;">
+          <div class="status-box__icon">⚠️</div>
+          <div class="status-box__desc" id="confirm-error-msg"></div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="confirm-btn" style="width:100%;margin-top:16px;">確認訂單</button>
+      </div>
+
+      <!-- PENDING_REVIEW -->
+      <div id="status-pending-review" style="display:none;">
+        <div class="status-box status-box--info" style="margin-bottom:20px;">
+          <div class="status-box__icon">⏳</div>
+          <div>
+            <div class="status-box__title">訂單已提交，待財務確認</div>
+            <div class="status-box__desc">財務人員確認後將寄送轉帳資訊至您的信箱，請耐心等候。</div>
+          </div>
+        </div>
+        <div class="flow-card">
+          <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">訂單明細</h3>
+          <div id="order-summary"></div>
+        </div>
+      </div>
+
+      <!-- PENDING_PAYMENT -->
+      <div id="status-pending-payment" style="display:none;">
+        <div class="status-box status-box--warning" style="margin-bottom:20px;">
+          <div class="status-box__icon">💳</div>
+          <div>
+            <div class="status-box__title">請完成轉帳付款</div>
+            <div class="status-box__desc">請依信件中的轉帳資訊完成付款，備註欄填寫上方訂單代碼。</div>
+          </div>
+        </div>
+        <div class="flow-card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">訂單明細</h3>
+          <div id="order-summary-payment"></div>
+        </div>
+        <div class="flow-card">
+          <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:4px;">確認付款通知</h3>
+          <p style="font-size:13px;color:var(--color-text-muted);margin-bottom:16px;line-height:1.6;">轉帳完成後，請填寫以下資訊通知財務人員，加速確認流程。</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div class="form-field">
+              <label class="form-field__label">付款日期 <span style="color:var(--color-secondary)">*</span></label>
+              <input class="form-control" type="date" id="payment-date" autocomplete="off">
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">帳號後五碼 <span style="color:var(--color-secondary)">*</span></label>
+              <input class="form-control" type="text" id="account-last5" placeholder="12345" maxlength="5"
+                pattern="[0-9]{5}" inputmode="numeric" autocomplete="off"
+                style="letter-spacing:3px;font-family:monospace;font-size:16px;">
+            </div>
+          </div>
+          <div id="payment-submit-error" class="status-box status-box--error" style="display:none;margin-bottom:12px;">
+            <div class="status-box__icon">⚠️</div>
+            <div class="status-box__desc" id="payment-submit-error-msg"></div>
+          </div>
+          <button class="btn btn--primary btn--lg" id="payment-submit-btn" style="width:100%;">✓ 確認已付款</button>
+        </div>
+      </div>
+
+      <!-- PAYMENT_SUBMITTED -->
+      <div id="status-payment-submitted" style="display:none;">
+        <div class="status-box status-box--success" style="margin-bottom:20px;">
+          <div class="status-box__icon">⏳</div>
+          <div>
+            <div class="status-box__title">付款通知已送出，等待財務確認</div>
+            <div class="status-box__desc">財務人員確認後將寄送通知，請耐心等候。</div>
+          </div>
+        </div>
+        <div class="flow-card">
+          <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">訂單明細</h3>
+          <div id="order-summary-payment-submitted"></div>
+        </div>
+      </div>
+
+      <!-- PENDING_SHIPPING -->
+      <div id="status-pending-shipping" style="display:none;">
+        <div class="status-box status-box--success" style="margin-bottom:20px;">
+          <div class="status-box__icon">📦</div>
+          <div>
+            <div class="status-box__title">付款已確認，商品準備中</div>
+            <div class="status-box__desc">商品送達後，請點下方按鈕確認收貨以完成訂單。</div>
+          </div>
+        </div>
+        <div class="flow-card" style="margin-bottom:16px;">
+          <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">訂單明細</h3>
+          <div id="order-summary-shipping"></div>
+        </div>
+        <div id="received-error" class="status-box status-box--error" style="display:none;margin-bottom:12px;">
+          <div class="status-box__icon">⚠️</div>
+          <div class="status-box__desc" id="received-error-msg"></div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="received-btn" style="width:100%;">✓ 確認收貨</button>
+      </div>
+
+      <!-- COMPLETED -->
+      <div id="status-completed" style="display:none;">
+        <div class="flow-card completed-banner">
+          <div class="completed-banner__icon">🎉</div>
+          <h2 style="font-size:24px;font-weight:800;color:var(--color-primary);margin-bottom:8px;">感謝購買！</h2>
+          <p style="font-size:15px;color:var(--color-text-muted);margin-bottom:28px;">訂單已完成，期待在重聚見到您。</p>
+          <div id="order-summary-done" style="text-align:left;"></div>
+        </div>
+      </div>
+
+      <!-- CANCELLED -->
+      <div id="status-cancelled" style="display:none;">
+        <div class="status-box status-box--error">
+          <div class="status-box__icon">❌</div>
+          <div>
+            <div class="status-box__title">訂單已取消</div>
+            <div class="status-box__desc">如有疑問請聯絡籌備委員會。</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:28px;">
+        <a href="shop.html" class="btn btn--ghost btn--sm">← 返回商品頁</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:3000'
+  : 'https://api.reunion30.tw';
+
+function swalError(title, text) {
+  return Swal.fire({
+    icon: 'error',
+    title,
+    text,
+    confirmButtonText: '確認',
+    confirmButtonColor: '#1f3a5f',
+  });
+}
+function swalSuccess(title, text) {
+  return Swal.fire({
+    icon: 'success',
+    title,
+    text,
+    confirmButtonText: '確認',
+    confirmButtonColor: '#1f3a5f',
+  });
+}
+
+const params = new URLSearchParams(location.search);
+const hashid = params.get('id');
+let orderData = null;
+let savedPassword = sessionStorage.getItem('order_pw_' + hashid) || '';
+let quantities = {};
+
+function getSteps() {
+  const steps = [
+    { key: 'BROWSING',          label: '選購中' },
+    { key: 'PENDING_REVIEW',    label: '待確認' },
+    { key: 'PENDING_PAYMENT',   label: '待付款' },
+    { key: 'PAYMENT_SUBMITTED', label: '已付款' },
+  ];
+  if (orderData?.event?.collectAddress) {
+    steps.push({ key: 'PENDING_SHIPPING', label: '待出貨' });
+  }
+  steps.push({ key: 'COMPLETED', label: '已完成' });
+  return steps;
+}
+
+function renderSteps(status) {
+  const stepsEl = document.getElementById('order-steps');
+  const steps = getSteps();
+  const activeIdx = steps.findIndex(s => s.key === status);
+  stepsEl.innerHTML = '';
+  steps.forEach((s, i) => {
+    if (i > 0) {
+      const line = document.createElement('div');
+      line.className = 'step-line' + (i <= activeIdx ? ' done' : '');
+      stepsEl.appendChild(line);
+    }
+    const step = document.createElement('div');
+    step.className = 'order-step' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
+    step.innerHTML = `<div class="order-step__dot">${i < activeIdx ? '✓' : i + 1}</div><div class="order-step__label">${s.label}</div>`;
+    stepsEl.appendChild(step);
+  });
+}
+
+const BUYER_TYPE_LABEL = {
+  CURRENT_ALUMNI: '當屆校友',
+  ALUMNI:         '校友（學長學弟）',
+  TEACHER:        '師長・老師',
+  PARENT_FRIEND:  '家長・親友',
+  GENERAL:        '一般民眾',
+};
+
+function renderSummary(containerId) {
+  if (!orderData) return;
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  // Contact info section
+  const buyerLabel = BUYER_TYPE_LABEL[orderData.buyerType] || orderData.buyerType || '';
+  const contactRows = [
+    orderData.name  ? `<tr><td class="si-label">訂購人</td><td>${orderData.name}${buyerLabel ? `　<span style="font-size:12px;color:var(--color-text-muted);">${buyerLabel}</span>` : ''}</td></tr>` : '',
+    orderData.email ? `<tr><td class="si-label">Email</td><td style="word-break:break-all;">${orderData.email}</td></tr>` : '',
+    orderData.phone ? `<tr><td class="si-label">電話</td><td>${orderData.phone}</td></tr>` : '',
+  ].filter(Boolean).join('');
+
+  // Shipping info section (only if collectAddress event and data present)
+  const hasShipping = orderData.event?.collectAddress && (orderData.recipientName || orderData.shippingAddress);
+  const shippingRows = hasShipping ? [
+    orderData.recipientName  ? `<tr><td class="si-label">收件人</td><td>${orderData.recipientName}</td></tr>` : '',
+    orderData.recipientPhone ? `<tr><td class="si-label">電話</td><td>${orderData.recipientPhone}</td></tr>` : '',
+    (orderData.postalCode || orderData.shippingAddress) ? `<tr><td class="si-label">地址</td><td>${[orderData.postalCode, orderData.shippingAddress].filter(Boolean).join(' ')}</td></tr>` : '',
+  ].filter(Boolean).join('') : '';
+
+  const notesHtml = orderData.notes
+    ? `<div style="margin-bottom:16px;padding:10px 12px;background:#f7f6f3;border-radius:var(--radius-sm);font-size:13px;color:var(--color-text-muted);"><strong style="color:var(--color-primary);">備註：</strong>${orderData.notes}</div>`
+    : '';
+
+  // Products table
+  const productRows = (orderData.items || []).map(i =>
+    `<tr><td style="padding-right:12px;">${i.productName}</td><td style="text-align:center;color:var(--color-text-muted);">×${i.quantity}</td><td style="text-align:right;font-weight:600;">NT$${(i.productPrice * i.quantity).toLocaleString()}</td></tr>`
+  ).join('');
+
+  el.innerHTML = `
+    <style>
+      .si-label { color:var(--color-text-muted);padding-right:14px;white-space:nowrap;font-size:13px;padding-bottom:6px;vertical-align:top; }
+    </style>
+    ${contactRows ? `<table style="width:100%;font-size:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--color-border);">${contactRows}</table>` : ''}
+    ${shippingRows ? `<div style="background:rgba(31,58,95,.04);border:1px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;font-size:13px;"><div style="font-size:12px;font-weight:700;color:var(--color-text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">收件資訊</div><table style="width:100%;">${shippingRows}</table></div>` : ''}
+    ${notesHtml}
+    <table class="summary-table">
+      <thead><tr><th>商品</th><th style="text-align:center;">數量</th><th style="text-align:right;">小計</th></tr></thead>
+      <tbody>${productRows}</tbody>
+      <tfoot><tr class="summary-total"><td colspan="2">合計</td><td style="text-align:right;">NT$${(orderData.totalAmount || 0).toLocaleString()}</td></tr></tfoot>
+    </table>`;
+}
+
+function updateTotal() {
+  let total = 0;
+  (orderData?.event?.products || []).forEach(p => {
+    total += p.price * (quantities[p.hashid] || 0);
+  });
+  document.getElementById('total-amount').textContent = 'NT$' + total.toLocaleString();
+}
+
+function renderProductRows() {
+  const container = document.getElementById('product-rows');
+  container.innerHTML = '';
+  (orderData.event.products || []).forEach(p => {
+    if (p.status !== 'ACTIVE') return;
+    const qty = quantities[p.hashid] || 0;
+    const maxQty = Math.min(
+      p.availableStock != null ? p.availableStock : 99,
+      p.maxPerPerson   != null ? p.maxPerPerson   : 99
+    );
+    const imgHtml = p.mainImage
+      ? `<img src="${p.mainImage.startsWith('/') ? API_BASE + p.mainImage : p.mainImage}" alt="${p.name}">`
+      : '🎁';
+
+    const row = document.createElement('div');
+    row.className = 'product-row';
+    row.innerHTML = `
+      <div class="product-row__img">${imgHtml}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="product-row__name">${p.name}</div>
+        <div class="product-row__meta">
+          ${p.maxPerPerson ? `每人限購 ${p.maxPerPerson} 件` : ''}
+          ${p.stockType === 'LIMITED' && p.availableStock != null ? `　剩餘 ${p.availableStock} 件` : ''}
+        </div>
+        <div class="product-row__price" style="margin-top:4px;">NT$${p.price.toLocaleString()}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="qty-control">
+          <button class="qty-btn" data-action="minus" data-hashid="${p.hashid}" ${qty <= 0 ? 'disabled' : ''}>−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" data-action="plus"  data-hashid="${p.hashid}" ${qty >= maxQty ? 'disabled' : ''}>+</button>
+        </div>
+      </div>`;
+
+    row.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ph = btn.dataset.hashid;
+        const action = btn.dataset.action;
+        const cur = quantities[ph] || 0;
+        const max = Math.min(
+          (orderData.event.products.find(x => x.hashid === ph)?.availableStock ?? 99),
+          (orderData.event.products.find(x => x.hashid === ph)?.maxPerPerson   ?? 99)
+        );
+        if (action === 'plus'  && cur < max) quantities[ph] = cur + 1;
+        if (action === 'minus' && cur > 0)   quantities[ph] = cur - 1;
+        renderProductRows();
+        updateTotal();
+      });
+    });
+
+    container.appendChild(row);
+  });
+}
+
+function showStatus(status) {
+  ['browsing','pending-review','pending-payment','payment-submitted','pending-shipping','completed','cancelled'].forEach(s => {
+    document.getElementById('status-' + s).style.display = 'none';
+  });
+  const key = status.toLowerCase().replace(/_/g, '-');
+  const el = document.getElementById('status-' + key);
+  if (el) el.style.display = '';
+
+  const codeBar = document.getElementById('transfer-code-bar');
+  if (['PENDING_PAYMENT', 'PENDING_SHIPPING', 'COMPLETED'].includes(status)) {
+    codeBar.style.display = '';
+    document.getElementById('transfer-code').textContent = orderData.transferCode || '';
+  } else {
+    codeBar.style.display = 'none';
+  }
+
+  renderSteps(status);
+
+  if (status === 'BROWSING') {
+    // Render buyer info bar
+    const buyerBar = document.getElementById('buyer-info-bar');
+    if (buyerBar && orderData) {
+      const bl = BUYER_TYPE_LABEL[orderData.buyerType] || '';
+      const parts = [
+        `<span style="font-weight:700;color:var(--color-primary);">${orderData.name || ''}</span>${bl ? `　<span style="font-size:12px;color:var(--color-text-muted);">${bl}</span>` : ''}`,
+        orderData.email ? `<span style="font-size:13px;color:var(--color-text-muted);">${orderData.email}</span>` : '',
+        orderData.phone ? `<span style="font-size:13px;color:var(--color-text-muted);">${orderData.phone}</span>` : '',
+      ].filter(Boolean);
+      buyerBar.innerHTML = `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;">${parts.join('<span style="color:var(--color-border);">·</span>')}</div>`;
+    }
+
+    renderProductRows();
+    const addrSection = document.getElementById('address-section');
+    if (addrSection) {
+      const collect = orderData.event?.collectAddress;
+      addrSection.style.display = collect ? '' : 'none';
+      if (collect) {
+        // Pre-fill from saved values or order defaults
+        const rName  = document.getElementById('recipient-name');
+        const rPhone = document.getElementById('recipient-phone');
+        if (!rName.value)  rName.value  = orderData.recipientName  || orderData.name  || '';
+        if (!rPhone.value) rPhone.value = orderData.recipientPhone || orderData.phone || '';
+        if (orderData.postalCode)     document.getElementById('postal-code').value      = orderData.postalCode;
+        if (orderData.shippingAddress) document.getElementById('shipping-address').value = orderData.shippingAddress;
+      }
+    }
+    if (orderData.notes) document.getElementById('order-notes').value = orderData.notes;
+  }
+  if (status === 'PENDING_REVIEW')    renderSummary('order-summary');
+  if (status === 'PENDING_PAYMENT')   renderSummary('order-summary-payment');
+  if (status === 'PAYMENT_SUBMITTED') renderSummary('order-summary-payment-submitted');
+  if (status === 'PENDING_SHIPPING')  renderSummary('order-summary-shipping');
+  if (status === 'COMPLETED')         renderSummary('order-summary-done');
+}
+
+function showOrderView(data) {
+  orderData = data;
+  document.getElementById('auth-gate').style.display  = 'none';
+  document.getElementById('order-view').style.display = '';
+  showStatus(data.status);
+  updateTotal();
+}
+
+async function auth(pw) {
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = true; btn.textContent = '驗證中…';
+  const errorBox = document.getElementById('auth-error');
+  const errorMsg = document.getElementById('auth-error-msg');
+  errorBox.style.display = 'none';
+  try {
+    const data = await CK48_API.verifyOrder(hashid, pw);
+    sessionStorage.setItem('order_pw_' + hashid, pw);
+    savedPassword = pw;
+    showOrderView(data);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = '確認';
+    swalError('密碼錯誤', e.message || '請確認信件中的密碼後重試。');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!hashid) {
+    document.getElementById('auth-gate').innerHTML =
+      '<p style="text-align:center;color:var(--color-text-muted);padding:60px 0;">無效的訂單連結</p>';
+    return;
+  }
+
+  if (savedPassword) {
+    await auth(savedPassword);
+  } else {
+    document.getElementById('auth-btn').addEventListener('click', () => {
+      auth(document.getElementById('pw-input').value.trim().toUpperCase());
+    });
+    document.getElementById('pw-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') auth(document.getElementById('pw-input').value.trim().toUpperCase());
+    });
+    document.getElementById('pw-input').addEventListener('input', e => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+  }
+
+  // Confirm order
+  // Clear individual field error on input
+  ['recipient-name','recipient-phone','postal-code','shipping-address'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => {
+      document.getElementById(id)?.classList.remove('form-control--error');
+    });
+  });
+
+  function validateBeforeConfirm() {
+    ['recipient-name','recipient-phone','postal-code','shipping-address'].forEach(id => {
+      document.getElementById(id)?.classList.remove('form-control--error');
+    });
+
+    const items = [];
+    Object.entries(quantities).forEach(([ph, qty]) => {
+      if (qty > 0) items.push({ productHashid: ph, quantity: qty });
+    });
+    if (!items.length) {
+      swalError('請選擇商品', '請至少選擇一項商品後再送出。');
+      return null;
+    }
+
+    if (orderData?.event?.collectAddress) {
+      const required = [
+        { id: 'recipient-name',   label: '收件人姓名' },
+        { id: 'recipient-phone',  label: '收件人電話' },
+        { id: 'postal-code',      label: '郵遞區號' },
+        { id: 'shipping-address', label: '收件地址' },
+      ];
+      let firstError = null;
+      required.forEach(({ id, label }) => {
+        const el = document.getElementById(id);
+        if (el && !el.value.trim()) {
+          el.classList.add('form-control--error');
+          if (!firstError) firstError = label;
+        }
+      });
+      if (firstError) {
+        document.querySelector('.form-control--error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        swalError('請填寫收件資訊', `「${firstError}」為必填欄位，請填寫後再送出。`);
+        return null;
+      }
+    }
+    return items;
+  }
+
+  document.getElementById('confirm-btn')?.addEventListener('click', async () => {
+    const items = validateBeforeConfirm();
+    if (!items) return;
+
+    const btn = document.getElementById('confirm-btn');
+    btn.disabled = true; btn.textContent = '送出中…';
+    const recipientName   = document.getElementById('recipient-name')?.value.trim()   || null;
+    const recipientPhone  = document.getElementById('recipient-phone')?.value.trim()  || null;
+    const postalCode      = document.getElementById('postal-code')?.value.trim()      || null;
+    const shippingAddress = document.getElementById('shipping-address')?.value.trim() || null;
+    const notes           = document.getElementById('order-notes')?.value.trim()      || null;
+    try {
+      const result = await CK48_API.confirmOrder(hashid, savedPassword, items, { recipientName, recipientPhone, postalCode, shippingAddress, notes });
+      orderData.status = 'PENDING_REVIEW';
+      orderData.totalAmount = result.totalAmount;
+      orderData.items = items.map(i => {
+        const p = orderData.event.products.find(p => p.hashid === i.productHashid);
+        return { productName: p?.name || '', productPrice: p?.price || 0, quantity: i.quantity };
+      });
+      showStatus('PENDING_REVIEW');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = '確認訂單';
+      swalError('無法送出訂單', e.message || '送出失敗，請稍後再試。');
+    }
+  });
+
+  // Submit payment proof
+  document.getElementById('payment-submit-btn')?.addEventListener('click', async () => {
+    const paymentDate  = document.getElementById('payment-date')?.value;
+    const accountLast5 = document.getElementById('account-last5')?.value.trim();
+    const errBox = document.getElementById('payment-submit-error');
+    const errMsg = document.getElementById('payment-submit-error-msg');
+    errBox.style.display = 'none';
+
+    if (!paymentDate) {
+      errBox.style.display = ''; errMsg.textContent = '請填寫付款日期'; return;
+    }
+    if (!accountLast5 || !/^\d{5}$/.test(accountLast5)) {
+      errBox.style.display = ''; errMsg.textContent = '請輸入帳號後五碼（數字）'; return;
+    }
+
+    const btn = document.getElementById('payment-submit-btn');
+    btn.disabled = true; btn.textContent = '送出中…';
+    try {
+      await CK48_API.submitPayment(hashid, savedPassword, paymentDate, accountLast5);
+      orderData.status = 'PAYMENT_SUBMITTED';
+      showStatus('PAYMENT_SUBMITTED');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = '✓ 確認已付款';
+      errBox.style.display = ''; errMsg.textContent = e.message || '送出失敗，請稍後再試';
+    }
+  });
+
+  // Confirm received
+  document.getElementById('received-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('received-btn');
+    btn.disabled = true; btn.textContent = '確認中…';
+    try {
+      await CK48_API.confirmReceived(hashid, savedPassword);
+      orderData.status = 'COMPLETED';
+      showStatus('COMPLETED');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = '✓ 確認收貨';
+      swalError('操作失敗', e.message || '請稍後再試。');
+    }
+  });
+});
+</script>
+</body>
+</html>

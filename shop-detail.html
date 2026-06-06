@@ -3,44 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>紀念商品 | 建中48屆30重聚</title>
-  <meta name="description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
+  <title>購買活動 | 建中48屆30重聚</title>
+  <meta name="description" content="建中48屆30年重聚紀念商品購買。">
   <meta name="robots" content="index, follow">
-  <!-- Open Graph (updated dynamically after product loads) -->
   <meta property="og:type"        content="website">
   <meta property="og:site_name"   content="建中48屆30重聚">
   <meta property="og:locale"      content="zh_TW">
-  <meta property="og:title"       content="紀念商品 | 建中48屆30重聚">
-  <meta property="og:description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
+  <meta property="og:title"       content="購買活動 | 建中48屆30重聚">
+  <meta property="og:description" content="建中48屆30年重聚紀念商品購買。">
   <meta property="og:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
-  <meta property="og:image:width"  content="1200">
-  <meta property="og:image:height" content="630">
-  <!-- Twitter Card -->
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="紀念商品 | 建中48屆30重聚">
-  <meta name="twitter:description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
-  <meta name="twitter:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
   <link rel="icon" href="images/favico.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <style>
-    .product-detail { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start; }
-    .product-detail__main-img { aspect-ratio:1/1; background:linear-gradient(135deg,#e8e2d8,#d4c9b8); border-radius:var(--radius-xl); display:flex;align-items:center;justify-content:center;font-size:120px; }
-    .product-detail__thumbs { display:flex; gap:8px; margin-top:10px; }
-    .thumb { width:60px; height:60px; border-radius:var(--radius-md); background:linear-gradient(135deg,#e8e2d8,#d4c9b8); display:flex;align-items:center;justify-content:center;font-size:24px; cursor:pointer; border:2px solid transparent; transition:border-color var(--transition); }
-    .thumb:hover, .thumb.active { border-color:var(--color-primary); }
-    .spec-group { margin-bottom:20px; }
-    .spec-label { font-size:14px; font-weight:700; color:var(--color-text); margin-bottom:8px; }
-    .spec-options { display:flex; flex-wrap:wrap; gap:8px; }
-    .spec-btn { padding:8px 16px; border:1.5px solid var(--color-border); border-radius:var(--radius-md); font-size:14px; font-weight:500; background:var(--color-surface); cursor:pointer; transition:all var(--transition); }
-    .spec-btn:hover { border-color:var(--color-primary); color:var(--color-primary); }
-    .spec-btn.active { background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
-    .add-cart-success { display:none; }
-    .add-cart-success.show { display:flex; }
-    @media(max-width:767px){.product-detail{grid-template-columns:1fr;gap:28px;}}
+    .product-list { display: grid; gap: 16px; }
+    .product-item {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 20px; background: #fff;
+      border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow .2s;
+    }
+    .product-item:hover { box-shadow: var(--shadow-md); }
+    .product-item__img {
+      width: 88px; height: 88px; flex-shrink: 0;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg,#e8e2d8,#d4c9b8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px; overflow: hidden;
+    }
+    .product-item__img img { width: 100%; height: 100%; object-fit: cover; }
+    .product-item__body { flex: 1; min-width: 0; }
+    .product-item__name  { font-size: 17px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px; }
+    .product-item__price { font-size: 20px; font-weight: 800; color: var(--color-secondary); margin-bottom: 6px; }
+    .product-item__meta  { font-size: 13px; color: var(--color-text-muted); line-height: 1.7; }
+    @media(max-width:500px){
+      .product-item { flex-direction: column; }
+      .product-item__img { width: 100%; height: 140px; font-size: 56px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; margin: -20px -20px 0; width: calc(100% + 40px); }
+    }
   </style>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -53,134 +56,144 @@
 <div id="header-placeholder"></div>
 
 <section class="section">
-  <div class="container">
+  <div class="container" style="max-width:760px;">
     <nav class="breadcrumb">
       <a href="index.html">首頁</a>
       <span class="breadcrumb__sep">/</span>
       <a href="shop.html">紀念商品</a>
       <span class="breadcrumb__sep">/</span>
-      <span id="bc-product">商品詳情</span>
+      <span id="bc-event">活動詳情</span>
     </nav>
 
-    <div class="product-detail" id="product-detail-wrap">
-      <!-- Rendered by JS -->
-    </div>
-  </div>
-</section>
+    <div id="event-loading" style="text-align:center;padding:60px 0;color:var(--color-text-muted);">載入中…</div>
 
-<!-- Related products -->
-<section class="section section--alt">
-  <div class="container">
-    <h2 style="font-size:22px;font-weight:700;color:var(--color-primary);margin-bottom:24px;">其他商品</h2>
-    <div class="shop-grid" id="related-products"></div>
+    <div id="event-content" style="display:none;">
+      <h1 id="event-name" style="font-size:clamp(24px,4vw,36px);font-weight:800;color:var(--color-primary);margin-bottom:12px;"></h1>
+      <div id="event-badges" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+      <p id="event-desc" style="font-size:16px;color:var(--color-text-muted);line-height:1.75;margin-bottom:8px;"></p>
+      <p id="event-time" style="font-size:14px;color:var(--color-text-muted);margin-bottom:28px;"></p>
+
+      <h2 style="font-size:16px;font-weight:700;color:var(--color-primary);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--color-border);">可購買商品</h2>
+      <div id="product-list" class="product-list"></div>
+
+      <div id="event-actions" style="margin-top:32px;"></div>
+    </div>
+
+    <div id="event-error" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
+      <p style="font-size:18px;margin-bottom:16px;">活動不存在或已結束</p>
+      <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+    </div>
   </div>
 </section>
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const params  = new URLSearchParams(location.search);
-  const slug    = params.get('slug') || CK48_DATA.products[0].slug;
-  const product = CK48_DATA.products.find(p => p.slug === slug) || CK48_DATA.products[0];
+document.addEventListener('DOMContentLoaded', async () => {
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://api.reunion30.tw';
 
-  document.title = `${product.name} | 建中48屆30重聚`;
-  const ogTitle = `${product.name} | 建中48屆30重聚`;
-  const ogDesc  = product.description || '建中48屆30年重聚紀念商品，留下這份珍貴的記憶。';
-  document.querySelector('meta[property="og:title"]')?.setAttribute('content', ogTitle);
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', ogDesc);
-  document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', ogTitle);
-  document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', ogDesc);
-  document.getElementById('bc-product').textContent = product.name;
+  const params = new URLSearchParams(location.search);
+  const eventHashid = params.get('id');
 
-  const sizesHtml = product.sizes
-    ? `<div class="spec-group">
-        <div class="spec-label">尺寸</div>
-        <div class="spec-options">
-          ${product.sizes.map((s,i) => `<button class="spec-btn ${i===1?'active':''}" onclick="selectSpec(this)">${s}</button>`).join('')}
-        </div>
-       </div>` : '';
-  const colorsHtml = product.colors
-    ? `<div class="spec-group">
-        <div class="spec-label">顏色</div>
-        <div class="spec-options">
-          ${product.colors.map((c,i) => `<button class="spec-btn ${i===0?'active':''}" onclick="selectSpec(this)">${c}</button>`).join('')}
-        </div>
-       </div>` : '';
+  const loading = document.getElementById('event-loading');
+  const content = document.getElementById('event-content');
+  const errorEl = document.getElementById('event-error');
 
-  document.getElementById('product-detail-wrap').innerHTML = `
-    <div>
-      <div class="product-detail__main-img">${product.emoji}</div>
-      <div class="product-detail__thumbs">
-        <div class="thumb active">${product.emoji}</div>
-        <div class="thumb" style="font-size:20px;">🏷️</div>
-        <div class="thumb" style="font-size:20px;">📦</div>
-      </div>
-    </div>
-    <div>
-      <span class="badge badge--light" style="margin-bottom:12px;display:inline-flex;">${product.category}</span>
-      <h1 style="font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--color-primary);margin-bottom:8px;">${product.name}</h1>
-      <div style="font-size:28px;font-weight:700;color:var(--color-secondary);margin-bottom:20px;">NT$${product.price.toLocaleString()}</div>
-      <p style="font-size:16px;color:var(--color-text-muted);line-height:1.75;margin-bottom:24px;">${product.description}</p>
-      <hr class="divider" style="margin-block:20px;">
-      ${sizesHtml}
-      ${colorsHtml}
-      <div class="spec-group">
-        <div class="spec-label">數量</div>
-        <div class="qty-control">
-          <button class="qty-btn" data-qty="minus" aria-label="減少">−</button>
-          <input class="qty-num" type="number" value="1" min="1" max="10" aria-label="數量">
-          <button class="qty-btn" data-qty="plus" aria-label="增加">+</button>
-        </div>
-      </div>
-      <div id="add-success" class="status-box status-box--success add-cart-success" style="margin-bottom:16px;">
-        <div class="status-box__icon">✅</div>
-        <div>
-          <div class="status-box__title">已加入訂購清單</div>
-          <div class="status-box__desc">感謝您的預購！實際訂購流程將於報名時一併完成。</div>
-        </div>
-      </div>
-      <div class="btn-group" style="flex-direction:column;align-items:stretch;">
-        <button class="btn btn--primary btn--lg" onclick="addToCart()">加入訂購</button>
-        <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
-      </div>
-      <p style="font-size:13px;color:var(--color-text-muted);margin-top:16px;line-height:1.6;">
-        💡 商品預購將於報名時一併處理，活動前寄送或現場領取。數量有限，售完為止。
-      </p>
-    </div>`;
+  if (!eventHashid) {
+    loading.style.display = 'none';
+    errorEl.style.display = '';
+    return;
+  }
 
-  initQtyControl();
+  let event;
+  try {
+    event = await CK48_API.getEvent(eventHashid);
+  } catch (e) {
+    console.error('getEvent failed:', eventHashid, e);
+    loading.style.display = 'none';
+    errorEl.querySelector('p').textContent = e?.message || '活動不存在或已結束';
+    errorEl.style.display = '';
+    return;
+  }
 
-  // Related
-  const related = CK48_DATA.products.filter(p => p.slug !== slug).slice(0, 3);
-  const rp = document.getElementById('related-products');
-  related.forEach(p => {
-    rp.innerHTML += `
-      <article class="product-card">
-        <div class="product-card__img"><div class="product-card__img-placeholder">${p.emoji}</div></div>
-        <div class="product-card__body">
-          <h3 class="product-card__name">${p.name}</h3>
-          <p class="product-card__desc">${p.description}</p>
-          <div class="product-card__footer">
-            <div class="product-card__price">NT$${p.price.toLocaleString()}</div>
-            <a href="shop-detail.html?slug=${p.slug}" class="btn btn--outline btn--sm">查看</a>
+  loading.style.display = 'none';
+  content.style.display = '';
+
+  const isInactive = event.status === 'INACTIVE';
+
+  document.title = `${event.name} | 建中48屆30重聚`;
+  document.getElementById('bc-event').textContent = event.name;
+  document.getElementById('event-name').textContent = event.name;
+  document.getElementById('event-desc').textContent = event.description || '';
+
+  const startDate = event.startAt ? new Date(event.startAt).toLocaleDateString('zh-TW') : '';
+  const endDate = event.endAt ? new Date(event.endAt).toLocaleDateString('zh-TW') : '無期限';
+  document.getElementById('event-time').textContent =
+    `開賣時間：${startDate}${event.endAt ? ' — ' + endDate : ''}`;
+
+  const badgesEl = document.getElementById('event-badges');
+  const eligBadge = event.eligibility === 'ALUMNI_ONLY'
+    ? '<span class="badge badge--primary">限當屆校友</span>'
+    : '<span class="badge badge--light">不限身份</span>';
+  const statusBadge = isInactive
+    ? '<span class="badge" style="background:#e5e7eb;color:#6b7280;">已結束</span>'
+    : '<span class="badge badge--success">購買中</span>';
+  badgesEl.innerHTML = eligBadge + statusBadge;
+
+  const productList = document.getElementById('product-list');
+  if (!event.products || event.products.length === 0) {
+    productList.innerHTML = '<p style="color:var(--color-text-muted);">此活動目前無可購買商品</p>';
+  } else {
+    event.products.forEach(p => {
+      const canBuy = p.status === 'ACTIVE' && !isInactive;
+      const stockHtml = p.stockType === 'LIMITED' && p.availableStock != null
+        ? `剩餘：${p.availableStock} 件　`
+        : '';
+      const limitHtml = p.maxPerPerson ? `每人限購 ${p.maxPerPerson} 件` : '';
+      const imgHtml = p.mainImage
+        ? `<img src="${p.mainImage.startsWith('/') ? API_BASE + p.mainImage : p.mainImage}" alt="${p.name}">`
+        : '🎁';
+
+      productList.innerHTML += `
+        <div class="product-item">
+          <div class="product-item__img">${imgHtml}</div>
+          <div class="product-item__body">
+            <div class="product-item__name">${p.name}</div>
+            <div class="product-item__price">NT$${p.price.toLocaleString()}</div>
+            <div class="product-item__meta">${stockHtml}${limitHtml}</div>
+            ${!canBuy ? '<div class="product-item__meta" style="margin-top:4px;">⛔ 此商品暫不開放購買</div>' : ''}
           </div>
-        </div>
-      </article>`;
-  });
-});
+        </div>`;
+    });
+  }
 
-function selectSpec(btn) {
-  const group = btn.closest('.spec-options');
-  group.querySelectorAll('.spec-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-function addToCart() {
-  document.getElementById('add-success').classList.add('show');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+  const actionsEl = document.getElementById('event-actions');
+  if (isInactive) {
+    actionsEl.innerHTML = `
+      <div class="status-box status-box--info" style="margin-bottom:16px;">
+        <div class="status-box__icon">ℹ️</div>
+        <div>
+          <div class="status-box__title">此活動已結束</div>
+          <div class="status-box__desc">若您已購買，可點下方按鈕重新取得訂單連結。</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <a href="shop-start.html?event=${eventHashid}&lookup=1" class="btn btn--primary">查詢我的訂單</a>
+        <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+      </div>`;
+  } else {
+    actionsEl.innerHTML = `
+      <div class="btn-group">
+        <a href="shop-start?event=${eventHashid}" class="btn btn--primary btn--lg">開始購買</a>
+        <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+      </div>`;
+  }
+});
 </script>
 </body>
 </html>

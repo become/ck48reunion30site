@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購買身份驗證 | 建中48屆30重聚</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .buyer-card {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 20px; background: #fff;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer; text-align: left; width: 100%;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      font-family: inherit;
+    }
+    .buyer-card:hover {
+      border-color: var(--color-primary);
+      background: rgba(31,58,95,.03);
+      box-shadow: var(--shadow-sm);
+    }
+    .buyer-card__icon { font-size: 26px; flex-shrink: 0; width: 36px; text-align: center; }
+    .buyer-card__body { flex: 1; min-width: 0; }
+    .buyer-card__title { font-size: 16px; font-weight: 700; color: var(--color-primary); margin-bottom: 2px; }
+    .buyer-card__desc { font-size: 13px; color: var(--color-text-muted); }
+    .buyer-card__arrow { color: #bbb; font-size: 18px; flex-shrink: 0; }
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+      gap: 6px;
+    }
+    .class-btn {
+      padding: 9px 4px; border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm); background: #fff;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      color: var(--color-text-muted); text-align: center;
+      transition: border-color .15s, background .15s, color .15s;
+      font-family: inherit; line-height: 1;
+    }
+    .class-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(31,58,95,.05); }
+    .class-btn.selected { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .flow-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg); padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    @media(max-width:480px){ .flow-card { padding: 20px 16px; } }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-YJYP34JVKM');
+  </script>
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="section section--alt">
+  <div class="container" style="max-width:560px;">
+
+    <nav class="breadcrumb">
+      <a href="index.html">首頁</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="shop.html">紀念商品</a>
+      <span class="breadcrumb__sep">/</span>
+      <span id="bc-event">購買</span>
+    </nav>
+
+    <div id="page-loading" style="text-align:center;padding:60px 0;color:var(--color-text-muted);">載入中…</div>
+
+    <!-- Step 1: Choose buyer type -->
+    <div id="step-type" style="display:none;">
+      <div style="margin-bottom:24px;">
+        <p style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-muted);margin-bottom:6px;">購買活動</p>
+        <h1 id="event-title" style="font-size:clamp(20px,3vw,28px);font-weight:800;color:var(--color-primary);margin:0;line-height:1.3;"></h1>
+      </div>
+      <div class="flow-card">
+        <h2 style="font-size:17px;font-weight:700;color:var(--color-primary);margin-bottom:4px;">請選擇您的身份</h2>
+        <p id="event-eligibility-hint" style="font-size:14px;color:var(--color-text-muted);margin-bottom:20px;line-height:1.5;"></p>
+        <div id="type-buttons" style="display:flex;gap:12px;flex-direction:column;"></div>
+      </div>
+    </div>
+
+    <!-- Step 2A: Alumni form -->
+    <div id="step-alumni" style="display:none;">
+      <button id="alumni-back" style="background:none;border:none;padding:0;cursor:pointer;font-size:14px;color:var(--color-text-muted);margin-bottom:20px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;line-height:1;">
+        ← 返回
+      </button>
+      <div class="flow-card">
+        <h2 style="font-size:19px;font-weight:800;color:var(--color-primary);margin-bottom:4px;">當屆校友驗證</h2>
+        <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:24px;line-height:1.65;">請填寫班級與中文姓名，系統將驗證您的報到記錄。</p>
+        <div class="form-field" style="margin-bottom:16px;">
+          <label class="form-field__label">班級</label>
+          <div id="class-grid" class="class-grid"></div>
+          <input type="hidden" id="alumni-class" value="">
+          <p id="class-selected-hint" style="display:none;font-size:13px;color:var(--color-primary);font-weight:600;margin-top:8px;"></p>
+        </div>
+        <div class="form-field" style="margin-bottom:24px;">
+          <label class="form-field__label">中文姓名</label>
+          <input class="form-control" type="text" id="alumni-name" placeholder="請輸入您的中文姓名" maxlength="20" autocomplete="off">
+        </div>
+        <div id="alumni-error" class="status-box status-box--error" style="display:none;margin-bottom:16px;">
+          <div class="status-box__icon">⚠️</div>
+          <div><div class="status-box__desc" id="alumni-error-msg" style="line-height:1.65;"></div></div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="alumni-submit" style="width:100%;">確認並繼續</button>
+      </div>
+    </div>
+
+    <!-- Step 2B: Non-alumni form -->
+    <div id="step-external" style="display:none;">
+      <button id="ext-back" style="background:none;border:none;padding:0;cursor:pointer;font-size:14px;color:var(--color-text-muted);margin-bottom:20px;display:inline-flex;align-items:center;gap:6px;font-family:inherit;line-height:1;">
+        ← 返回
+      </button>
+      <div class="flow-card">
+        <h2 style="font-size:19px;font-weight:800;color:var(--color-primary);margin-bottom:4px;">填寫購買資料</h2>
+        <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:24px;line-height:1.65;">確認後系統將寄出包含訂單連結與密碼的確認信。</p>
+        <div class="form-field" style="margin-bottom:16px;">
+          <label class="form-field__label">身份類型</label>
+          <select class="form-control form-control--select" id="ext-type">
+            <option value="ALUMNI">校友（學長學弟）</option>
+            <option value="TEACHER">師長・老師</option>
+            <option value="PARENT_FRIEND">家長・親友</option>
+            <option value="GENERAL">一般民眾・其他</option>
+          </select>
+        </div>
+        <div class="form-field" style="margin-bottom:16px;">
+          <label class="form-field__label">姓名 <span style="color:var(--color-secondary)">*</span></label>
+          <input class="form-control" type="text" id="ext-name" placeholder="請輸入姓名" maxlength="50" autocomplete="name">
+        </div>
+        <div class="form-field" style="margin-bottom:16px;">
+          <label class="form-field__label">手機號碼 <span style="color:var(--color-secondary)">*</span></label>
+          <input class="form-control" type="tel" id="ext-phone" placeholder="0912345678" autocomplete="tel">
+        </div>
+        <div class="form-field" style="margin-bottom:24px;">
+          <label class="form-field__label">Email <span style="color:var(--color-secondary)">*</span></label>
+          <input class="form-control" type="email" id="ext-email" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <div id="ext-error" class="status-box status-box--error" style="display:none;margin-bottom:16px;">
+          <div class="status-box__icon">⚠️</div>
+          <div><div class="status-box__desc" id="ext-error-msg"></div></div>
+        </div>
+        <button class="btn btn--primary btn--lg" id="ext-submit" style="width:100%;">確認並繼續</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Done -->
+    <div id="step-done" style="display:none;">
+      <div class="flow-card" style="text-align:center;padding:40px 28px;">
+        <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px;">📬</div>
+        <h2 id="done-title" style="font-size:22px;font-weight:800;color:var(--color-primary);margin-bottom:8px;">確認信已寄出！</h2>
+        <p id="done-lead" style="font-size:15px;color:var(--color-text-muted);margin-bottom:4px;">訂單連結與密碼已寄至</p>
+        <p id="masked-email" style="font-size:18px;font-weight:700;color:var(--color-secondary);margin-bottom:24px;word-break:break-all;"></p>
+        <div class="status-box status-box--info" style="text-align:left;margin-bottom:28px;">
+          <div class="status-box__icon">ℹ️</div>
+          <div>
+            <div class="status-box__title">下一步</div>
+            <div id="done-hint" class="status-box__desc">開啟信中連結，輸入密碼即可選購商品並確認訂單。</div>
+          </div>
+        </div>
+        <a href="shop.html" class="btn btn--outline">← 返回商品頁</a>
+      </div>
+    </div>
+
+    <div id="page-error" style="display:none;text-align:center;padding:60px 0;">
+      <p style="font-size:18px;color:var(--color-text-muted);margin-bottom:16px;">活動不存在或已結束</p>
+      <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+    </div>
+
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+<script>
+function swalError(title, text) {
+  return Swal.fire({ icon: 'error', title, text, confirmButtonText: '確認', confirmButtonColor: '#1f3a5f' });
+}
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(location.search);
+  const eventHashid = params.get('event');
+
+  const loading = document.getElementById('page-loading');
+  const pageError = document.getElementById('page-error');
+
+  if (!eventHashid) {
+    loading.style.display = 'none';
+    pageError.style.display = '';
+    return;
+  }
+
+  let event, classes;
+  try {
+    [event, classes] = await Promise.all([
+      CK48_API.getEvent(eventHashid),
+      CK48_API.getClasses(),
+    ]);
+  } catch (e) {
+    console.error('shop-start error:', e);
+    loading.style.display = 'none';
+    pageError.querySelector('p').textContent = e?.message || '活動不存在或已結束';
+    pageError.style.display = '';
+    return;
+  }
+
+  const now = new Date();
+  const startAt    = event.startAt ? new Date(event.startAt) : null;
+  const endAt      = event.endAt   ? new Date(event.endAt)   : null;
+  const hasStarted = !startAt || now >= startAt;
+  const hasEnded   = !!endAt && now > endAt;
+
+  const isOpen       = event.status === 'ACTIVE' && hasStarted && !hasEnded;
+  const isComingSoon = event.status === 'ACTIVE' && !hasStarted;
+  const isLookupMode = params.get('lookup') === '1'
+    || event.status === 'INACTIVE'
+    || (event.status === 'ACTIVE' && hasEnded);
+
+  loading.style.display = 'none';
+
+  // Always set event title for ACTIVE events
+  document.getElementById('bc-event').textContent = event.name;
+  document.getElementById('event-title').textContent = event.name;
+
+  if (isComingSoon) {
+    document.title = `${event.name} — 即將開賣 | 建中48屆30重聚`;
+    const dateStr = startAt
+      ? startAt.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '';
+    document.getElementById('event-eligibility-hint').innerHTML =
+      `活動將於 <strong>${dateStr}</strong> 開賣`;
+    document.getElementById('type-buttons').innerHTML = `
+      <div style="text-align:center;padding:24px 0;color:var(--color-text-muted);">
+        <div style="font-size:40px;margin-bottom:12px;">🕐</div>
+        <div style="font-size:16px;font-weight:700;color:var(--color-primary);margin-bottom:6px;">活動尚未開始</div>
+        <div style="font-size:13px;line-height:1.6;">開賣後請再回來選購。</div>
+      </div>`;
+    document.getElementById('step-type').style.display = '';
+    return;
+  }
+
+  if (isLookupMode) {
+    document.title = `${event.name} — 訂單查詢 | 建中48屆30重聚`;
+    document.getElementById('event-title').textContent = `${event.name}（活動已結束）`;
+    document.getElementById('event-eligibility-hint').textContent = '請輸入您的資料重新取得訂單連結';
+    const alumniBtn = document.getElementById('alumni-submit');
+    const extBtn = document.getElementById('ext-submit');
+    if (alumniBtn) alumniBtn.textContent = '重新取得訂單連結';
+    if (extBtn) extBtn.textContent = '重新取得訂單連結';
+  } else {
+    document.title = `${event.name} — 購買 | 建中48屆30重聚`;
+  }
+
+  // Build class grid
+  const classGrid = document.getElementById('class-grid');
+  const classInput = document.getElementById('alumni-class');
+  const classHint  = document.getElementById('class-selected-hint');
+
+  classes.forEach(cls => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'class-btn';
+    btn.textContent = cls.className;
+    btn.addEventListener('click', () => {
+      classGrid.querySelectorAll('.class-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      classInput.value = cls.id;
+      classHint.textContent = `已選擇：${cls.className} 班`;
+      classHint.style.display = '';
+    });
+    classGrid.appendChild(btn);
+  });
+
+  // Pre-fill name from localStorage (project-specific key, no browser autocomplete)
+  const NAME_KEY = 'ck48_alumni_name';
+  const savedName = localStorage.getItem(NAME_KEY);
+  if (savedName) document.getElementById('alumni-name').value = savedName;
+
+  function showStep(id) {
+    ['step-type', 'step-alumni', 'step-external', 'step-done'].forEach(s => {
+      document.getElementById(s).style.display = s === id ? '' : 'none';
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function applyDoneState(result) {
+    document.getElementById('masked-email').textContent = result.maskedEmail;
+    if (result.alreadyCompleted) {
+      document.getElementById('done-title').textContent = '訂單已完成';
+      document.getElementById('done-lead').textContent = '訂單查詢連結已重新寄至';
+      document.getElementById('done-hint').textContent = '開啟信中連結，輸入新密碼即可查看已完成的訂單記錄。';
+    } else if (result.alreadyOrdered) {
+      document.getElementById('done-title').textContent = '訂單連結已重新寄出';
+      document.getElementById('done-lead').textContent = '您已有進行中的訂單，連結與新密碼已寄至';
+      document.getElementById('done-hint').textContent = '開啟信中連結，輸入新密碼即可查看目前訂單狀態。';
+    } else {
+      document.getElementById('done-title').textContent = '確認信已寄出！';
+      document.getElementById('done-lead').textContent = '訂單連結與密碼已寄至';
+      document.getElementById('done-hint').textContent = '開啟信中連結，輸入密碼即可選購商品並確認訂單。';
+    }
+  }
+
+  if (event.eligibility === 'ALUMNI_ONLY') {
+    document.getElementById('event-eligibility-hint').textContent = '此活動僅限當屆校友購買';
+    document.getElementById('type-buttons').innerHTML = `
+      <button class="buyer-card" id="btn-alumni">
+        <div class="buyer-card__icon">🏫</div>
+        <div class="buyer-card__body">
+          <div class="buyer-card__title">當屆校友購買</div>
+          <div class="buyer-card__desc">建中48屆，需已完成報到驗證</div>
+        </div>
+        <div class="buyer-card__arrow">→</div>
+      </button>`;
+    document.getElementById('btn-alumni').addEventListener('click', () => showStep('step-alumni'));
+  } else {
+    document.getElementById('event-eligibility-hint').textContent = '請選擇您的身份以繼續';
+    document.getElementById('type-buttons').innerHTML = `
+      <button class="buyer-card" id="btn-alumni">
+        <div class="buyer-card__icon">🏫</div>
+        <div class="buyer-card__body">
+          <div class="buyer-card__title">當屆校友</div>
+          <div class="buyer-card__desc">建中48屆，需已完成報到驗證</div>
+        </div>
+        <div class="buyer-card__arrow">→</div>
+      </button>
+      <button class="buyer-card" id="btn-external">
+        <div class="buyer-card__icon">👥</div>
+        <div class="buyer-card__body">
+          <div class="buyer-card__title">非當屆校友・師長・親友</div>
+          <div class="buyer-card__desc">學長學弟、老師、家長親友、一般民眾</div>
+        </div>
+        <div class="buyer-card__arrow">→</div>
+      </button>`;
+    document.getElementById('btn-alumni').addEventListener('click', () => showStep('step-alumni'));
+    document.getElementById('btn-external').addEventListener('click', () => showStep('step-external'));
+  }
+
+  showStep('step-type');
+
+  document.getElementById('alumni-back').addEventListener('click', () => showStep('step-type'));
+  document.getElementById('ext-back').addEventListener('click', () => showStep('step-type'));
+
+  // Helper: mark/unmark field error
+  function fieldError(id, hasError) {
+    document.getElementById(id)?.classList.toggle('form-control--error', hasError);
+  }
+  function clearFieldErrors(...ids) {
+    ids.forEach(id => document.getElementById(id)?.classList.remove('form-control--error'));
+  }
+
+  // Clear error when user corrects a field
+  document.getElementById('alumni-name')?.addEventListener('input', () => fieldError('alumni-name', false));
+  ['ext-name','ext-phone','ext-email'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => fieldError(id, false));
+  });
+
+  // Alumni submit
+  document.getElementById('alumni-submit').addEventListener('click', async () => {
+    const classId = classInput.value;
+    const name = document.getElementById('alumni-name').value.trim();
+
+    clearFieldErrors('alumni-name');
+
+    if (!classId) {
+      document.getElementById('class-grid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      swalError('請選擇班級', '請先點選您的班級後再繼續。');
+      return;
+    }
+    if (!name) {
+      fieldError('alumni-name', true);
+      document.getElementById('alumni-name')?.focus();
+      swalError('請填寫姓名', '請輸入您的中文姓名。');
+      return;
+    }
+
+    localStorage.setItem(NAME_KEY, name);
+    const btn = document.getElementById('alumni-submit');
+    btn.disabled = true; btn.textContent = isLookupMode ? '查詢中…' : '驗證中…';
+    try {
+      const result = await CK48_API.startOrder({ eventHashid, buyerType: 'CURRENT_ALUMNI', name, classId });
+      applyDoneState(result);
+      showStep('step-done');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = isLookupMode ? '重新取得訂單連結' : '確認並繼續';
+      if (e.code === 'ORDER_NOT_FOUND') {
+        swalError('查無訂單記錄', e.message || '此班級姓名查無購買記錄，如有疑問請聯絡籌備團隊。');
+      } else if (e.code === 'NAME_NOT_FOUND') {
+        fieldError('alumni-name', true);
+        swalError('查無此校友', '請確認班級與中文姓名是否正確，或聯絡班召協助。');
+      } else if (e.code === 'NOT_CHECKED_IN') {
+        Swal.fire({
+          icon: 'warning',
+          title: '尚未完成報到',
+          html: '購買前請先完成報到。<br><a href="find-classmates.html" style="color:#7a2e3a;text-decoration:underline;">前往報到頁面 →</a>',
+          confirmButtonText: '確認',
+          confirmButtonColor: '#1f3a5f',
+        });
+      } else {
+        swalError('送出失敗', e.message || '請稍後再試。');
+      }
+    }
+  });
+
+  // External submit
+  document.getElementById('ext-submit').addEventListener('click', async () => {
+    const buyerType = document.getElementById('ext-type').value;
+    const name  = document.getElementById('ext-name').value.trim();
+    const phone = document.getElementById('ext-phone').value.trim();
+    const email = document.getElementById('ext-email').value.trim();
+
+    clearFieldErrors('ext-name', 'ext-phone', 'ext-email');
+
+    let firstInvalid = null;
+    if (!name)  { fieldError('ext-name', true);  if (!firstInvalid) firstInvalid = { id: 'ext-name',  msg: '請填寫姓名' }; }
+    if (!phone) { fieldError('ext-phone', true); if (!firstInvalid) firstInvalid = { id: 'ext-phone', msg: '請填寫手機號碼' }; }
+    if (!email) { fieldError('ext-email', true); if (!firstInvalid) firstInvalid = { id: 'ext-email', msg: '請填寫 Email' }; }
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      fieldError('ext-email', true);
+      if (!firstInvalid) firstInvalid = { id: 'ext-email', msg: 'Email 格式不正確' };
+    }
+
+    if (firstInvalid) {
+      document.getElementById(firstInvalid.id)?.focus();
+      swalError('請填寫必要資料', firstInvalid.msg);
+      return;
+    }
+
+    const btn = document.getElementById('ext-submit');
+    btn.disabled = true; btn.textContent = isLookupMode ? '查詢中…' : '送出中…';
+    try {
+      const result = await CK48_API.startOrder({ eventHashid, buyerType, name, phone, email });
+      applyDoneState(result);
+      showStep('step-done');
+    } catch (e) {
+      btn.disabled = false; btn.textContent = isLookupMode ? '重新取得訂單連結' : '確認並繼續';
+      if (e.code === 'ORDER_NOT_FOUND') {
+        swalError('查無訂單記錄', e.message || '此 Email 查無購買記錄，如有疑問請聯絡籌備團隊。');
+      } else {
+        swalError('送出失敗', e.message || '請稍後再試。');
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>

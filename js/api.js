@@ -106,5 +106,108 @@ const CK48_API = (() => {
       }
       return data;
     },
+
+    // ── Shop ──────────────────────────────────────────────────────────────────
+
+    async getEvents() {
+      return get('/api/events');
+    },
+
+    async getEvent(eventHashid) {
+      return get(`/api/events/${encodeURIComponent(eventHashid)}`);
+    },
+
+    async getProductDetail(hashid) {
+      return get(`/api/products/${encodeURIComponent(hashid)}`);
+    },
+
+    async startOrder(payload) {
+      const res = await fetch(BASE + '/api/orders/start', {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(typeof data.error === 'string' ? data.error : '送出失敗，請稍後再試');
+        err.code = data.code || null;
+        throw err;
+      }
+      return data;
+    },
+
+    async lookupOrder(transferCode, password) {
+      const res = await fetch(BASE + '/api/orders/lookup', {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ transferCode, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(typeof data.error === 'string' ? data.error : '查詢失敗');
+      return data;
+    },
+
+    async verifyOrder(hashid, password) {
+      const res = await fetch(BASE + '/api/orders/verify', {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ hashid, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(
+          typeof data.error === 'string' ? data.error : '密碼錯誤或訂單不存在'
+        );
+        err.status = res.status;
+        throw err;
+      }
+      return data;
+    },
+
+    async confirmOrder(hashid, password, items, shipping = {}) {
+      const res = await fetch(BASE + `/api/orders/${encodeURIComponent(hashid)}/confirm`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ password, items, ...shipping }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(
+          typeof data.error === 'string' ? data.error : '送出失敗，請稍後再試'
+        );
+        throw err;
+      }
+      return data;
+    },
+
+    async submitPayment(hashid, password, paymentDate, accountLast5) {
+      const res = await fetch(BASE + `/api/orders/${encodeURIComponent(hashid)}/submit-payment`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ password, paymentDate, accountLast5 }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(typeof data.error === 'string' ? data.error : '送出失敗，請稍後再試');
+        throw err;
+      }
+      return data;
+    },
+
+    async confirmReceived(hashid, password) {
+      const res = await fetch(BASE + `/api/orders/${encodeURIComponent(hashid)}/received`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = new Error(
+          typeof data.error === 'string' ? data.error : '操作失敗，請稍後再試'
+        );
+        throw err;
+      }
+      return data;
+    },
   };
 })();

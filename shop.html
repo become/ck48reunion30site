@@ -8,7 +8,6 @@
   <meta name="keywords" content="建中,建國中學,48屆,30年重聚,紀念商品,CK48">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://ck48.reunion30.tw/shop.html">
-  <!-- Open Graph -->
   <meta property="og:type"        content="website">
   <meta property="og:site_name"   content="建中48屆30重聚">
   <meta property="og:locale"      content="zh_TW">
@@ -18,7 +17,6 @@
   <meta property="og:image"       content="https://ck48.reunion30.tw/images/og-default.jpg">
   <meta property="og:image:width"  content="1200">
   <meta property="og:image:height" content="630">
-  <!-- Twitter Card -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="紀念商品 | 建中48屆30重聚">
   <meta name="twitter:description" content="建中48屆30年重聚紀念商品，留下這份珍貴的記憶。">
@@ -27,7 +25,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -49,23 +46,15 @@
 
 <section class="section">
   <div class="container">
-    <!-- Tabs -->
-    <div data-tabs style="margin-bottom:0;">
-      <div class="tabs">
-        <button class="tab-btn active" data-shop-cat="all">全部</button>
-        <button class="tab-btn" data-shop-cat="服飾">服飾</button>
-        <button class="tab-btn" data-shop-cat="紀念品">紀念品</button>
-        <button class="tab-btn" data-shop-cat="其他">其他</button>
-      </div>
+    <div id="events-loading" style="text-align:center;padding:60px 0;color:var(--color-text-muted);">載入中…</div>
+    <div class="shop-grid" id="events-grid" style="display:none;"></div>
+    <div id="events-empty" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
+      <p style="font-size:18px;margin-bottom:8px;">目前尚無開放中的購買活動</p>
+      <p>請稍後再查看</p>
     </div>
-
-    <!-- Notice -->
-    <div style="background:rgba(176,141,87,.08);border:1px solid rgba(176,141,87,.25);border-radius:var(--radius-md);padding:14px 18px;font-size:14px;color:var(--color-text);margin-bottom:28px;">
-      🎁 商品數量有限，敬請提早預購！預計於活動前寄出，或活動當天現場領取。
-    </div>
-
-    <div class="shop-grid" id="shop-grid">
-      <!-- Rendered by JS -->
+    <div style="margin-top:40px;text-align:center;padding:20px;border-top:1px solid var(--color-border);">
+      <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:12px;">已購買過？</p>
+      <a href="order-lookup.html" class="btn btn--ghost btn--sm">🔍 查詢我的訂單</a>
     </div>
   </div>
 </section>
@@ -86,52 +75,75 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  let currentCat = 'all';
+document.addEventListener('DOMContentLoaded', async () => {
+  let events = [];
 
-  function renderShop() {
-    const grid = document.getElementById('shop-grid');
-    const items = currentCat === 'all'
-      ? CK48_DATA.products
-      : CK48_DATA.products.filter(p => p.category === currentCat);
-    grid.innerHTML = '';
-    items.forEach(p => {
-      grid.innerHTML += `
-        <article class="product-card reveal">
-          <div class="product-card__img">
-            <div class="product-card__img-placeholder">${p.emoji}</div>
-          </div>
-          <div class="product-card__body">
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-              <span class="badge badge--light">${p.category}</span>
-            </div>
-            <h2 class="product-card__name">${p.name}</h2>
-            <p class="product-card__desc">${p.description}</p>
-            <div class="product-card__footer">
-              <div class="product-card__price">NT$${p.price.toLocaleString()} <span>/ 件</span></div>
-              <a href="shop-detail.html?slug=${p.slug}" class="btn btn--outline btn--sm">查看詳情</a>
-            </div>
-          </div>
-        </article>`;
-    });
-    setTimeout(() => {
-      document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
-    }, 50);
+  try {
+    events = await CK48_API.getEvents();
+  } catch (e) {
+    events = (CK48_DATA.events || []).filter(ev => ev.status === 'ACTIVE' || ev.status === 'INACTIVE');
   }
 
-  document.querySelectorAll('[data-shop-cat]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-shop-cat]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentCat = btn.dataset.shopCat;
-      renderShop();
-    });
+  const loading = document.getElementById('events-loading');
+  const grid = document.getElementById('events-grid');
+  const empty = document.getElementById('events-empty');
+
+  loading.style.display = 'none';
+
+  if (!events.length) {
+    empty.style.display = '';
+    return;
+  }
+
+  grid.style.display = '';
+
+  events.forEach(ev => {
+    const isInactive = ev.status === 'INACTIVE';
+    const eligBadge = ev.eligibility === 'ALUMNI_ONLY'
+      ? '<span class="badge badge--primary" style="font-size:12px;">限當屆校友</span>'
+      : '<span class="badge badge--light" style="font-size:12px;">不限身份</span>';
+    const statusBadge = isInactive
+      ? '<span class="badge" style="font-size:12px;background:#e5e7eb;color:#6b7280;">已結束</span>'
+      : '';
+    const startDate = ev.startAt ? new Date(ev.startAt).toLocaleDateString('zh-TW') : '';
+    const endDate = ev.endAt ? new Date(ev.endAt).toLocaleDateString('zh-TW') : '無期限';
+    const detailBtn = isInactive
+      ? `<span class="btn btn--outline btn--sm" style="opacity:.5;pointer-events:none;">已結束</span>`
+      : ev.hashid
+        ? `<a href="shop-detail?id=${ev.hashid}" class="btn btn--outline btn--sm">查看詳情</a>`
+        : `<span class="btn btn--outline btn--sm" style="opacity:.5;pointer-events:none;">即將開放</span>`;
+
+    grid.innerHTML += `
+      <article class="product-card reveal" style="${isInactive ? 'opacity:.6;filter:grayscale(.3);' : ''}">
+        <div class="product-card__img" style="background:linear-gradient(135deg,var(--color-primary) 0%,#2a4f7c 100%);display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="font-size:56px;">🎁</span>
+          ${isInactive ? '<div style="position:absolute;inset:0;background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;"><span style="background:rgba(0,0,0,.5);color:#fff;font-size:13px;font-weight:700;padding:4px 12px;border-radius:20px;">已結束</span></div>' : ''}
+        </div>
+        <div class="product-card__body">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+            ${eligBadge}
+          </div>
+          <h2 class="product-card__name">${ev.name}</h2>
+          <p class="product-card__desc">${ev.description || ''}</p>
+          <p style="font-size:12px;color:var(--color-text-muted);margin-bottom:14px;display:flex;align-items:center;gap:4px;">
+            <span>🗓</span>
+            <span>${startDate}${ev.endAt ? ' — ' + endDate : '（無截止日）'}</span>
+          </p>
+          <div class="product-card__footer">
+            <span style="font-size:13px;color:var(--color-text-muted);font-weight:600;">${ev.productCount || 0} 項商品</span>
+            ${detailBtn}
+          </div>
+        </div>
+      </article>`;
   });
 
-  renderShop();
+  setTimeout(() => {
+    document.querySelectorAll('.reveal:not(.revealed)').forEach(el => el.classList.add('revealed'));
+  }, 50);
 });
 </script>
 </body>

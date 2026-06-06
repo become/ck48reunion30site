@@ -14,6 +14,7 @@ const HEADER_HTML = `
       <a href="news.html"           class="header-nav__item">最新消息</a>
       <a href="event.html"          class="header-nav__item">活動資訊</a>
       <a href="memory-photos.html"  class="header-nav__item">回憶照片</a>
+      <a href="shop.html"           class="header-nav__item">紀念品</a>
       <a href="faq.html"            class="header-nav__item">FAQ</a>
     </nav>
     <div class="header-actions">
@@ -59,6 +60,7 @@ const HEADER_HTML = `
     <a href="news.html"            class="mobile-menu__item">最新消息</a>
     <a href="event.html"           class="mobile-menu__item">活動資訊</a>
     <a href="memory-photos.html"   class="mobile-menu__item">回憶照片</a>
+    <a href="shop.html"            class="mobile-menu__item">紀念品</a>
     <a href="faq.html"             class="mobile-menu__item">FAQ</a>
   </div>
 </nav>`;

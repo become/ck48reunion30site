@@ -113,6 +113,7 @@ p  { line-height: 1.75; }
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 12px 28px;
   border-radius: var(--radius-md);
@@ -1269,6 +1270,8 @@ p  { line-height: 1.75; }
 .status-box.show { display: flex; }
 .status-box--success { background: #EBF5F0; border: 1.5px solid #5BAD85; }
 .status-box--error   { background: #FDF0F0; border: 1.5px solid var(--color-secondary); }
+.status-box--info    { background: #EBF2FC; border: 1.5px solid #5B91D0; }
+.status-box--warning { background: #FEF3E2; border: 1.5px solid #D4963A; }
 .status-box__icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
 .status-box__title { font-size: 16px; font-weight: 700; color: var(--color-text); margin-bottom: 4px; }
 .status-box__desc  { font-size: 14px; color: var(--color-text-muted); }

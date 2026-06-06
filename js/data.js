@@ -204,6 +204,20 @@ const CK48_DATA = {
     "甲班", "乙班", "丙班", "丁班", "戊班",
     "己班", "庚班", "辛班", "壬班", "癸班",
     "子班", "丑班", "寅班", "卯班", "辰班"
+  ],
+
+  events: [
+    {
+      hashid: null,
+      name: '紀念品選購',
+      description: '精選多款建中48屆30重聚紀念品，數量有限，歡迎選購。',
+      eligibility: 'ALL',
+      status: 'ACTIVE',
+      startAt: '2026-08-01T00:00:00Z',
+      endAt: null,
+      productCount: 0,
+      products: []
+    }
   ]
 };
 
