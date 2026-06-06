@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const detailBtn = isInactive
       ? `<span class="btn btn--outline btn--sm" style="opacity:.5;pointer-events:none;">已結束</span>`
       : ev.hashid
-        ? `<a href="shop-detail?id=${ev.hashid}" class="btn btn--outline btn--sm">查看詳情</a>`
+        ? `<a href="shop-detail.html?id=${ev.hashid}" class="btn btn--outline btn--sm">查看詳情</a>`
         : `<span class="btn btn--outline btn--sm" style="opacity:.5;pointer-events:none;">即將開放</span>`;
 
     grid.innerHTML += `
