@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>購買說明 | 建中48屆30重聚</title>
+  <meta name="description" content="建中48屆30重聚紀念商品購買流程說明、常見問題解答。">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    /* ── Steps timeline ─────────────────────────────────────── */
+    .steps { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 22px; top: 44px; bottom: 44px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--color-primary) 0%, #b8965a 100%);
+      opacity: .2;
+    }
+    .step {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 20px 0;
+    }
+    .step__num {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 17px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1;
+      box-shadow: 0 2px 8px rgba(31,58,95,.25);
+    }
+    .step__body { flex: 1; padding-top: 9px; }
+    .step__title {
+      font-size: 16px; font-weight: 700;
+      color: var(--color-primary); margin-bottom: 5px;
+    }
+    .step__desc {
+      font-size: 14px; color: var(--color-text-muted); line-height: 1.75;
+    }
+    .step__email {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      background: #fef9ec; color: #92400e;
+      border: 1px solid #fde68a;
+      border-radius: 6px; padding: 3px 10px;
+      margin-top: 8px;
+    }
+    .step__status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      background: #eff6ff; color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px; padding: 3px 10px;
+      margin-top: 8px;
+    }
+    /* ── Info card ─────────────────────────────────────────── */
+    .info-card {
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .info-card__title {
+      font-size: 15px; font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .info-card__body {
+      font-size: 14px; color: var(--color-text-muted); line-height: 1.8;
+    }
+    .info-card--warn {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+    .info-card--warn .info-card__title { color: #92400e; }
+    /* ── FAQ ───────────────────────────────────────────────── */
+    .faq-item {
+      border-bottom: 1px solid var(--color-border);
+      padding: 18px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      font-size: 15px; font-weight: 700;
+      color: var(--color-primary); margin-bottom: 8px;
+      display: flex; gap: 10px;
+    }
+    .faq-q::before {
+      content: 'Q';
+      width: 22px; height: 22px; flex-shrink: 0;
+      background: var(--color-primary); color: #fff;
+      border-radius: 4px;
+      font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px;
+    }
+    .faq-a {
+      font-size: 14px; color: var(--color-text-muted); line-height: 1.8;
+      padding-left: 32px;
+    }
+    /* ── Section headers ───────────────────────────────────── */
+    .guide-section { margin-bottom: 48px; }
+    .guide-section__title {
+      font-size: 19px; font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--color-border);
+      display: flex; align-items: center; gap: 10px;
+    }
+  </style>
+</head>
+<body class="page-top">
+<div id="header-placeholder"></div>
+
+<section class="page-hero">
+  <div class="container page-hero__content">
+    <div class="page-hero__eyebrow">Purchase Guide</div>
+    <h1 class="page-hero__title">購買說明</h1>
+    <p class="page-hero__sub">詳細了解購買流程、Email 驗證與常見問題</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:760px;">
+
+    <!-- ── 購買流程 ── -->
+    <div class="guide-section">
+      <h2 class="guide-section__title">
+        <span>📋</span> 購買流程說明
+      </h2>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__body">
+            <div class="step__title">選擇活動，確認商品</div>
+            <div class="step__desc">
+              前往「紀念商品」頁面，選擇您有興趣的購買活動，查看商品內容、價格與購買資格。
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__body">
+            <div class="step__title">身份驗證，建立訂單</div>
+            <div class="step__desc">
+              限當屆校友的活動，需輸入班級與中文姓名進行驗證（需先完成活動報到且審核通過）。
+              其他身份可直接填寫姓名與聯絡資料。
+              驗證成功後，系統會寄送訂單信件與專屬密碼。
+            </div>
+            <div class="step__email">📬 信件 1：訂單建立通知，附上訂單連結與密碼</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__body">
+            <div class="step__title">開啟訂單，選擇商品</div>
+            <div class="step__desc">
+              點擊信件中的「開啟我的訂單」連結，輸入密碼後進入訂單頁面，勾選想要的商品數量，按下「送出選購」確認。
+            </div>
+            <div class="step__status">📄 訂單狀態：待財務確認</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__num">4</div>
+          <div class="step__body">
+            <div class="step__title">收到付款通知，完成轉帳</div>
+            <div class="step__desc">
+              財務人員審核後，會寄送轉帳帳號、金額與期限。請於截止日前完成匯款。
+              信件中附有「確認付款」連結，轉帳後可填入帳號後五碼與日期讓財務快速對帳。
+            </div>
+            <div class="step__email">📬 信件 2：付款通知，含轉帳資訊與確認付款連結</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__num">5</div>
+          <div class="step__body">
+            <div class="step__title">財務確認收款</div>
+            <div class="step__desc">
+              財務核對匯款後確認收款，系統寄出付款確認信。
+              若活動含寄送服務，接下來會等待商品出貨。
+            </div>
+            <div class="step__email">📬 信件 3：付款已確認</div>
+            <div class="step__status" style="margin-left:8px;">📄 訂單狀態：已付款 / 待出貨</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step__num">6</div>
+          <div class="step__body">
+            <div class="step__title">出貨通知 / 完成訂單</div>
+            <div class="step__desc">
+              商品寄出後收到出貨通知，請收貨後點擊信件連結「確認收貨」完成整個流程。
+              無需寄送的活動（如現場取件），付款確認後訂單即完成。
+            </div>
+            <div class="step__email">📬 信件 4（含寄送）：出貨通知，請確認收貨</div>
+            <div class="step__status" style="margin-left:8px;">📄 訂單狀態：已完成</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Email 說明 ── -->
+    <div class="guide-section">
+      <h2 class="guide-section__title">
+        <span>📧</span> 關於報到 Email
+      </h2>
+
+      <div class="info-card info-card--warn">
+        <div class="info-card__title">⚠️ 重要：當屆校友的 Email 來源</div>
+        <div class="info-card__body">
+          限當屆校友購買的活動，所有訂單信件會寄到您<strong>報到時填寫的 Email</strong>。
+          若您在報到時填寫的 Email 有誤，或根本沒有填寫，將無法收到任何訂單通知。
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card__title">✅ 確認流程</div>
+        <div class="info-card__body">
+          1. 確認您已完成線上報到，且班召已審核通過<br>
+          2. 報到時填寫的 Email 必須是您能收信的信箱<br>
+          3. 若 Email 有誤，請聯絡您的班召或籌備組協助更正，再重新操作購買流程
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card__title">💡 未完成報到的同學</div>
+        <div class="info-card__body">
+          尚未報到的當屆校友無法通過身份驗證，請先前往
+          <a href="find-classmates.html" style="color:var(--color-primary);font-weight:600;">找到我</a>
+          完成報到後再進行購買。
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 密碼說明 ── -->
+    <div class="guide-section">
+      <h2 class="guide-section__title">
+        <span>🔑</span> 關於訂單密碼
+      </h2>
+
+      <div class="info-card">
+        <div class="info-card__title">每封信都有最新密碼</div>
+        <div class="info-card__body">
+          為了安全起見，每次寄送訂單相關通知時，系統都會<strong>重置密碼</strong>並在信件中提供最新密碼。
+          舊密碼會立即失效，請務必使用<strong>最新一封信件中的密碼</strong>登入訂單頁面。
+        </div>
+      </div>
+
+      <div class="info-card info-card--warn">
+        <div class="info-card__title">⚠️ 密碼失效了怎麼辦？</div>
+        <div class="info-card__body">
+          如果您輸入密碼後顯示「密碼錯誤」，請查看<strong>最新一封</strong>訂單相關信件（勿使用舊信件的密碼）。
+          若仍無法登入，請前往
+          <a href="order-lookup.html" style="color:var(--color-primary);font-weight:600;">訂單查詢</a>
+          輸入訂單代號重新取得連結，或聯絡籌備組協助。
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FAQ ── -->
+    <div class="guide-section">
+      <h2 class="guide-section__title">
+        <span>❓</span> 常見問題
+      </h2>
+
+      <div>
+        <div class="faq-item">
+          <div class="faq-q">系統找不到我的姓名，怎麼辦？</div>
+          <div class="faq-a">
+            請確認：① 班級選擇正確　② 姓名輸入完整中文名（含改名的新名字也可以）　③ 已完成線上報到且班召已審核通過。
+            若以上條件都符合仍無法找到，請聯絡班召或籌備組協助確認。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">我重複點了「確認並繼續」，收到很多封信，哪個才有效？</div>
+          <div class="faq-a">
+            最新一封信件就是目前的訂單密碼。每次重新驗證都會重置密碼，使用最新信件的連結與密碼即可，舊信件自動失效，不需要擔心重複訂單的問題。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">一個活動可以購買多件同一商品嗎？</div>
+          <div class="faq-a">
+            視各活動商品設定而定。部分商品設有每人購買上限（例如每人限購 1 件），訂單選購頁面會顯示可購買數量上限。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">可以幫家人或朋友購買嗎？</div>
+          <div class="faq-a">
+            限當屆校友的活動需以本人身份驗證購買，無法代購。不限身份的活動可填寫對方的資料進行購買。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">轉帳後一定要填付款確認嗎？</div>
+          <div class="faq-a">
+            不是強制的，財務人員也會主動核對帳戶。但建議填寫帳號後五碼與付款日期，能讓財務更快速比對，加速訂單處理。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">訂單送出後可以修改商品嗎？</div>
+          <div class="faq-a">
+            訂單一旦送出（進入「待財務確認」狀態）即無法自行修改。如需調整，請聯絡籌備組，由財務人員協助處理。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">找不到信件怎麼辦？</div>
+          <div class="faq-a">
+            請先檢查垃圾郵件或促銷信件資料夾。若確認沒有收到，可前往
+            <a href="order-lookup.html" style="color:var(--color-primary);">訂單查詢</a>
+            輸入訂單代號查詢，或聯絡籌備組確認 Email 是否正確。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">還有其他問題？</div>
+          <div class="faq-a">
+            請透過班召或籌備組 Facebook 社團聯繫我們，我們會儘快協助處理。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding-top:16px;padding-bottom:8px;">
+      <a href="shop.html" class="btn btn--primary">前往商品選購</a>
+      &nbsp;
+      <a href="order-lookup.html" class="btn btn--outline">查詢我的訂單</a>
+    </div>
+
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
