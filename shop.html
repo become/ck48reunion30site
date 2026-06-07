@@ -112,11 +112,19 @@
       <p style="font-size:18px;margin-bottom:8px;">目前尚無開放中的購買活動</p>
       <p>請稍後再查看</p>
     </div>
-    <div style="margin-top:40px;text-align:center;padding:20px;border-top:1px solid var(--color-border);">
-      <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:12px;">已購買過？</p>
-      <a href="order-lookup.html" class="btn btn--ghost btn--sm">🔍 查詢我的訂單</a>
-      &nbsp;
-      <a href="shop-guide.html" class="btn btn--ghost btn--sm">📋 購買說明 &amp; FAQ</a>
+    <div style="margin-top:48px;max-width:960px;margin-left:auto;margin-right:auto;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;">
+        <a href="order-lookup.html" style="text-decoration:none;display:block;background:#fff;border:1.5px solid var(--color-border);border-radius:14px;padding:22px 24px;transition:border-color .2s,box-shadow .2s;" onmouseover="this.style.borderColor='var(--color-primary)';this.style.boxShadow='0 4px 16px rgba(31,58,95,.10)'" onmouseout="this.style.borderColor='var(--color-border)';this.style.boxShadow='none'">
+          <div style="font-size:28px;margin-bottom:10px;">🔍</div>
+          <div style="font-size:16px;font-weight:800;color:var(--color-primary);margin-bottom:6px;">查詢我的訂單</div>
+          <div style="font-size:13px;color:var(--color-text-muted);line-height:1.65;">已購買過？輸入訂單代號查看目前狀態、付款進度或重新取得訂單連結。</div>
+        </a>
+        <a href="shop-guide.html" style="text-decoration:none;display:block;background:#fff;border:1.5px solid var(--color-border);border-radius:14px;padding:22px 24px;transition:border-color .2s,box-shadow .2s;" onmouseover="this.style.borderColor='var(--color-primary)';this.style.boxShadow='0 4px 16px rgba(31,58,95,.10)'" onmouseout="this.style.borderColor='var(--color-border)';this.style.boxShadow='none'">
+          <div style="font-size:28px;margin-bottom:10px;">📋</div>
+          <div style="font-size:16px;font-weight:800;color:var(--color-primary);margin-bottom:6px;">購買說明 &amp; FAQ</div>
+          <div style="font-size:13px;color:var(--color-text-muted);line-height:1.65;">了解完整購買流程、信件說明、密碼問題、以及常見問題解答。</div>
+        </a>
+      </div>
     </div>
   </div>
 </section>
