@@ -257,6 +257,19 @@
             <div class="status-box__desc">財務人員確認後將寄送通知，請耐心等候。</div>
           </div>
         </div>
+        <div class="flow-card" style="margin-bottom:16px;">
+          <h3 style="font-size:14px;font-weight:700;color:var(--color-primary);margin-bottom:12px;">您填寫的付款資訊</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;">
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--color-text-muted);">帳號後五碼</span>
+              <span id="ps-account-last5" style="font-family:monospace;font-weight:700;letter-spacing:2px;">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--color-text-muted);">匯款日期</span>
+              <span id="ps-payment-date" style="font-weight:600;">—</span>
+            </div>
+          </div>
+        </div>
         <div class="flow-card">
           <h3 style="font-size:15px;font-weight:700;color:var(--color-primary);margin-bottom:16px;">訂單明細</h3>
           <div id="order-summary-payment-submitted"></div>
@@ -544,7 +557,15 @@ function showStatus(status) {
   }
   if (status === 'PENDING_REVIEW')    renderSummary('order-summary');
   if (status === 'PENDING_PAYMENT')   renderSummary('order-summary-payment');
-  if (status === 'PAYMENT_SUBMITTED') renderSummary('order-summary-payment-submitted');
+  if (status === 'PAYMENT_SUBMITTED') {
+    renderSummary('order-summary-payment-submitted');
+    const acct = document.getElementById('ps-account-last5');
+    const dt   = document.getElementById('ps-payment-date');
+    if (acct) acct.textContent = orderData.paymentAccountLast5 || '—';
+    if (dt)   dt.textContent   = orderData.paymentDate
+      ? new Date(orderData.paymentDate).toLocaleDateString('zh-TW')
+      : '—';
+  }
   if (status === 'PENDING_SHIPPING')  renderSummary('order-summary-shipping');
   if (status === 'COMPLETED')         renderSummary('order-summary-done');
 }
