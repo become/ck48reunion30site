@@ -124,7 +124,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   loading.style.display = 'none';
   content.style.display = '';
 
-  const isInactive = event.status === 'INACTIVE';
+  const now = new Date();
+  const startAt  = event.startAt ? new Date(event.startAt) : null;
+  const endAt    = event.endAt   ? new Date(event.endAt)   : null;
+  const hasStarted = !startAt || now >= startAt;
+  const hasEnded   = !!endAt && now > endAt;
+
+  const isInactive   = event.status === 'INACTIVE' || hasEnded;
+  const isComingSoon = event.status === 'ACTIVE' && !hasStarted;
+  const isOpen       = event.status === 'ACTIVE' && hasStarted && !hasEnded;
 
   document.title = `${event.name} | 建中48屆30重聚`;
   document.getElementById('bc-event').textContent = event.name;
@@ -142,7 +150,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     : '<span class="badge badge--light">不限身份</span>';
   const statusBadge = isInactive
     ? '<span class="badge" style="background:#e5e7eb;color:#6b7280;">已結束</span>'
-    : '<span class="badge badge--success">購買中</span>';
+    : isComingSoon
+      ? '<span class="badge" style="background:#eff6ff;color:#1d4ed8;">即將開賣</span>'
+      : '<span class="badge badge--success">購買中</span>';
   badgesEl.innerHTML = eligBadge + statusBadge;
 
   const productList = document.getElementById('product-list');
@@ -183,7 +193,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       </div>
       <div class="btn-group">
-        <a href="shop-start.html?event=${eventHashid}&lookup=1" class="btn btn--primary">查詢我的訂單</a>
+        <a href="shop-start.html?event=${eventHashid}&lookup=1" class="btn btn--outline">查詢我的訂單</a>
+        <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
+      </div>`;
+  } else if (isComingSoon) {
+    const dateStr = startAt
+      ? startAt.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : '';
+    actionsEl.innerHTML = `
+      <div class="status-box status-box--info" style="margin-bottom:16px;">
+        <div class="status-box__icon">🕐</div>
+        <div>
+          <div class="status-box__title">活動尚未開始</div>
+          <div class="status-box__desc">將於 ${dateStr} 開始販售，請屆時再回來選購。</div>
+        </div>
+      </div>
+      <div class="btn-group">
         <a href="shop.html" class="btn btn--outline">← 返回商品列表</a>
       </div>`;
   } else {
