@@ -269,6 +269,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const classInput = document.getElementById('alumni-class');
   const classHint  = document.getElementById('class-selected-hint');
 
+  const NAME_KEY  = 'ck48_alumni_name';
+  const CLASS_KEY = 'ck48_alumni_class';
+  const savedClassId = localStorage.getItem(CLASS_KEY);
+
   classes.forEach(cls => {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -282,10 +286,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       classHint.style.display = '';
     });
     classGrid.appendChild(btn);
+
+    // Restore saved class selection
+    if (savedClassId && String(cls.id) === savedClassId) {
+      btn.classList.add('selected');
+      classInput.value = cls.id;
+      classHint.textContent = `已選擇：${cls.className} 班`;
+      classHint.style.display = '';
+    }
   });
 
-  // Pre-fill name from localStorage (project-specific key, no browser autocomplete)
-  const NAME_KEY = 'ck48_alumni_name';
+  // Pre-fill name from localStorage
   const savedName = localStorage.getItem(NAME_KEY);
   if (savedName) document.getElementById('alumni-name').value = savedName;
 
@@ -387,6 +398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     localStorage.setItem(NAME_KEY, name);
+    localStorage.setItem(CLASS_KEY, classId);
     const btn = document.getElementById('alumni-submit');
     btn.disabled = true; btn.textContent = isLookupMode ? '查詢中…' : '驗證中…';
     try {
