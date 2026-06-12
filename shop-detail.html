@@ -39,9 +39,56 @@
     .product-item__name  { font-size: 17px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px; }
     .product-item__price { font-size: 20px; font-weight: 800; color: var(--color-secondary); margin-bottom: 6px; }
     .product-item__meta  { font-size: 13px; color: var(--color-text-muted); line-height: 1.7; }
+    .product-item { cursor: pointer; }
+    .product-item:hover { box-shadow: var(--shadow-md); border-color: rgba(31,58,95,.2); }
+    .product-item__hint { font-size: 12px; color: var(--color-text-muted); margin-top: 6px; opacity: .7; }
     @media(max-width:500px){
       .product-item { flex-direction: column; }
       .product-item__img { width: 100%; height: 140px; font-size: 56px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; margin: -20px -20px 0; width: calc(100% + 40px); }
+    }
+    /* Product modal */
+    .pmodal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .pmodal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .pmodal {
+      background: #fff; border-radius: 20px;
+      width: 100%; max-width: 520px; max-height: 90vh;
+      overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,.2);
+      transform: translateY(16px); transition: transform .2s;
+    }
+    .pmodal-backdrop.open .pmodal { transform: translateY(0); }
+    .pmodal__img-wrap {
+      width: 100%; aspect-ratio: 4/3;
+      background: linear-gradient(135deg,#e8e2d8,#d4c9b8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 80px; overflow: hidden;
+      border-radius: 20px 20px 0 0;
+    }
+    .pmodal__img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .pmodal__thumbs { display: flex; gap: 8px; padding: 10px 20px 0; flex-wrap: wrap; }
+    .pmodal__thumb {
+      width: 56px; height: 56px; border-radius: 8px; overflow: hidden;
+      border: 2px solid transparent; cursor: pointer; flex-shrink: 0;
+      transition: border-color .15s;
+    }
+    .pmodal__thumb.active { border-color: var(--color-primary); }
+    .pmodal__thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .pmodal__body { padding: 20px 24px 28px; }
+    .pmodal__name { font-size: 22px; font-weight: 800; color: var(--color-primary); margin-bottom: 4px; line-height: 1.3; }
+    .pmodal__price { font-size: 26px; font-weight: 800; color: var(--color-secondary); margin-bottom: 14px; }
+    .pmodal__desc { font-size: 14px; color: var(--color-text-muted); line-height: 1.85; white-space: pre-wrap; margin-bottom: 16px; }
+    .pmodal__meta { font-size: 13px; color: var(--color-text-muted); line-height: 2; border-top: 1px solid var(--color-border); padding-top: 14px; }
+    .pmodal__close {
+      position: absolute; top: 14px; right: 14px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(0,0,0,.35); color: #fff;
+      border: none; cursor: pointer; font-size: 18px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
     }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJYP34JVKM"></script>
@@ -77,6 +124,21 @@
       <div id="product-list" class="product-list"></div>
 
       <div id="event-actions" style="margin-top:32px;"></div>
+    </div>
+
+    <!-- Product detail modal -->
+    <div id="product-modal" class="pmodal-backdrop" role="dialog" aria-modal="true">
+      <div class="pmodal" style="position:relative;">
+        <button class="pmodal__close" id="pmodal-close" aria-label="關閉">&times;</button>
+        <div class="pmodal__img-wrap" id="pmodal-img-wrap"></div>
+        <div id="pmodal-thumbs" class="pmodal__thumbs"></div>
+        <div class="pmodal__body">
+          <div class="pmodal__name" id="pmodal-name"></div>
+          <div class="pmodal__price" id="pmodal-price"></div>
+          <div class="pmodal__desc" id="pmodal-desc" style="display:none;"></div>
+          <div class="pmodal__meta" id="pmodal-meta"></div>
+        </div>
+      </div>
     </div>
 
     <div id="event-error" style="display:none;text-align:center;padding:60px 0;color:var(--color-text-muted);">
@@ -162,24 +224,98 @@ document.addEventListener('DOMContentLoaded', async () => {
     event.products.forEach(p => {
       const canBuy = p.status === 'ACTIVE' && !isInactive;
       const stockHtml = p.stockType === 'LIMITED' && p.availableStock != null
-        ? `剩餘：${p.availableStock} 件　`
-        : '';
+        ? `剩餘：${p.availableStock} 件` : '';
       const limitHtml = p.maxPerPerson ? `每人限購 ${p.maxPerPerson} 件` : '';
+      const resolvedImg = url => url.startsWith('/') ? API_BASE + url : url;
       const imgHtml = p.mainImage
-        ? `<img src="${p.mainImage.startsWith('/') ? API_BASE + p.mainImage : p.mainImage}" alt="${p.name}">`
+        ? `<img src="${resolvedImg(p.mainImage)}" alt="${p.name}">`
         : '🎁';
 
-      productList.innerHTML += `
-        <div class="product-item">
-          <div class="product-item__img">${imgHtml}</div>
-          <div class="product-item__body">
-            <div class="product-item__name">${p.name}</div>
-            <div class="product-item__price">NT$${p.price.toLocaleString()}</div>
-            <div class="product-item__meta">${stockHtml}${limitHtml}</div>
-            ${!canBuy ? '<div class="product-item__meta" style="margin-top:4px;">⛔ 此商品暫不開放購買</div>' : ''}
-          </div>
+      const el = document.createElement('div');
+      el.className = 'product-item';
+      el.innerHTML = `
+        <div class="product-item__img">${imgHtml}</div>
+        <div class="product-item__body">
+          <div class="product-item__name">${p.name}</div>
+          <div class="product-item__price">NT$${p.price.toLocaleString()}</div>
+          <div class="product-item__meta">${[stockHtml, limitHtml].filter(Boolean).join('　')}</div>
+          ${!canBuy ? '<div class="product-item__meta" style="margin-top:4px;">⛔ 此商品暫不開放購買</div>' : ''}
+          <div class="product-item__hint">點擊查看詳細說明 →</div>
         </div>`;
+
+      el.addEventListener('click', () => openProductModal(p, resolvedImg));
+      productList.appendChild(el);
     });
+  }
+
+  // Product modal
+  function openProductModal(p, resolveUrl) {
+    const modal = document.getElementById('product-modal');
+    const imgWrap = document.getElementById('pmodal-img-wrap');
+    const thumbs  = document.getElementById('pmodal-thumbs');
+
+    const images = (p.images || []).map(resolveUrl);
+    const main   = p.mainImage ? resolveUrl(p.mainImage) : null;
+
+    function setMainImg(src) {
+      imgWrap.innerHTML = src
+        ? `<img src="${src}" alt="${p.name}">`
+        : '<span>🎁</span>';
+      thumbs.querySelectorAll('.pmodal__thumb').forEach(t => {
+        t.classList.toggle('active', t.dataset.src === src);
+      });
+    }
+
+    if (images.length > 1) {
+      thumbs.style.display = '';
+      thumbs.innerHTML = images.map((src, i) =>
+        `<div class="pmodal__thumb${i === 0 ? ' active' : ''}" data-src="${src}">
+           <img src="${src}" alt="">
+         </div>`
+      ).join('');
+      thumbs.querySelectorAll('.pmodal__thumb').forEach(t => {
+        t.addEventListener('click', () => setMainImg(t.dataset.src));
+      });
+    } else {
+      thumbs.style.display = 'none';
+    }
+
+    setMainImg(main);
+
+    document.getElementById('pmodal-name').textContent  = p.name;
+    document.getElementById('pmodal-price').textContent = 'NT$' + p.price.toLocaleString();
+
+    const descEl = document.getElementById('pmodal-desc');
+    if (p.description) {
+      descEl.textContent = p.description;
+      descEl.style.display = '';
+    } else {
+      descEl.style.display = 'none';
+    }
+
+    const meta = [];
+    if (p.stockType === 'LIMITED' && p.availableStock != null) meta.push(`剩餘庫存：${p.availableStock} 件`);
+    if (p.maxPerPerson) meta.push(`每人限購：${p.maxPerPerson} 件`);
+    if (!isInactive && p.status !== 'ACTIVE') meta.push('⛔ 此商品暫不開放購買');
+    document.getElementById('pmodal-meta').innerHTML = meta.length
+      ? meta.map(m => `<div>${m}</div>`).join('')
+      : '';
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  document.getElementById('pmodal-close').addEventListener('click', closeProductModal);
+  document.getElementById('product-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeProductModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeProductModal();
+  });
+
+  function closeProductModal() {
+    document.getElementById('product-modal').classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   const actionsEl = document.getElementById('event-actions');
