@@ -59,6 +59,10 @@ const CK48_API = (() => {
       return get('/api/classes');
     },
 
+    async getClassStats() {
+      return get('/api/classes/stats');
+    },
+
     async getMemoryPhotos({ album, tag, q, shuffle = true } = {}) {
       const params = new URLSearchParams();
       if (shuffle) params.set('shuffle', '1');

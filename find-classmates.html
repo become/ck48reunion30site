@@ -456,6 +456,30 @@
   </div>
 </section>
 
+<!-- ── BUBBLE CHART: 各班找人進度 ─────────────────────────── -->
+<section class="bubble-chart-section">
+  <div class="container">
+    <div class="section-title reveal">
+      <div class="section-title__eyebrow">Class Progress</div>
+      <h2 class="section-title__main">各班找人進度</h2>
+      <p class="section-title__sub">你剛剛填寫的報到，就是讓你的班泡泡更亮的那一步！</p>
+    </div>
+    <div class="bc-wrapper reveal" id="bc-checkin" style="height:460px;">
+      <div class="bc-loading" id="bc-checkin-loading">載入中</div>
+    </div>
+    <div class="bc-legend">
+      <div class="bc-legend-item">
+        <div class="bc-legend-dot" style="background:linear-gradient(#c9a96e,#8a6530);"></div>
+        金色填充 = 已確認聯絡的比例
+      </div>
+      <div class="bc-legend-item">
+        <div class="bc-legend-dot" style="background:#162640;border:1px solid rgba(180,140,80,.3);"></div>
+        暗色 = 尚未聯絡到的比例
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Error modal -->
 <div class="error-modal-overlay" id="error-modal-overlay" onclick="closeErrorModal(event)">
   <div class="error-modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-title">
@@ -469,6 +493,8 @@
 <div id="footer-placeholder"></div>
 <script src="js/data.js"></script>
 <script src="js/api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="js/bubble-chart.js"></script>
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>
@@ -814,6 +840,17 @@ function showState(stateId) {
 document.addEventListener('DOMContentLoaded', () => {
   loadClasses();
   loadSurveyQuestions();
+
+  // Bubble chart
+  CK48_API.getClassStats().then(classStats => {
+    const loadingEl = document.getElementById('bc-checkin-loading');
+    if (loadingEl) loadingEl.remove();
+    ClassBubbleChart.init({ containerId: 'bc-checkin', data: classStats, height: 460 });
+  }).catch(e => {
+    const loadingEl = document.getElementById('bc-checkin-loading');
+    if (loadingEl) loadingEl.textContent = '資料載入失敗';
+    console.warn('Bubble chart unavailable', e);
+  });
 });
 </script>
 </body>
