@@ -46,8 +46,8 @@
         i,
         x: 0, y: 0, vx: 0, vy: 0,
         _angle: Math.random() * Math.PI * 2,
-        _angleSpeed: 0.005 + Math.random() * 0.008,
-        _strength: 0.05 + Math.random() * 0.07,
+        _angleSpeed: 0.006 + Math.random() * 0.009,
+        _strength: 0.18 + Math.random() * 0.14,
       }));
 
       // Rank by found ratio — top-5 get boosted radius
@@ -220,11 +220,9 @@
 
       // ── Force simulation ──────────────────────────────────────
       const sim = d3.forceSimulation(nodes)
-        // Gentle boundary pull so bubbles don't escape — same for everyone
-        .force('cx', d3.forceX(width / 2).strength(0.012))
-        .force('cy', d3.forceY(height / 2).strength(0.012))
-        .force('collide', d3.forceCollide(d => d.r + 2).strength(0.8).iterations(2))
-        // Slow personal drift — all bubbles wander at their own pace
+        // Collision is the only inter-bubble force — let them bounce freely
+        .force('collide', d3.forceCollide(d => d.r + 2).strength(0.9).iterations(3))
+        // Each bubble has its own slowly-rotating push — drives continuous movement
         .force('drift', function () {
           nodes.forEach(d => {
             d._angle += d._angleSpeed;
@@ -232,16 +230,19 @@
             d.vy += Math.sin(d._angle) * d._strength;
           });
         })
-        .velocityDecay(0.28)
+        .velocityDecay(0.08)   // low decay — momentum carries through many ticks
         .alphaTarget(0.3)
         .alphaDecay(0)
         .on('tick', tick);
 
       function tick() {
-        const pad = 4;
+        const pad = 2;
         nodes.forEach(d => {
-          d.x = Math.max(d.r + pad, Math.min(width - d.r - pad, d.x));
-          d.y = Math.max(d.r + pad, Math.min(height - d.r - pad, d.y));
+          // Soft wall bounce: reverse velocity when hitting edge
+          if (d.x < d.r + pad)            { d.x = d.r + pad;            d.vx =  Math.abs(d.vx) * 0.6; }
+          if (d.x > width  - d.r - pad)   { d.x = width  - d.r - pad;   d.vx = -Math.abs(d.vx) * 0.6; }
+          if (d.y < d.r + pad)            { d.y = d.r + pad;            d.vy =  Math.abs(d.vy) * 0.6; }
+          if (d.y > height - d.r - pad)   { d.y = height - d.r - pad;   d.vy = -Math.abs(d.vy) * 0.6; }
         });
 
         // ClipPath circles follow bubble position
@@ -289,7 +290,6 @@
       const ro = new ResizeObserver(() => {
         width = getWidth();
         svg.attr('width', width);
-        sim.force('center', d3.forceCenter(width / 2, height / 2).strength(0.04));
         sim.alpha(0.4).restart();
       });
       ro.observe(container);
