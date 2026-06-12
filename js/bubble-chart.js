@@ -48,11 +48,19 @@
         y: height / 2 + (Math.random() - 0.5) * height * 0.5,
         vx: 0,
         vy: 0,
-        // Each bubble gets its own slowly-rotating drift vector
         _angle: Math.random() * Math.PI * 2,
         _angleSpeed: 0.006 + Math.random() * 0.010,
         _strength: 0.06 + Math.random() * 0.08,
       }));
+
+      // Rank by found ratio — top 5 get center stage & boosted radius
+      [...nodes].sort((a, b) => b.ratio - a.ratio)
+        .forEach((d, rank) => {
+          d._rank = rank + 1;
+          if (rank < 5) d.r *= 1.2;
+        });
+      // Render top-5 last so they appear above others in SVG
+      nodes.sort((a, b) => (a._rank <= 5 ? 1 : 0) - (b._rank <= 5 ? 1 : 0));
 
       // ── SVG ───────────────────────────────────────────────────
       const svg = d3.select(container).append('svg')
@@ -62,7 +70,7 @@
 
       const defs = svg.append('defs');
 
-      // Gold gradient (bottom-dark → top-light)
+      // Standard gold gradient
       const gid = `bc-gold-${uid}`;
       const grad = defs.append('linearGradient')
         .attr('id', gid)
@@ -71,6 +79,16 @@
       grad.append('stop').attr('offset', '0%').attr('stop-color', '#8a6530');
       grad.append('stop').attr('offset', '60%').attr('stop-color', '#b08d57');
       grad.append('stop').attr('offset', '100%').attr('stop-color', '#d4ac70');
+
+      // Vivid gold gradient for top-5
+      const gid5 = `bc-gold5-${uid}`;
+      const grad5 = defs.append('linearGradient')
+        .attr('id', gid5)
+        .attr('x1', '0%').attr('y1', '100%')
+        .attr('x2', '0%').attr('y2', '0%');
+      grad5.append('stop').attr('offset', '0%').attr('stop-color', '#9a5f00');
+      grad5.append('stop').attr('offset', '50%').attr('stop-color', '#e8960a');
+      grad5.append('stop').attr('offset', '100%').attr('stop-color', '#ffd04a');
 
       // Glow filter for high-ratio bubbles
       const fid = `bc-glow-${uid}`;
@@ -105,7 +123,7 @@
         .data(nodes).join('rect')
         .attr('class', 'bc-water')
         .attr('clip-path', d => `url(#bc-clip-${uid}-${d.i})`)
-        .attr('fill', `url(#${gid})`);
+        .attr('fill', d => `url(#${d._rank <= 5 ? gid5 : gid})`);
 
       // 3) Sheen: subtle top-highlight (frosted glass look)
       const sheenClipPaths = defs.selectAll(null)
@@ -191,21 +209,22 @@
 
       // ── Force simulation ──────────────────────────────────────
       const sim = d3.forceSimulation(nodes)
-        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.015))
-        .force('collide', d3.forceCollide(d => d.r + 3).strength(0.7).iterations(2))
-        .force('y', d3.forceY(d => {
-          return height * (0.3 + (1 - d.ratio) * 0.4);
-        }).strength(0.02))
-        // Custom slow-drift force: each bubble has a direction that rotates gradually
+        // Top-5 pulled strongly to center; others loosely orbit
+        .force('cx', d3.forceX(width / 2).strength(d => d._rank <= 5 ? 0.10 : 0.004))
+        .force('cy', d3.forceY(height / 2).strength(d => d._rank <= 5 ? 0.10 : 0.004))
+        .force('collide', d3.forceCollide(d => d.r + 3).strength(0.75).iterations(2))
+        // Slow drift: each bubble has a direction that rotates gradually
         .force('drift', function () {
           nodes.forEach(d => {
             d._angle += d._angleSpeed;
-            d.vx += Math.cos(d._angle) * d._strength;
-            d.vy += Math.sin(d._angle) * d._strength;
+            // Top-5 drift more gently so they stay near center
+            const s = d._rank <= 5 ? d._strength * 0.5 : d._strength;
+            d.vx += Math.cos(d._angle) * s;
+            d.vy += Math.sin(d._angle) * s;
           });
         })
-        .velocityDecay(0.25)   // slower decay → momentum lingers → smooth drifting
-        .alphaTarget(0.3)      // keep simulation always running
+        .velocityDecay(0.25)
+        .alphaTarget(0.3)
         .alphaDecay(0)
         .on('tick', tick);
 
@@ -234,11 +253,12 @@
           .attr('cx', d => d.x)
           .attr('cy', d => d.y - d.r * 0.45);
 
-        // Ring color: gold-bright for high ratio, dim for low
+        // Ring: top-5 get bright vivid stroke + glow; others dim
         rings
           .attr('cx', d => d.x).attr('cy', d => d.y)
-          .attr('stroke', d => d.ratio > 0.75 ? '#c9a96e' : 'rgba(180,140,80,0.3)')
-          .attr('filter', d => d.ratio > 0.8 ? `url(#${fid})` : null);
+          .attr('stroke-width', d => d._rank <= 5 ? 2.5 : 1.5)
+          .attr('stroke', d => d._rank <= 5 ? '#ffd04a' : (d.ratio > 0.5 ? '#c9a96e' : 'rgba(180,140,80,0.25)'))
+          .attr('filter', d => d._rank <= 5 ? `url(#${fid})` : null);
 
         hits.attr('cx', d => d.x).attr('cy', d => d.y);
 
