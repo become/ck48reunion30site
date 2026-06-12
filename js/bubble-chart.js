@@ -48,6 +48,10 @@
         y: height / 2 + (Math.random() - 0.5) * height * 0.5,
         vx: 0,
         vy: 0,
+        // Each bubble gets its own slowly-rotating drift vector
+        _angle: Math.random() * Math.PI * 2,
+        _angleSpeed: 0.006 + Math.random() * 0.010,
+        _strength: 0.06 + Math.random() * 0.08,
       }));
 
       // ── SVG ───────────────────────────────────────────────────
@@ -187,15 +191,22 @@
 
       // ── Force simulation ──────────────────────────────────────
       const sim = d3.forceSimulation(nodes)
-        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.04))
-        .force('collide', d3.forceCollide(d => d.r + 2.5).strength(0.85).iterations(3))
-        .force('charge', d3.forceManyBody().strength(-8))
+        .force('center', d3.forceCenter(width / 2, height / 2).strength(0.015))
+        .force('collide', d3.forceCollide(d => d.r + 3).strength(0.7).iterations(2))
         .force('y', d3.forceY(d => {
-          // Bubbles with higher ratio float slightly higher
-          return height * (0.28 + (1 - d.ratio) * 0.44);
-        }).strength(0.04))
-        .alphaTarget(0.08)   // keep simulation gently running forever
-        .alphaDecay(0.01)
+          return height * (0.3 + (1 - d.ratio) * 0.4);
+        }).strength(0.02))
+        // Custom slow-drift force: each bubble has a direction that rotates gradually
+        .force('drift', function () {
+          nodes.forEach(d => {
+            d._angle += d._angleSpeed;
+            d.vx += Math.cos(d._angle) * d._strength;
+            d.vy += Math.sin(d._angle) * d._strength;
+          });
+        })
+        .velocityDecay(0.25)   // slower decay → momentum lingers → smooth drifting
+        .alphaTarget(0.3)      // keep simulation always running
+        .alphaDecay(0)
         .on('tick', tick);
 
       function tick() {
