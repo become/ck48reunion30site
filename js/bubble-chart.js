@@ -38,28 +38,39 @@
         .domain(d3.extent(data, d => d.totalAlumni))
         .range([24, 38]);
 
-      // Node data
+      // Node data (positions assigned after ranking)
       const nodes = data.map((d, i) => ({
         ...d,
         r: rScale(d.totalAlumni),
         ratio: d.totalAlumni > 0 ? d.foundAlumni / d.totalAlumni : 0,
         i,
-        x: width / 2 + (Math.random() - 0.5) * width * 0.6,
-        y: height / 2 + (Math.random() - 0.5) * height * 0.5,
-        vx: 0,
-        vy: 0,
+        x: 0, y: 0, vx: 0, vy: 0,
         _angle: Math.random() * Math.PI * 2,
-        _angleSpeed: 0.006 + Math.random() * 0.010,
-        _strength: 0.06 + Math.random() * 0.08,
+        _angleSpeed: 0.005 + Math.random() * 0.008,
+        _strength: 0.05 + Math.random() * 0.07,
       }));
 
-      // Rank by found ratio — top 5 get center stage & boosted radius
+      // Rank by found ratio — top-5 get boosted radius
       [...nodes].sort((a, b) => b.ratio - a.ratio)
         .forEach((d, rank) => {
           d._rank = rank + 1;
-          if (rank < 5) d.r *= 1.2;
+          if (rank < 5) d.r *= 1.18;
         });
-      // Render top-5 last so they appear above others in SVG
+
+      // Initial positions: top-5 clustered near center, others spread around
+      nodes.forEach(d => {
+        if (d._rank <= 5) {
+          const a = Math.random() * Math.PI * 2;
+          const dist = 40 + Math.random() * 60;
+          d.x = width / 2 + Math.cos(a) * dist;
+          d.y = height / 2 + Math.sin(a) * dist;
+        } else {
+          d.x = width / 2 + (Math.random() - 0.5) * width * 0.7;
+          d.y = height / 2 + (Math.random() - 0.5) * height * 0.6;
+        }
+      });
+
+      // Render top-5 last so they sit above others in SVG z-order
       nodes.sort((a, b) => (a._rank <= 5 ? 1 : 0) - (b._rank <= 5 ? 1 : 0));
 
       // ── SVG ───────────────────────────────────────────────────
@@ -70,33 +81,33 @@
 
       const defs = svg.append('defs');
 
-      // Standard gold gradient
+      // Muted warm-gold gradient (others)
       const gid = `bc-gold-${uid}`;
       const grad = defs.append('linearGradient')
         .attr('id', gid)
         .attr('x1', '0%').attr('y1', '100%')
         .attr('x2', '0%').attr('y2', '0%');
-      grad.append('stop').attr('offset', '0%').attr('stop-color', '#8a6530');
-      grad.append('stop').attr('offset', '60%').attr('stop-color', '#b08d57');
-      grad.append('stop').attr('offset', '100%').attr('stop-color', '#d4ac70');
+      grad.append('stop').attr('offset', '0%').attr('stop-color', '#5c3e18');
+      grad.append('stop').attr('offset', '65%').attr('stop-color', '#8a6530');
+      grad.append('stop').attr('offset', '100%').attr('stop-color', '#a88448');
 
-      // Vivid gold gradient for top-5
+      // Refined antique-gold gradient (top-5) — site accent palette, not garish
       const gid5 = `bc-gold5-${uid}`;
       const grad5 = defs.append('linearGradient')
         .attr('id', gid5)
         .attr('x1', '0%').attr('y1', '100%')
         .attr('x2', '0%').attr('y2', '0%');
-      grad5.append('stop').attr('offset', '0%').attr('stop-color', '#9a5f00');
-      grad5.append('stop').attr('offset', '50%').attr('stop-color', '#e8960a');
-      grad5.append('stop').attr('offset', '100%').attr('stop-color', '#ffd04a');
+      grad5.append('stop').attr('offset', '0%').attr('stop-color', '#6b4c18');
+      grad5.append('stop').attr('offset', '55%').attr('stop-color', '#b08030');
+      grad5.append('stop').attr('offset', '100%').attr('stop-color', '#d4a84a');
 
-      // Glow filter for high-ratio bubbles
+      // Subtle glow (softer stdDeviation)
       const fid = `bc-glow-${uid}`;
       const filt = defs.append('filter').attr('id', fid)
-        .attr('x', '-40%').attr('y', '-40%')
-        .attr('width', '180%').attr('height', '180%');
+        .attr('x', '-50%').attr('y', '-50%')
+        .attr('width', '200%').attr('height', '200%');
       filt.append('feGaussianBlur')
-        .attr('in', 'SourceGraphic').attr('stdDeviation', '4').attr('result', 'blur');
+        .attr('in', 'SourceGraphic').attr('stdDeviation', '3').attr('result', 'blur');
       const fm = filt.append('feMerge');
       fm.append('feMergeNode').attr('in', 'blur');
       fm.append('feMergeNode').attr('in', 'SourceGraphic');
@@ -209,21 +220,19 @@
 
       // ── Force simulation ──────────────────────────────────────
       const sim = d3.forceSimulation(nodes)
-        // Top-5 pulled strongly to center; others loosely orbit
-        .force('cx', d3.forceX(width / 2).strength(d => d._rank <= 5 ? 0.10 : 0.004))
-        .force('cy', d3.forceY(height / 2).strength(d => d._rank <= 5 ? 0.10 : 0.004))
-        .force('collide', d3.forceCollide(d => d.r + 3).strength(0.75).iterations(2))
-        // Slow drift: each bubble has a direction that rotates gradually
+        // Gentle boundary pull so bubbles don't escape — same for everyone
+        .force('cx', d3.forceX(width / 2).strength(0.012))
+        .force('cy', d3.forceY(height / 2).strength(0.012))
+        .force('collide', d3.forceCollide(d => d.r + 2).strength(0.8).iterations(2))
+        // Slow personal drift — all bubbles wander at their own pace
         .force('drift', function () {
           nodes.forEach(d => {
             d._angle += d._angleSpeed;
-            // Top-5 drift more gently so they stay near center
-            const s = d._rank <= 5 ? d._strength * 0.5 : d._strength;
-            d.vx += Math.cos(d._angle) * s;
-            d.vy += Math.sin(d._angle) * s;
+            d.vx += Math.cos(d._angle) * d._strength;
+            d.vy += Math.sin(d._angle) * d._strength;
           });
         })
-        .velocityDecay(0.25)
+        .velocityDecay(0.28)
         .alphaTarget(0.3)
         .alphaDecay(0)
         .on('tick', tick);
@@ -253,11 +262,11 @@
           .attr('cx', d => d.x)
           .attr('cy', d => d.y - d.r * 0.45);
 
-        // Ring: top-5 get bright vivid stroke + glow; others dim
+        // Ring: top-5 warm antique-gold ring + soft glow; others very dim
         rings
           .attr('cx', d => d.x).attr('cy', d => d.y)
-          .attr('stroke-width', d => d._rank <= 5 ? 2.5 : 1.5)
-          .attr('stroke', d => d._rank <= 5 ? '#ffd04a' : (d.ratio > 0.5 ? '#c9a96e' : 'rgba(180,140,80,0.25)'))
+          .attr('stroke-width', d => d._rank <= 5 ? 2 : 1)
+          .attr('stroke', d => d._rank <= 5 ? '#c8a040' : 'rgba(160,120,60,0.2)')
           .attr('filter', d => d._rank <= 5 ? `url(#${fid})` : null);
 
         hits.attr('cx', d => d.x).attr('cy', d => d.y);
