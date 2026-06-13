@@ -1732,7 +1732,7 @@ p  { line-height: 1.75; }
 
 .bc-wrapper {
   position: relative;
-  background: #0f1e33;
+  background: #0f1e33 url('../images/bubble_bg.jpg') center / cover no-repeat;
   border-radius: 16px;
   overflow: hidden;
   min-height: 320px;
