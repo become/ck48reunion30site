@@ -46,8 +46,8 @@
         i,
         x: 0, y: 0, vx: 0, vy: 0,
         _angle: Math.random() * Math.PI * 2,
-        _angleSpeed: 0.006 + Math.random() * 0.009,
-        _strength: 0.18 + Math.random() * 0.14,
+        _angleSpeed: 0.002 + Math.random() * 0.003,
+        _strength: 0.05 + Math.random() * 0.04,
       }));
 
       // Rank by found ratio — top-5 get boosted radius
@@ -230,7 +230,7 @@
             d.vy += Math.sin(d._angle) * d._strength;
           });
         })
-        .velocityDecay(0.08)   // low decay — momentum carries through many ticks
+        .velocityDecay(0.3)    // higher decay — keeps bubbles drifting slowly
         .alphaTarget(0.3)
         .alphaDecay(0)
         .on('tick', tick);
@@ -239,10 +239,10 @@
         const pad = 2;
         nodes.forEach(d => {
           // Soft wall bounce: reverse velocity when hitting edge
-          if (d.x < d.r + pad)            { d.x = d.r + pad;            d.vx =  Math.abs(d.vx) * 0.6; }
-          if (d.x > width  - d.r - pad)   { d.x = width  - d.r - pad;   d.vx = -Math.abs(d.vx) * 0.6; }
-          if (d.y < d.r + pad)            { d.y = d.r + pad;            d.vy =  Math.abs(d.vy) * 0.6; }
-          if (d.y > height - d.r - pad)   { d.y = height - d.r - pad;   d.vy = -Math.abs(d.vy) * 0.6; }
+          if (d.x < d.r + pad)            { d.x = d.r + pad;            d.vx =  Math.abs(d.vx) * 0.3; }
+          if (d.x > width  - d.r - pad)   { d.x = width  - d.r - pad;   d.vx = -Math.abs(d.vx) * 0.3; }
+          if (d.y < d.r + pad)            { d.y = d.r + pad;            d.vy =  Math.abs(d.vy) * 0.3; }
+          if (d.y > height - d.r - pad)   { d.y = height - d.r - pad;   d.vy = -Math.abs(d.vy) * 0.3; }
         });
 
         // ClipPath circles follow bubble position
