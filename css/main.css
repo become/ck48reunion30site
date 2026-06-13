@@ -1663,6 +1663,11 @@ p  { line-height: 1.75; }
   .hero__cd-num { font-size: 28px; }
 }
 @media (max-width: 767px) {
+  /* Mobile hero image: portrait crop — anchor to bottom so slogan stays visible */
+  .hero__bg img {
+    object-position: center bottom;
+  }
+
   /* Hero: mobile — full-screen immersive */
   .hero {
     grid-template-columns: 1fr;
