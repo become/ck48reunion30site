@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>畢業紀念冊 — 建中48屆30重聚</title>
+  <link rel="icon" href="images/favico.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0d1f38;
+      --navy2:   #1a2f4a;
+      --navy3:   #1f3a5f;
+      --gold:    #c9a84c;
+      --gold2:   #e8c96a;
+      --white:   #f8f9fb;
+      --text:    #d4dce8;
+      --muted:   #8fa3bc;
+      --border:  rgba(255,255,255,.10);
+      --radius:  10px;
+    }
+
+    html, body { height: 100%; font-family: 'Noto Sans TC', sans-serif; }
+    body { background: var(--navy); color: var(--white); }
+
+    /* ── Screens ── */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; }
+
+    /* Loading */
+    #screen-loading {
+      align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid rgba(255,255,255,.15);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: var(--muted); font-size: .9rem; }
+
+    /* Form & Sent */
+    #screen-form, #screen-sent, #screen-error {
+      align-items: center; justify-content: center; padding: 24px;
+      flex-direction: column;
+    }
+    .card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.4);
+    }
+    .card-logo {
+      text-align: center; margin-bottom: 24px;
+    }
+    .card-logo .book-icon {
+      font-size: 2.5rem; margin-bottom: 8px; display: block;
+    }
+    .card-logo h1 { font-size: 1.25rem; font-weight: 700; color: var(--gold); }
+    .card-logo p { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+    .form-group select,
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--white);
+      font-size: .95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+      appearance: auto;
+    }
+    .form-group select:focus,
+    .form-group input[type="text"]:focus { border-color: var(--gold); }
+    .form-group select option { background: #1a2f4a; color: #f8f9fb; }
+
+    .btn-primary {
+      display: block; width: 100%;
+      padding: 13px;
+      background: var(--gold);
+      color: var(--navy);
+      border: none; border-radius: var(--radius);
+      font-size: 1rem; font-weight: 700; font-family: inherit;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+    }
+    .btn-primary:hover { background: var(--gold2); }
+    .btn-primary:disabled { opacity: .5; cursor: default; }
+
+    .form-error {
+      margin-top: 14px;
+      padding: 11px 14px;
+      background: rgba(220,38,38,.15);
+      border: 1px solid rgba(220,38,38,.3);
+      border-radius: var(--radius);
+      font-size: .85rem; color: #f87171;
+    }
+    .form-note {
+      margin-top: 18px; font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.6;
+    }
+
+    /* Sent screen */
+    .sent-icon { font-size: 3rem; text-align: center; margin-bottom: 16px; }
+    .sent-email { color: var(--gold); font-weight: 600; }
+    .btn-link {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: .85rem; font-family: inherit;
+      text-decoration: underline; margin-top: 20px;
+    }
+    .btn-link:hover { color: var(--white); }
+
+    /* Error screen */
+    .error-icon { font-size: 2.5rem; text-align: center; margin-bottom: 12px; }
+    .error-msg { color: #f87171; text-align: center; margin-bottom: 20px; font-size: .9rem; line-height: 1.6; }
+
+    /* ── Viewer ── */
+    #screen-viewer {
+      flex-direction: column; height: 100vh; overflow: hidden;
+    }
+
+    /* Header */
+    .viewer-header {
+      display: flex; align-items: center;
+      height: 52px; padding: 0 12px;
+      background: var(--navy3);
+      border-bottom: 1px solid var(--border);
+      gap: 8px; flex-shrink: 0; z-index: 20; position: relative;
+    }
+    .hd-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .hd-center {
+      display: flex; align-items: center; gap: 6px;
+      flex: 1; justify-content: center;
+    }
+    .hd-right { display: flex; align-items: center; gap: 8px; }
+
+    .btn-icon {
+      background: none; border: 1px solid var(--border);
+      color: var(--text); border-radius: 7px;
+      padding: 5px 10px; cursor: pointer; font-size: .85rem;
+      font-family: inherit; transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,.08); color: var(--white); }
+    .btn-icon:disabled { opacity: .35; cursor: default; }
+    .btn-icon.active { background: rgba(201,168,76,.15); border-color: var(--gold); color: var(--gold); }
+
+    .btn-nav {
+      background: none; border: none;
+      color: var(--text); font-size: 1.4rem;
+      cursor: pointer; padding: 4px 10px;
+      border-radius: 6px; transition: color .15s, background .15s;
+      line-height: 1;
+    }
+    .btn-nav:hover { color: var(--white); background: rgba(255,255,255,.08); }
+    .btn-nav:disabled { opacity: .3; cursor: default; }
+
+    #page-display { color: var(--muted); font-size: .85rem; white-space: nowrap; min-width: 90px; text-align: center; }
+
+    .jump-input {
+      width: 64px; padding: 5px 8px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--border);
+      border-radius: 6px; color: var(--white);
+      font-size: .85rem; text-align: center;
+      font-family: inherit; outline: none;
+    }
+    .jump-input:focus { border-color: var(--gold); }
+
+    .hd-title {
+      font-size: .8rem; color: var(--muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
+    .download-btn {
+      display: flex; align-items: center; gap: 5px;
+      color: var(--gold); font-size: .82rem; text-decoration: none;
+      border: 1px solid rgba(201,168,76,.4); border-radius: 7px;
+      padding: 5px 10px; white-space: nowrap; transition: background .15s;
+    }
+    .download-btn:hover { background: rgba(201,168,76,.1); }
+    .download-btn.hidden { display: none; }
+
+    .exit-btn {
+      color: var(--muted); font-size: .82rem; text-decoration: none;
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: 5px 10px; white-space: nowrap; transition: color .15s;
+    }
+    .exit-btn:hover { color: var(--white); }
+
+    /* Viewer body */
+    .viewer-body {
+      display: flex; flex: 1; overflow: hidden; position: relative;
+    }
+
+    /* Index panel */
+    .index-panel {
+      width: 200px; flex-shrink: 0;
+      background: var(--navy2);
+      border-right: 1px solid var(--border);
+      overflow-y: auto; overflow-x: hidden;
+      transition: width .2s, opacity .2s;
+    }
+    .index-panel.collapsed { width: 0; opacity: 0; pointer-events: none; }
+    .index-panel-header {
+      padding: 12px 14px 8px;
+      font-size: .72rem; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .08em;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .index-item {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 9px 14px;
+      background: none; border: none; border-bottom: 1px solid var(--border);
+      color: var(--text); font-family: inherit; font-size: .82rem;
+      cursor: pointer; text-align: left;
+      transition: background .15s;
+    }
+    .index-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+    .index-item.current { background: rgba(201,168,76,.1); color: var(--gold); }
+    .index-page {
+      font-family: monospace; font-size: .78rem;
+      color: var(--muted); white-space: nowrap; flex-shrink: 0;
+    }
+    .index-no-labels {
+      padding: 20px 14px; font-size: .82rem; color: var(--muted); text-align: center;
+    }
+
+    /* Book area */
+    .book-area {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; overflow: hidden; padding: 12px;
+    }
+
+    #book {
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+
+    /* Label overlay */
+    .label-overlay {
+      position: absolute;
+      top: 24px; left: 24px;
+      background: rgba(13,31,56,.85);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: .78rem; font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 10;
+      display: none;
+    }
+
+    /* Mobile nav bar at bottom */
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .hd-title, .download-btn span, .exit-btn { display: none; }
+      .hd-center { gap: 4px; }
+      .jump-input { width: 52px; }
+      #page-display { min-width: 70px; font-size: .8rem; }
+      .download-btn { padding: 5px 7px; }
+      .download-btn::before { content: '⬇'; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="screen-loading" class="screen active">
+  <div class="spinner"></div>
+  <div class="loading-text">載入中…</div>
+</div>
+
+<!-- Request form -->
+<div id="screen-form" class="screen">
+  <div class="card">
+    <div class="card-logo">
+      <span class="book-icon">📖</span>
+      <h1>畢業紀念冊</h1>
+      <p>建中第48屆 · 30年重聚</p>
+    </div>
+    <div class="form-group">
+      <label for="sel-class">就讀班級</label>
+      <select id="sel-class">
+        <option value="">— 請選擇 —</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="inp-name">中文姓名（請填就讀時的姓名）</label>
+      <input type="text" id="inp-name" placeholder="請輸入姓名" maxlength="30" autocomplete="off">
+    </div>
+    <button class="btn-primary" id="btn-request">寄送專屬閱覽連結</button>
+    <div id="form-error" class="form-error" style="display:none;"></div>
+    <p class="form-note">
+      · 僅限已完成報到的校友申請<br>
+      · 連結將寄至報到時留下的 Email<br>
+      · 連結為一次性使用，點擊後即失效
+    </p>
+  </div>
+</div>
+
+<!-- Check email -->
+<div id="screen-sent" class="screen">
+  <div class="card">
+    <div class="sent-icon">📬</div>
+    <div class="card-logo">
+      <h1 style="color:var(--white);">連結已寄出</h1>
+    </div>
+    <p style="color:var(--text);font-size:.9rem;line-height:1.7;text-align:center;">
+      專屬閱覽連結已寄至您的信箱<br>
+      <span class="sent-email" id="sent-email"></span>
+    </p>
+    <p style="margin-top:14px;color:var(--muted);font-size:.82rem;text-align:center;line-height:1.6;">
+      · 連結有效期限為 24 小時<br>
+      · 點擊後即失效，請勿關閉瀏覽器<br>
+      · 若未收到，請檢查垃圾信件匣
+    </p>
+    <button class="btn-link" id="btn-back">重新申請</button>
+  </div>
+</div>
+
+<!-- Error -->
+<div id="screen-error" class="screen">
+  <div class="card">
+    <div class="error-icon">🔒</div>
+    <div class="error-msg" id="error-msg"></div>
+    <button class="btn-primary" id="btn-error-retry">重新申請</button>
+  </div>
+</div>
+
+<!-- Viewer -->
+<div id="screen-viewer" class="screen">
+  <header class="viewer-header">
+    <div class="hd-left">
+      <button class="btn-icon" id="btn-index-toggle" title="目錄">☰ 目錄</button>
+      <span class="hd-title" id="hd-user"></span>
+    </div>
+    <div class="hd-center">
+      <button class="btn-nav" id="btn-prev" title="上一頁">‹</button>
+      <span id="page-display">— / —</span>
+      <button class="btn-nav" id="btn-next" title="下一頁">›</button>
+      <input class="jump-input" id="jump-input" type="number" min="1" placeholder="跳頁">
+    </div>
+    <div class="hd-right">
+      <a class="download-btn hidden" id="btn-download" href="#" target="_blank" rel="noopener">
+        <span>⬇</span><span>下載高清版</span>
+      </a>
+      <a class="exit-btn" href="/">回首頁</a>
+    </div>
+  </header>
+
+  <div class="viewer-body">
+    <aside class="index-panel collapsed" id="index-panel">
+      <div class="index-panel-header">目錄</div>
+      <div id="index-list"></div>
+    </aside>
+    <div class="book-area" id="book-area">
+      <div class="label-overlay" id="label-overlay"></div>
+      <div id="book"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://api.reunion30.tw';
+  const HEADERS = { 'X-Tenant-Slug': 'ck48', 'Content-Type': 'application/json' };
+  const JWT_KEY  = 'yearbook_jwt';
+  const NAME_KEY = 'yearbook_name';
+
+  let pageFlip   = null;
+  let pages      = [];
+  let labels     = [];
+  let driveUrl   = null;
+  let indexOpen  = false;
+
+  // ── API ──────────────────────────────────────────────
+  async function api(method, path, body, jwt) {
+    const headers = { ...HEADERS };
+    if (jwt) headers['Authorization'] = 'Bearer ' + jwt;
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(BASE + path, opts);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || '請求失敗');
+    return data;
+  }
+
+  // ── Screens ───────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+  }
+
+  function showError(msg) {
+    document.getElementById('error-msg').textContent = msg;
+    showScreen('error');
+  }
+
+  // ── Init ─────────────────────────────────────────────
+  async function init() {
+    const params = new URLSearchParams(location.search);
+    const token  = params.get('token');
+
+    if (token) {
+      showScreen('loading');
+      try {
+        const data = await api('GET', '/api/yearbook/verify?token=' + encodeURIComponent(token));
+        sessionStorage.setItem(JWT_KEY,  data.jwt);
+        sessionStorage.setItem(NAME_KEY, data.name || '');
+        history.replaceState(null, '', location.pathname);
+        await loadViewer();
+      } catch (e) {
+        showError(e.message);
+      }
+      return;
+    }
+
+    const jwt = sessionStorage.getItem(JWT_KEY);
+    if (jwt) {
+      showScreen('loading');
+      try {
+        await loadViewer();
+      } catch (e) {
+        sessionStorage.removeItem(JWT_KEY);
+        sessionStorage.removeItem(NAME_KEY);
+        await loadForm();
+      }
+      return;
+    }
+
+    await loadForm();
+  }
+
+  // ── Form ─────────────────────────────────────────────
+  async function loadForm() {
+    showScreen('form');
+    try {
+      const classes = await api('GET', '/api/classes');
+      const sel = document.getElementById('sel-class');
+      classes.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.className;
+        sel.appendChild(opt);
+      });
+    } catch (_) {
+      // Leave dropdown empty; user will see no options — not a critical failure
+    }
+  }
+
+  document.getElementById('btn-request').addEventListener('click', async () => {
+    const classId = document.getElementById('sel-class').value;
+    const name    = document.getElementById('inp-name').value.trim();
+    const errEl   = document.getElementById('form-error');
+    errEl.style.display = 'none';
+
+    if (!classId) { errEl.textContent = '請選擇班級'; errEl.style.display = 'block'; return; }
+    if (!name)    { errEl.textContent = '請填寫姓名'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('btn-request');
+    btn.disabled = true;
+    btn.textContent = '申請中…';
+
+    try {
+      const data = await api('POST', '/api/yearbook/request', { classId, name });
+      document.getElementById('sent-email').textContent = data.maskedEmail || '';
+      showScreen('sent');
+    } catch (e) {
+      errEl.textContent = e.message;
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '寄送專屬閱覽連結';
+    }
+  });
+
+  document.getElementById('inp-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-request').click();
+  });
+
+  document.getElementById('btn-back').addEventListener('click', () => loadForm());
+  document.getElementById('btn-error-retry').addEventListener('click', () => loadForm());
+
+  // ── Viewer ───────────────────────────────────────────
+  async function loadViewer() {
+    const jwt  = sessionStorage.getItem(JWT_KEY);
+    const data = await api('GET', '/api/yearbook/pages', null, jwt);
+
+    pages    = data.pages   || [];
+    driveUrl = data.driveUrl || null;
+    labels   = pages.filter(p => p.label).map(p => ({ page: p.page, label: p.label }));
+
+    const name = sessionStorage.getItem(NAME_KEY);
+    if (name) document.getElementById('hd-user').textContent = name;
+
+    if (driveUrl) {
+      const dlBtn = document.getElementById('btn-download');
+      dlBtn.href = driveUrl;
+      dlBtn.classList.remove('hidden');
+    }
+
+    renderIndexList();
+    showScreen('viewer');
+    initPageFlip();
+  }
+
+  function getPageDims() {
+    const area = document.getElementById('book-area');
+    const aw = area.clientWidth  - 24;
+    const ah = area.clientHeight - 24;
+    const isMobile = window.innerWidth < 700;
+
+    if (isMobile) {
+      const w = Math.min(aw, 420);
+      const h = Math.min(Math.floor(w * 1.42), ah);
+      return { w: Math.floor(h / 1.42), h };
+    }
+    // Desktop: spread = 2 pages side by side. Single-page width = half of available.
+    const halfW = Math.floor(aw / 2) - 4;
+    const h     = Math.min(Math.floor(halfW * 1.42), ah);
+    const w     = Math.floor(h / 1.42);
+    return { w, h };
+  }
+
+  function initPageFlip() {
+    const bookEl = document.getElementById('book');
+    const isMobile = window.innerWidth < 700;
+    const { w, h } = getPageDims();
+
+    pageFlip = new St.PageFlip(bookEl, {
+      width:              w,
+      height:             h,
+      showCover:          true,
+      mobileScrollSupport: false,
+      flippingTime:       600,
+      usePortrait:        isMobile,
+      maxShadowOpacity:   0.4,
+      startZIndex:        0,
+    });
+
+    pageFlip.loadFromImages(pages.map(p => BASE + p.url));
+
+    pageFlip.on('flip', () => updateNav());
+    pageFlip.on('changeState', () => updateNav());
+
+    updateNav();
+  }
+
+  function updateNav() {
+    if (!pageFlip) return;
+    const idx   = pageFlip.getCurrentPageIndex();
+    const total = pages.length;
+    const cur   = idx + 1;
+    const isMob = window.innerWidth < 700;
+
+    // Page counter
+    let display;
+    if (isMob || pageFlip.getPageCount() <= 1) {
+      display = `${cur} / ${total}`;
+    } else {
+      const right = Math.min(cur + 1, total);
+      display = `${cur}–${right} / ${total}`;
+    }
+    document.getElementById('page-display').textContent = display;
+
+    // Label overlay
+    const label = getCurrentLabel(cur);
+    const overlayEl = document.getElementById('label-overlay');
+    if (label) {
+      overlayEl.textContent = label;
+      overlayEl.style.display = 'block';
+    } else {
+      overlayEl.style.display = 'none';
+    }
+
+    // Nav buttons
+    document.getElementById('btn-prev').disabled = idx <= 0;
+    document.getElementById('btn-next').disabled = idx >= total - 1;
+
+    // Update index highlight
+    document.querySelectorAll('.index-item').forEach(el => {
+      const pg = parseInt(el.dataset.page, 10);
+      el.classList.toggle('current', pg === getActiveLabelPage(cur));
+    });
+  }
+
+  function getCurrentLabel(page) {
+    let result = null;
+    for (const l of labels) {
+      if (l.page <= page) result = l.label;
+      else break;
+    }
+    return result;
+  }
+
+  function getActiveLabelPage(page) {
+    let result = null;
+    for (const l of labels) {
+      if (l.page <= page) result = l.page;
+      else break;
+    }
+    return result;
+  }
+
+  // Navigation buttons
+  document.getElementById('btn-prev').addEventListener('click', () => {
+    if (pageFlip) pageFlip.flipPrev();
+  });
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (pageFlip) pageFlip.flipNext();
+  });
+
+  document.getElementById('jump-input').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const n = parseInt(e.target.value, 10);
+    if (!isNaN(n) && pageFlip) {
+      pageFlip.flip(Math.max(0, Math.min(n - 1, pages.length - 1)));
+      e.target.value = '';
+    }
+  });
+
+  // ── Index panel ──────────────────────────────────────
+  function renderIndexList() {
+    const el = document.getElementById('index-list');
+    if (!labels.length) {
+      el.innerHTML = '<div class="index-no-labels">尚未建立目錄</div>';
+      return;
+    }
+    el.innerHTML = labels.map(l =>
+      `<button class="index-item" data-page="${l.page}" onclick="window._ybJump(${l.page})">
+        <span class="index-page">p${String(l.page).padStart(3,'0')}</span>
+        <span>${l.label}</span>
+      </button>`
+    ).join('');
+  }
+
+  window._ybJump = function(page) {
+    if (!pageFlip) return;
+    pageFlip.flip(Math.max(0, page - 1));
+  };
+
+  document.getElementById('btn-index-toggle').addEventListener('click', () => {
+    indexOpen = !indexOpen;
+    const panel = document.getElementById('index-panel');
+    const btn   = document.getElementById('btn-index-toggle');
+    panel.classList.toggle('collapsed', !indexOpen);
+    btn.classList.toggle('active', indexOpen);
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (!pageFlip) return;
+    if (e.target.tagName === 'INPUT') return;
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   pageFlip.flipPrev();
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown')  pageFlip.flipNext();
+  });
+
+  // ── Start ────────────────────────────────────────────
+  init();
+})();
+</script>
+</body>
+</html>
