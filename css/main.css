@@ -1663,9 +1663,11 @@ p  { line-height: 1.75; }
   .hero__cd-num { font-size: 28px; }
 }
 @media (max-width: 767px) {
-  /* Mobile hero image: portrait crop — anchor to bottom so slogan stays visible */
+  /* Mobile hero image: portrait — contain so full width shows, no side crop */
   .hero__bg img {
+    object-fit: contain;
     object-position: center bottom;
+    background: #0d1f38;
   }
 
   /* Hero: mobile — full-screen immersive */
