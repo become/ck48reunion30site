@@ -306,14 +306,15 @@
               <!-- Row 2: Phone + Email -->
               <div class="form-grid form-grid--2">
                 <div class="form-field">
-                  <label for="fc-phone">手機號碼 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（與 Email 至少填一項）</span></label>
+                  <label for="fc-phone">手機號碼 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（選填）</span></label>
                   <input type="tel" id="fc-phone" class="form-control" placeholder="09XX-XXX-XXX" autocomplete="tel">
                   <div class="form-field__error" id="err-phone">請輸入手機號碼</div>
                 </div>
                 <div class="form-field">
-                  <label for="fc-email">電子郵件 <span style="color:var(--color-text-muted);font-weight:400;font-size:13px;">（與手機至少填一項）</span></label>
-                  <input type="email" id="fc-email" class="form-control" placeholder="your@email.com" autocomplete="email">
-                  <div class="form-field__error" id="err-email">請輸入有效的電子郵件</div>
+                  <label for="fc-email">電子郵件 <span>*</span></label>
+                  <input type="email" id="fc-email" class="form-control" placeholder="your@email.com" autocomplete="email" required>
+                  <div class="form-field__error" id="err-email">請留下可以收到信的電子郵件</div>
+                  <div class="form-field__hint" style="color:var(--color-text-muted);font-weight:400;font-size:13px;margin-top:4px;">為了通知與後續訂購的需求，請留下可以收到信的 email</div>
                 </div>
               </div>
 
@@ -701,12 +702,9 @@ async function submitCheckin() {
   if (!name)  { showError('name',  '請輸入姓名'); valid = false; }
   if (!cls)   { showError('class', '請選擇班級'); valid = false; }
 
-  if (!phone && !email) {
-    showError('phone', '手機與 Email 至少填一項'); valid = false;
-  } else {
-    if (phone && !validatePhone(phone)) { showError('phone', '手機格式錯誤，例：0912345678'); valid = false; }
-    if (email && !validateEmail(email)) { showError('email', '請輸入有效的電子郵件'); valid = false; }
-  }
+  if (phone && !validatePhone(phone)) { showError('phone', '手機格式錯誤，例：0912345678'); valid = false; }
+  if (!email) { showError('email', '請留下可以收到信的電子郵件'); valid = false; }
+  else if (!validateEmail(email)) { showError('email', '請輸入有效的電子郵件'); valid = false; }
 
   if (!formState.location) { showError('location', '請選擇目前活動地點'); valid = false; }
 
